@@ -44,14 +44,12 @@ export async function GET(request: Request, { params }: RouteParams) {
 // Requires canViewApplicationPortal (founder or Application Portal reviewer).
 //
 // Fields that can be updated through this endpoint:
-//   - status         (required for approve/reject)
-//   - verified_license   (set when license has been manually verified)
-//   - verified_insurance  (set when insurance has been manually verified)
-//   - verified_w9        (set when W-9 has been manually verified)
-//
-// Fields intentionally NOT supported here (require future migration):
-//   - notes           — add as TEXT column if admin notes are needed
-//   - reviewed_at     — add as TIMESTAMPTZ column if auto-timestamps are needed
+//   - status              (approve/reject)
+//   - verified_license    (manually verified by admin)
+//   - verified_insurance  (manually verified by admin)
+//   - verified_w9        (manually verified by admin)
+//   - reviewed_at         (auto-set when status leaves pending states)
+//   - notes              (free-text admin review notes)
 //
 // The admin page should send only the fields that are in allowedFields.
 export async function PUT(request: Request, { params }: RouteParams) {
@@ -83,12 +81,23 @@ export async function PUT(request: Request, { params }: RouteParams) {
       'verified_license',
       'verified_insurance',
       'verified_w9',
+      'notes',
+      'reviewed_at',
     ]
     const updateData: Record<string, unknown> = {}
     for (const field of allowedFields) {
       if (field in body) {
         updateData[field] = body[field]
       }
+    }
+
+    // Auto-set reviewed_at when status transitions to a decision state
+    if (
+      updateData.status &&
+      updateData.status !== 'pending_review' &&
+      updateData.status !== 'pending'
+    ) {
+      updateData.reviewed_at = new Date().toISOString()
     }
 
     if (Object.keys(updateData).length === 0) {
