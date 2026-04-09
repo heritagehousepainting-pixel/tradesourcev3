@@ -3,7 +3,9 @@ import { getSupabaseAdminClient } from '@/lib/supabase/server'
 import { getServerUserAccess } from '@/lib/auth/access.server'
 import type { NextRequest } from 'next/server'
 
-// GET /api/messages/threads — list threads for the authenticated user
+// GET /api/messages/threads — list threads for the authenticated user.
+// Non-founders see only threads they are a participant in (contractor or poster).
+// Founders/admins see all threads.
 export async function GET(request: Request) {
   try {
     const access = await getServerUserAccess(request as unknown as NextRequest)
@@ -16,7 +18,6 @@ export async function GET(request: Request) {
     const contractorId = searchParams.get('contractor_id')
     const jobId = searchParams.get('job_id')
 
-    // Non-founders can only see threads they are a participant in
     let query = supabase
       .from('message_threads')
       .select('*, jobs(title, area, status, poster_id)')
@@ -24,26 +25,15 @@ export async function GET(request: Request) {
 
     if (!access.isFounderEmail && access.userId) {
       // Filter to threads where the user is either the contractor or the job poster
-      query = query.or(`contractor_id.eq.${access.userId},jobs.poster_id.eq.${access.userId}`)
+      query = query.or(
+        `contractor_id.eq.${access.userId},jobs.poster_id.eq.${access.userId}`
+      )
     }
 
     if (contractorId) query = query.eq('contractor_id', contractorId)
     if (jobId) query = query.eq('job_id', jobId)
 
     const { data, error } = await query
-
-    if (error) return NextResponse.json({ error: error.message }, { status: 500 })
-
-    // Attach latest message preview
-      .from('message_threads')
-      .select('*, jobs(title, area, status)')
-      .order('updated_at', { ascending: false })
-
-    if (contractorId) query = query.eq('contractor_id', contractorId)
-    if (jobId) query = query.eq('job_id', jobId)
-
-    const { data, error } = await query
-
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
 
     // Attach latest message preview
@@ -57,7 +47,11 @@ export async function GET(request: Request) {
           .order('created_at', { ascending: false })
           .limit(1)
           .single()
-        return { ...thread, last_message: lastMsg?.content || null, last_message_at: lastMsg?.created_at || null }
+        return {
+          ...thread,
+          last_message: lastMsg?.content || null,
+          last_message_at: lastMsg?.created_at || null,
+        }
       })
     )
 
@@ -67,11 +61,12 @@ export async function GET(request: Request) {
   }
 }
 
-// POST /api/messages/threads — authenticated create/open a thread
+// POST /api/messages/threads — authenticated create/open a thread.
+// Requires: authenticated user who is the job poster or awarded contractor.
+// Idempotent: returns existing thread if one already exists for this job+contractor.
 export async function POST(request: Request) {
   try {
-    const { getServerUserAccess } = await import('@/lib/auth/access.server')
-    const access = await getServerUserAccess(request as any)
+    const access = await getServerUserAccess(request as unknown as NextRequest)
     if (!access.isAuthenticated) {
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 })
     }
@@ -80,7 +75,10 @@ export async function POST(request: Request) {
     const { job_id, homeowner_email, contractor_id } = body
 
     if (!job_id || !homeowner_email || !contractor_id) {
-      return NextResponse.json({ error: 'job_id, homeowner_email, and contractor_id are required' }, { status: 400 })
+      return NextResponse.json(
+        { error: 'job_id, homeowner_email, and contractor_id are required' },
+        { status: 400 }
+      )
     }
 
     const supabase = await getSupabaseAdminClient()
@@ -96,14 +94,18 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Job not found' }, { status: 404 })
     }
 
-    const isAuthorized = access.userId === job.poster_id || access.userId === contractor_id
+    const isAuthorized =
+      access.userId === job.poster_id || access.userId === contractor_id
     if (!isAuthorized) {
-      return NextResponse.json({ error: 'Forbidden: you are not authorized to create this thread' }, { status: 403 })
+      return NextResponse.json(
+        { error: 'Forbidden: you are not authorized to create this thread' },
+        { status: 403 }
+      )
     }
 
     const { data: existing } = await supabase
       .from('message_threads')
-      .select('*')
+      .select('id')
       .eq('job_id', job_id)
       .eq('contractor_id', contractor_id)
       .single()

@@ -1,10 +1,11 @@
 import { NextResponse } from 'next/server'
 import bcrypt from 'bcryptjs'
 import { getSupabaseAdminClient } from '@/lib/supabase/server-only'
+import type { SupabaseClient } from '@supabase/supabase-js'
 
 // Helper: upload a file to Supabase Storage and return the public URL
 async function uploadDocumentToStorage(
-  supabaseAdmin: ReturnType<typeof import('@/lib/supabase/server-only').getSupabaseAdminClient>,
+  supabaseAdmin: SupabaseClient,
   file: File,
   contractorEmail: string,
   docType: 'w9' | 'insurance'
@@ -109,7 +110,7 @@ export async function POST(request: Request) {
 
     // Also create a Supabase Auth user so they can sign in via supabase.auth.signInWithPassword()
     if (password && contractor?.id) {
-      const { data: authUser, error: signUpError } = await supabaseAdmin.auth.admin.createUser({
+      const { data: authData, error: signUpError } = await supabaseAdmin.auth.admin.createUser({
         email: contractorData.email as string,
         password: password as string,
         email_confirm: true,
@@ -120,11 +121,13 @@ export async function POST(request: Request) {
         },
       })
 
+
       // Bridge auth user ID to contractor row for RLS policy checks
-      if (authUser?.id) {
+      const authUserId = (authData as { user?: { id: string } }).user?.id
+      if (authUserId) {
         await supabaseAdmin
           .from('contractor_applications')
-          .update({ auth_user_id: authUser.id })
+          .update({ auth_user_id: authUserId })
           .eq('id', contractor.id)
       }
 

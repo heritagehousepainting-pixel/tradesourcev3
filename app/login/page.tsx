@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
-import { isFounderEmail } from '@/lib/auth/access'
+import { isFounderEmail } from '@/lib/auth/access.types'
 
 export default function Login() {
   const router = useRouter()
