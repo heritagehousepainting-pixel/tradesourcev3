@@ -511,6 +511,33 @@ export default function AdminPage() {
                               </a>
                             )}
                           </div>
+                        {/* Admin notes */}
+                        <div style={{ marginTop: 20 }}>
+                          <h3 style={{ fontSize: 12, fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 10 }}>Admin Notes</h3>
+                          <textarea
+                            id={'admin-notes-' + u.id}
+                            name="notes"
+                            defaultValue={u.notes || ''}
+                            placeholder="Add private notes about this applicant..."
+                            rows={3}
+                            style={{ width: '100%', padding: '10px 12px', borderRadius: 8, fontSize: 13, border: '1.5px solid var(--color-input-border)', resize: 'vertical', color: 'var(--color-text)', backgroundColor: 'var(--color-bg)', outline: 'none' }}
+                          />
+                          <button
+                            onClick={async () => {
+                              const el = document.getElementById('admin-notes-' + u.id)
+                              const notesVal = el && (el as HTMLTextAreaElement).value
+                              if (!notesVal) return
+                              try {
+                                const res = await fetch('/api/users/' + u.id, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ notes: notesVal }) })
+                                if (res.ok) { const updated = await res.json(); setUsers(prev => prev.map(x => x.id === u.id ? { ...x, notes: updated.notes } : x)); showToast('Notes saved.') }
+                                else showToast('Failed to save notes.')
+                              } catch { showToast('Failed to save notes.') }
+                            }}
+                            style={{ marginTop: 8, padding: '6px 14px', borderRadius: 7, fontSize: 12, fontWeight: 700, backgroundColor: 'var(--color-blue)', color: '#fff', border: 'none', cursor: 'pointer' }}
+                          >
+                            Save Notes
+                          </button>
+                        </div>
                         </div>
                       </div>
                     </div>

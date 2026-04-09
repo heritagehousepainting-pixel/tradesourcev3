@@ -68,9 +68,22 @@ export async function PATCH(request: Request, { params }: RouteParams) {
     }
 
     // Validate status transitions if a new status is provided.
-    const allowedStatuses = ['open', 'awarded', 'in_progress', 'completed', 'cancelled']
-    if (body.status && !allowedStatuses.includes(body.status)) {
-      return NextResponse.json({ error: 'Invalid status value' }, { status: 400 })
+    // Jobs follow a strict lifecycle: open → awarded → in_progress → completed
+    if (body.status) {
+      const validTransitions: Record<string, string[]> = {
+        open: ['awarded', 'cancelled'],
+        awarded: ['in_progress', 'cancelled'],
+        in_progress: ['completed', 'cancelled'],
+        completed: [],
+        cancelled: [],
+      }
+      const allowed = validTransitions[job.status] || []
+      if (!allowed.includes(body.status)) {
+        return NextResponse.json(
+          { error: `Cannot transition from '${job.status}' to '${body.status}'. Valid transitions: ${allowed.join(', ') || 'none'}` },
+          { status: 400 }
+        )
+      }
     }
 
     // Build update payload from validated, allowed fields only.

@@ -139,7 +139,19 @@ function FileUploadField({
           name={inputId}
           type="file"
           accept={accept}
-          onChange={e => onChange(e.target.files?.[0] || null)}
+          onChange={e => {
+            const file = e.target.files?.[0] || null
+            // Playwright's setInputFiles() triggers a native 'change' event — React sees
+            // a plain Event, not a SyntheticEvent, so we call onChange directly when the
+            // native file input value changes but React state hasn't updated.
+            onChange(file)
+          }}
+          onInput={e => {
+            // Also handle onInput as a fallback for programmatic file setting.
+            // This catches setInputFiles() and DataTransfer-based injection.
+            const file = (e.target as HTMLInputElement).files?.[0] || null
+            onChange(file)
+          }}
           style={{ display: 'none' }}
         />
       </div>
@@ -393,10 +405,12 @@ export default function Apply() {
                 {/* Name + Email */}
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
                   <div>
-                    <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>
+                    <label htmlFor="apply-full-name" style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>
                       Full Name <span style={{ color: 'var(--color-red)' }}>*</span>
                     </label>
                     <input
+                      id="apply-full-name"
+                      name="full_name"
                       type="text"
                       value={form.full_name}
                       onChange={e => update('full_name', e.target.value)}
@@ -408,10 +422,12 @@ export default function Apply() {
                     />
                   </div>
                   <div>
-                    <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>
+                    <label htmlFor="apply-email" style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>
                       Email <span style={{ color: 'var(--color-red)' }}>*</span>
                     </label>
                     <input
+                      id="apply-email"
+                      name="email"
                       type="email"
                       value={form.email}
                       onChange={e => update('email', e.target.value)}
@@ -427,10 +443,12 @@ export default function Apply() {
                 {/* Phone + Business */}
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
                   <div>
-                    <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>
+                    <label htmlFor="apply-phone" style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>
                       Phone
                     </label>
                     <input
+                      id="apply-phone"
+                      name="phone"
                       type="tel"
                       value={form.phone}
                       onChange={e => update('phone', e.target.value)}
@@ -441,10 +459,12 @@ export default function Apply() {
                     />
                   </div>
                   <div>
-                    <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>
+                    <label htmlFor="apply-business-name" style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>
                       Business Name
                     </label>
                     <input
+                      id="apply-business-name"
+                      name="business_name"
                       type="text"
                       value={form.business_name}
                       onChange={e => update('business_name', e.target.value)}
@@ -459,10 +479,12 @@ export default function Apply() {
                 {/* License + Insurance carrier */}
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
                   <div>
-                    <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>
+                    <label htmlFor="apply-license" style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>
                       PA License #
                     </label>
                     <input
+                      id="apply-license"
+                      name="license_number"
                       type="text"
                       value={form.license_number}
                       onChange={e => update('license_number', e.target.value)}
@@ -473,10 +495,12 @@ export default function Apply() {
                     />
                   </div>
                   <div>
-                    <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>
+                    <label htmlFor="apply-insurance-carrier" style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>
                       Insurance Carrier
                     </label>
                     <input
+                      id="apply-insurance-carrier"
+                      name="insurance_carrier"
                       type="text"
                       value={form.insurance_carrier}
                       onChange={e => update('insurance_carrier', e.target.value)}
@@ -595,10 +619,12 @@ export default function Apply() {
 
                 {/* Bio */}
                 <div>
-                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>
+                  <label htmlFor="apply-bio" style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>
                     Short Bio
                   </label>
                   <textarea
+                    id="apply-bio"
+                    name="bio"
                     value={form.bio}
                     onChange={e => update('bio', e.target.value)}
                     placeholder="Years of experience, specialty, types of properties you work on most…"

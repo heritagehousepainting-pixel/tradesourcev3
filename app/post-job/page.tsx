@@ -428,10 +428,12 @@ export default function PostJob() {
                 {/* Title + Scope */}
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
                   <div>
-                    <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>
+                    <label htmlFor="job-title" style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>
                       Job Title <span style={{ color: 'var(--color-red)' }}>*</span>
                     </label>
                     <input
+                      id="job-title"
+                      name="title"
                       type="text"
                       value={form.title}
                       onChange={e => update('title', e.target.value)}
@@ -443,10 +445,12 @@ export default function PostJob() {
                     />
                   </div>
                   <div>
-                    <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>
+                    <label htmlFor="job-scope" style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>
                       Service Type <span style={{ color: 'var(--color-red)' }}>*</span>
                     </label>
                     <select
+                      id="job-scope"
+                      name="scope"
                       value={form.scope}
                       onChange={e => update('scope', e.target.value)}
                       required
@@ -463,10 +467,12 @@ export default function PostJob() {
                 {/* Location + Timeline */}
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
                   <div>
-                    <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>
+                    <label htmlFor="job-area" style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>
                       Job Location <span style={{ color: 'var(--color-red)' }}>*</span>
                     </label>
                     <input
+                      id="job-area"
+                      name="area"
                       type="text"
                       value={form.area}
                       onChange={e => update('area', e.target.value)}
@@ -478,10 +484,12 @@ export default function PostJob() {
                     />
                   </div>
                   <div>
-                    <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>
+                    <label htmlFor="job-timeline" style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>
                       Timeline
                     </label>
                     <select
+                      id="job-timeline"
+                      name="timeline"
                       value={form.timeline}
                       onChange={e => update('timeline', e.target.value)}
                       style={{ width: '100%', padding: '11px 14px', borderRadius: 10, fontSize: 14, border: '1.5px solid var(--color-input-border)', outline: 'none', transition: 'border-color 0.15s', color: 'var(--color-text)', cursor: 'pointer' }}

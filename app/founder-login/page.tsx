@@ -1,15 +1,32 @@
 'use client'
 
-import { Suspense, useState } from 'react'
+import { Suspense, useState, useEffect } from 'react'
 import { useSearchParams } from 'next/navigation'
+import { supabase } from '@/lib/supabase'
 import { signIn } from '@/lib/auth/client'
 
-/**
- * The page shell — required export. The actual form is in FounderForm below,
- * wrapped in Suspense so useSearchParams (a client-only hook) doesn't break
- * static prerendering.
- */
+/** The page shell — required export. The actual form is in FounderForm below. */
 export default function FounderLoginPage() {
+  // Redirect already-authenticated users away from founder-login.
+  // Auth-check is a client-side cookie read — no network call needed.
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => {
+      if (!data.session?.user) return
+      const token = data.session.access_token
+      let isFounder = false
+      try {
+        const payload = token.split('.')[1]
+        if (payload) {
+          const base64 = payload.replace(/-/g, '+').replace(/_/g, '/')
+          const padded = base64 + '=='.slice(0, (4 - base64.length % 4) % 4)
+          const decoded = JSON.parse(atob(padded))
+          isFounder = (decoded.app_metadata as Record<string, unknown>)?.role === 'admin'
+        }
+      } catch {}
+      window.location.href = isFounder ? '/admin' : '/dashboard'
+    })
+  }, [])
+
   return (
     <Suspense fallback={<div style={{ minHeight: '100vh', backgroundColor: '#0F172A' }} />}>
       <FounderForm />

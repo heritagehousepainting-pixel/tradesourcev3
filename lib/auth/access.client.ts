@@ -4,10 +4,10 @@
  * Client-side user access hook.
  *
  * Import this in Client Components to get the canonical UserAccess object.
- * Handles the full auth flow: Supabase session → profile fetch → capability resolution.
+ * Handles the full auth flow: session cookie → profile → capability resolution.
  */
 
-import { useState, useEffect, useCallback, useRef } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { getSupabaseBrowserClient } from '@/lib/supabase/client'
 import {
   type UserAccess,
@@ -21,12 +21,12 @@ import {
  *
  * Usage:
  *   const access = useUserAccess()
- *
  *   if (!access.checked) return <Loading />
- *   // access.isAuthenticated, access.canPostJobs, etc.
+ *   // access.canPostJobs, access.canViewApplicationPortal, etc.
  *
- * `access.checked` is `false` during the initial async auth check.
- * Use this to render loading states before redirecting.
+ * Profile lookup: reads directly from contractor_applications via Supabase browser client
+ * (bypasses API routes — avoids Edge Runtime network issues in Vercel).
+ * Uses email matching to find the contractor row, which is fast and reliable.
  */
 export function useUserAccess(): UserAccess {
   const [access, setAccess] = useState<UserAccess>(DEFAULT_USER_ACCESS)
@@ -34,8 +34,7 @@ export function useUserAccess(): UserAccess {
   const fetchAccess = useCallback(async () => {
     const supabase = getSupabaseBrowserClient()
 
-    // getSession() reads from the cookie store — no network call, always fast.
-    // Use getUser() only as a fallback if we need to force a token refresh.
+    // getSession() reads from the cookie store — no network call, always fast in browser.
     const { data: { session } } = await supabase.auth.getSession()
 
     if (!session?.user) {
@@ -43,50 +42,74 @@ export function useUserAccess(): UserAccess {
       return
     }
 
-    // Preserve the full user object including app_metadata for role checks.
-    const authUser = session.user
+    // Decode JWT to check founder role (fast, no network).
+    let isJwtAdmin = false
+    try {
+      const token = session.access_token
+      if (token) {
+        const payload = token.split('.')[1]
+        if (payload) {
+          const base64 = payload.replace(/-/g, '+').replace(/_/g, '/')
+          const padded = base64 + '=='.slice(0, (4 - base64.length % 4) % 4)
+          const decoded = JSON.parse(atob(padded))
+          isJwtAdmin = decoded.app_metadata?.role === 'admin'
+        }
+      }
+    } catch { /* non-founder */ }
 
-    // Look up contractor profile via the users API endpoint.
-    // The API route validates the session server-side (cookie decode in middleware)
-    // and returns the matching profile row.
+    // Try to fetch contractor profile directly from DB via Supabase browser client.
+    // This avoids the API route (which goes through Edge Runtime getUser() call).
+    // The browser client uses cookie-based auth and reads from RLS.
     let profile: ContractorProfile | null = null
     try {
-      const res = await fetch('/api/users')
-      if (res.ok) {
-        const users: ContractorProfile[] = await res.json()
-        const found = users.find(
-          (u) =>
-            u.id === authUser.id ||
-            u.email?.toLowerCase() === authUser.email?.toLowerCase()
-        )
-        if (found) profile = found
+      // Match by auth UID first, fall back to email.
+      const { data: byId } = await supabase
+        .from('contractor_applications')
+        .select('*')
+        .eq('auth_user_id', session.user.id)
+        .maybeSingle()
+      if (byId) {
+        profile = byId
+      } else {
+        // Fall back to email match
+        const { data: byEmail } = await supabase
+          .from('contractor_applications')
+          .select('*')
+          .ilike('email', session.user.email || '')
+          .maybeSingle()
+        if (byEmail) profile = byEmail
       }
     } catch {
-      // Network/API error — continue without profile
+      // Network/RLS error — profile stays null; user gets limited access.
+      // At minimum, founder check via JWT works even without profile.
     }
 
-    const resolved = resolveUserAccess(authUser, profile)
+    // Also check NEXT_PUBLIC_FOUNDER_EMAILS for founder detection fallback.
+    const { getFounderEmailFromEnv } = await import('./access.types')
+    const isFounderEmail = getFounderEmailFromEnv(session.user.email)
+    const isFounder = isJwtAdmin || isFounderEmail
+
+    const resolved = resolveUserAccess(session.user, profile)
+    // Override isFounderEmail if JWT confirms admin role.
+    if (isFounder && !resolved.isFounderEmail) {
+      resolved.isFounderEmail = true
+    }
     setAccess(resolved)
   }, [])
 
   useEffect(() => {
-    // Initial fetch
     fetchAccess()
 
-    // Subscribe to Supabase auth state changes (login, logout, token refresh)
     const supabase = getSupabaseBrowserClient()
     const { data } = supabase.auth.onAuthStateChange((_event, session) => {
       if (!session?.user) {
         setAccess({ ...DEFAULT_USER_ACCESS, checked: true })
       } else {
-        // Re-check profile on auth change (session may have new user metadata)
         fetchAccess()
       }
     })
 
-    return () => {
-      data.subscription.unsubscribe()
-    }
+    return () => { data.subscription.unsubscribe() }
   }, [fetchAccess])
 
   return access

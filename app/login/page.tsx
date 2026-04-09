@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
 
@@ -10,6 +10,26 @@ export default function Login() {
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+
+  // Redirect already-authenticated users away from the login page.
+  // Check the cookie-based session on mount — no network call needed.
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => {
+      if (!data.session?.user) return
+      const token = data.session.access_token
+      let isFounder = false
+      try {
+        const payload = token.split('.')[1]
+        if (payload) {
+          const base64 = payload.replace(/-/g, '+').replace(/_/g, '/')
+          const padded = base64 + '=='.slice(0, (4 - base64.length % 4) % 4)
+          const decoded = JSON.parse(atob(padded))
+          isFounder = (decoded.app_metadata as Record<string, unknown>)?.role === 'admin'
+        }
+      } catch {}
+      window.location.href = isFounder ? '/admin' : '/dashboard'
+    })
+  }, [])
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()

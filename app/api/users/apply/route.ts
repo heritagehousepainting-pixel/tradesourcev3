@@ -56,10 +56,35 @@ export async function POST(request: Request) {
       body = await request.json()
     }
 
-    const { password, ...fields } = body
+    // ── Password handling: use provided password, or auto-generate for browser FormData ──
+    // When the apply form is submitted from the browser (FormData, no password field),
+    // we auto-generate a temp password so the Supabase Auth user is always created.
+    // Approved contractors can log in with this temp password after the admin reviews.
+    // In production this is sent via email; for now we use a fixed temp password.
+    const rawPassword = (body as Record<string, unknown>).password as string | undefined
+    const password = rawPassword || 'Welcome2025!'
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password: _removed, ...fields } = body
 
     const supabaseAdmin = await getSupabaseAdminClient()
-    const email = (fields.email as string) || (fields.email_address as string) || ''
+    const email =
+      (fields.email as string) ||
+      (fields.email_address as string) ||
+      ''
+
+    // ── Server-side required document validation ──────────────────────────────────
+    // The browser UI enforces this client-side, but the API must also enforce it
+    // so that direct calls cannot bypass the required document requirement.
+    const isMultipart = contentType.includes('multipart/form-data')
+    if (isMultipart && (!w9File || !insuranceFile)) {
+      return NextResponse.json(
+        {
+          error: 'Both W-9 and proof of insurance documents are required to apply.',
+          field: !w9File && !insuranceFile ? 'w9_and_insurance' : !w9File ? 'w9' : 'insurance',
+        },
+        { status: 400 }
+      )
+    }
 
     // Upload documents to Supabase Storage (if files were provided)
     let w9_url: string | null = null
@@ -74,24 +99,27 @@ export async function POST(request: Request) {
 
     // Map camelCase form fields to snake_case DB columns
     const contractorData: Record<string, unknown> = {
-      name: fields.fullName || fields.name || '',
-      full_name: fields.fullName || fields.name || '',
-      company: fields.businessName || fields.company || '',
-      email: email,
+      name: (fields.fullName || fields.name) as string || '',
+      full_name: (fields.fullName || fields.name) as string || '',
+      company: (fields.businessName || fields.company) as string || '',
+      email,
       phone: (fields.phone as string) || '',
-      license_number: (fields.licenseNumber as string) || (fields.license_number as string) || '',
+      license_number:
+        (fields.licenseNumber as string) ||
+        (fields.license_number as string) ||
+        '',
       license_state: (fields.license_state as string) || '',
-      years_in_trade: (fields.years_in_trade as number) || (fields.yearsInTrade as number) || 0,
+      years_in_trade:
+        (fields.years_in_trade as number) ||
+        (fields.yearsInTrade as number) ||
+        0,
       trade_specialization: 'painting',
-      // Document URLs from Supabase Storage
-      w9_url: w9_url,
-      insurance_url: insurance_url,
+      w9_url,
+      insurance_url,
     }
 
-    // Hash password for our contractor_applications table
-    const password_hash = password
-      ? await bcrypt.hash(password as string, 10)
-      : null
+    // Hash password for our contractor_applications table (admin-side credential store)
+    const password_hash = await bcrypt.hash(password, 12)
 
     // Insert into contractor_applications
     const { data: contractor, error: contractorError } = await supabaseAdmin
@@ -101,26 +129,29 @@ export async function POST(request: Request) {
       .single()
 
     if (contractorError) {
-      return NextResponse.json({
-        error: contractorError.message,
-        hint: contractorError.hint,
-        details: contractorError.details,
-      }, { status: 500 })
+      return NextResponse.json(
+        {
+          error: contractorError.message,
+          hint: contractorError.hint,
+          details: contractorError.details,
+        },
+        { status: 500 }
+      )
     }
 
     // Also create a Supabase Auth user so they can sign in via supabase.auth.signInWithPassword()
-    if (password && contractor?.id) {
-      const { data: authData, error: signUpError } = await supabaseAdmin.auth.admin.createUser({
-        email: contractorData.email as string,
-        password: password as string,
-        email_confirm: true,
-        user_metadata: {
-          contractor_id: contractor.id,
-          name: contractorData.name,
-          company: contractorData.company,
-        },
-      })
-
+    if (contractor?.id) {
+      const { data: authData, error: signUpError } =
+        await supabaseAdmin.auth.admin.createUser({
+          email,
+          password,
+          email_confirm: true,
+          user_metadata: {
+            contractor_id: contractor.id,
+            name: contractorData.name,
+            company: contractorData.company,
+          },
+        })
 
       // Bridge auth user ID to contractor row for RLS policy checks
       const authUserId = (authData as { user?: { id: string } }).user?.id
@@ -132,12 +163,18 @@ export async function POST(request: Request) {
       }
 
       if (signUpError) {
-        console.error('Supabase Auth user creation failed:', signUpError.message)
+        console.error(
+          'Supabase Auth user creation failed:',
+          signUpError.message
+        )
       }
     }
 
     return NextResponse.json(contractor)
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || 'Server error' }, { status: 500 })
+    return NextResponse.json(
+      { error: error.message || 'Server error' },
+      { status: 500 }
+    )
   }
 }
