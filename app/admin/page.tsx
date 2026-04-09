@@ -206,10 +206,10 @@ export default function AdminPage() {
       const res = await fetch(`/api/users/${userId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: 'approved', verified_license: verifyLicense, verified_insurance: verifyInsurance }),
+        body: JSON.stringify({ status: 'approved', verified_license: verifyLicense, verified_insurance: verifyInsurance, verified_w9: true }),
       })
       if (res.ok) {
-        setUsers(prev => prev.map(u => u.id === userId ? { ...u, status: 'approved' } : u))
+        setUsers(prev => prev.map(u => u.id === userId ? { ...u, status: 'approved', verified_license: verifyLicense, verified_insurance: verifyInsurance } : u))
         showToast('Application approved.')
       } else {
         showToast('Failed to approve.')
@@ -487,33 +487,28 @@ export default function AdminPage() {
                         <div style={{ marginTop: 20 }}>
                           <h3 style={{ fontSize: 12, fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 10 }}>Documents</h3>
                           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                            {u.license_document_url ? (
-                              <a href={u.license_document_url} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', borderRadius: 8, backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)', textDecoration: 'none' }}>
+                            {u.w9_url ? (
+                              <a href={u.w9_url} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', borderRadius: 8, backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)', textDecoration: 'none' }}>
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-blue)" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
                                 <div>
-                                  <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--color-blue)' }}>License Document</div>
+                                  <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--color-blue)' }}>W-9 / License Document</div>
                                   <div style={{ fontSize: 11, color: 'var(--color-text-muted)' }}>{u.license_state ? `${u.license_state} license` : 'View file'}</div>
                                 </div>
                               </a>
                             ) : (
                               <div style={{ padding: '10px 12px', borderRadius: 8, backgroundColor: 'var(--color-surface)', border: '1px dashed var(--color-border)', display: 'flex', alignItems: 'center', gap: 10 }}>
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-muted)" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
-                                <span style={{ fontSize: 12, color: 'var(--color-text-muted)' }}>No license document uploaded</span>
+                                <span style={{ fontSize: 12, color: 'var(--color-text-muted)' }}>No W-9 / license document uploaded</span>
                               </div>
                             )}
-                            {u.insurance_document_url ? (
-                              <a href={u.insurance_document_url} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', borderRadius: 8, backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)', textDecoration: 'none' }}>
+                            {u.insurance_url && (
+                              <a href={u.insurance_url} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', borderRadius: 8, backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)', textDecoration: 'none' }}>
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-blue)" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
                                 <div>
                                   <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--color-blue)' }}>Insurance Document</div>
                                   <div style={{ fontSize: 11, color: 'var(--color-text-muted)' }}>View file</div>
                                 </div>
                               </a>
-                            ) : (
-                              <div style={{ padding: '10px 12px', borderRadius: 8, backgroundColor: 'var(--color-surface)', border: '1px dashed var(--color-border)', display: 'flex', alignItems: 'center', gap: 10 }}>
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-muted)" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
-                                <span style={{ fontSize: 12, color: 'var(--color-text-muted)' }}>No insurance document uploaded</span>
-                              </div>
                             )}
                           </div>
                         </div>
