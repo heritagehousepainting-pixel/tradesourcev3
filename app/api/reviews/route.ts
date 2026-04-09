@@ -64,6 +64,29 @@ export async function POST(request: Request) {
 
     const supabase = await getSupabaseAdminClient()
 
+    // Ownership check: if a job_id is provided, verify the authenticated user
+    // is either the job poster OR the awarded contractor.
+    // In contractor-to-contractor jobs, both parties can review each other.
+    // Founders/admins bypass this check.
+    if (job_id && !access.isFounderEmail) {
+      const { data: job } = await supabase
+        .from('jobs')
+        .select('poster_id, contractor_id')
+        .eq('id', job_id)
+        .single()
+
+      if (job) {
+        // Resolve both poster and contractor auth_user_ids
+        const posterAuthId = job.poster_id ? (await supabase.from('contractor_applications').select('auth_user_id').eq('id', job.poster_id).single()).data?.auth_user_id : null
+        const contractorAuthId = job.contractor_id ? (await supabase.from('contractor_applications').select('auth_user_id').eq('id', job.contractor_id).single()).data?.auth_user_id : null
+
+        const isAuthorized = access.userId === posterAuthId || access.userId === contractorAuthId
+        if (!isAuthorized) {
+          return NextResponse.json({ error: 'Forbidden: you are not a participant in this job' }, { status: 403 })
+        }
+      }
+    }
+
     const insertBody = {
       rating,
       comment: comment || null,

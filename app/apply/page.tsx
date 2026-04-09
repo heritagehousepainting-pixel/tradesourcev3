@@ -136,6 +136,7 @@ function FileUploadField({
 
         <input
           id={inputId}
+          name={inputId}
           type="file"
           accept={accept}
           onChange={e => onChange(e.target.files?.[0] || null)}
@@ -207,16 +208,9 @@ export default function Apply() {
 
       const res = await fetch('/api/users/apply', {
         method: 'POST',
-        // Note: using JSON body for MVP. File uploads would need multipart/form-data
-        // For now, include file names in body as metadata. Backend handles file storage.
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          ...form,
-          w9_filename: w9File.name,
-          w9_size: w9File.size,
-          insurance_filename: insuranceFile.name,
-          insurance_size: insuranceFile.size,
-        }),
+        // Files are sent as multipart/form-data; API uploads them to Supabase Storage
+        // and saves the public URLs in the contractor_applications table.
+        body: formData,
       })
       if (!res.ok) {
         const data = await res.json().catch(() => ({}))

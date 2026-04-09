@@ -25,7 +25,29 @@ export async function GET(request: Request) {
       .select('*')
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
-    return NextResponse.json(data || [])
+
+    // Strip sensitive fields (email, phone) for non-admin users.
+    // Admins see everything; regular authenticated users only see public-safe fields.
+    const isAdmin = (access as any).canViewApplicationPortal === true || (access as any).isFounderEmail === true
+    const safeFields = [
+      'id', 'name', 'full_name', 'company', 'license_number', 'license_state',
+      'years_in_trade', 'trade_specialization', 'insurance_expiry',
+      'status', 'verified_w9', 'verified_insurance', 'verified_license',
+      'verified_external', 'is_pro', 'bio', 'created_at',
+      'w9_url', 'insurance_url', 'external_reviews',
+      'notes', 'reviewed_at',
+    ]
+    const sanitized = isAdmin
+      ? data
+      : (data || []).map(row => {
+          const safe: Record<string, unknown> = {}
+          for (const key of safeFields) {
+            if (key in row) safe[key] = (row as Record<string, unknown>)[key]
+          }
+          return safe
+        })
+
+    return NextResponse.json(sanitized)
   } catch (error: any) {
     return NextResponse.json({ error: error.message || 'Server error' }, { status: 500 })
   }

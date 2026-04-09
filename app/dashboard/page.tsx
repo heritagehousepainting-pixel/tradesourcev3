@@ -159,10 +159,15 @@ export default function Dashboard() {
   const [awardingJob, setAwardingJob] = useState<string | null>(null)
   const [myReviews, setMyReviews] = useState<any[]>([])
   const [myRating, setMyRating] = useState<number | null>(null)
+  const [reviewForm, setReviewForm] = useState<Record<string, { rating: number; comment: string }>>({})
+  const [showReviewForm, setShowReviewForm] = useState<string | null>(null)
+  const [reviewSubmitted, setReviewSubmitted] = useState<Set<string>>(new Set())
 
   const myPostedJobs = jobs.filter(j => j.poster_id === user?.id)
   const availableJobs = jobs.filter(j => j.status === 'open' && j.contractor_id !== user?.id && !(j.homeowner_email && j.homeowner_email === user?.email) && j.poster_id !== user?.id)
   const jobsInProgress = jobs.filter(j => j.contractor_id === user?.id && (j.status === 'in_progress' || j.status === 'awarded'))
+  // Completed jobs where this user was the awarded contractor — eligible for review
+  const completedJobsWithReview = jobs.filter(j => j.contractor_id === user?.id && j.status === 'completed')
 
   const showToast = (msg: string) => {
     if (toastTimer.current) clearTimeout(toastTimer.current)
@@ -248,14 +253,67 @@ export default function Dashboard() {
     } catch {} finally { setSendingMessage(false) }
   }
 
+  const handleSubmitReview = async (contractorId: string, jobId: string, posterName: string) => {
+    const form = reviewForm[contractorId]
+    if (!form || !form.rating) return
+    try {
+      const res = await fetch('/api/reviews', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contractor_id: contractorId,
+          homeowner_name: posterName || user?.name || user?.full_name || 'Contractor',
+          rating: form.rating,
+          comment: form.comment,
+          job_id: jobId,
+          reviewer_id: user?.id || null,
+          reviewer_type: 'contractor',
+        }),
+      })
+      if (res.ok) {
+        setReviewSubmitted(prev => new Set([...prev, jobId]))
+        setShowReviewForm(null)
+        showToast('Review submitted! Thanks.')
+        // Refresh reviews to update rating
+        if (user?.id) {
+          fetch(`/api/reviews?contractor_id=${user.id}`).then(r => r.json()).then(data => {
+            if (data?.reviews) {
+              setMyReviews(data.reviews)
+              const r = data.reviews
+              if (r.length > 0) setMyRating(Math.round((r.reduce((s: number, x: any) => s + x.rating, 0) / r.length * 10) / 10))
+            }
+          }).catch(() => null)
+        }
+      }
+    } catch { showToast('Failed to submit review.') }
+  }
+
   const handleAwardJob = async (jobId: string, contractorId: string, contractorName: string) => {
     setAwardingJob(jobId)
     try {
       const res = await fetch(`/api/jobs/${jobId}/award`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ contractor_id: contractorId }) })
       if (res.ok) {
+        const data = await res.json()
         setJobs(prev => prev.map(j => j.id === jobId ? { ...j, status: 'awarded', contractor_id: contractorId } : j))
-        showToast(`Job awarded to ${contractorName}!`)
-        fetch(`/api/jobs/${jobId}/interests`).then(ir => { if (ir?.ok) ir.json().then(data => setPostedJobInterests(prev => ({ ...prev, [jobId]: data || [] }))) }).catch(() => null)
+        // Refresh threads so the new conversation appears in the Messages tab
+        if (user?.id) {
+          fetch(`/api/messages/threads?contractor_id=${user.id}`)
+            .then(r => r.json())
+            .then(threads => { setMessageThreads(threads || []); return threads })
+            .then(threads => {
+              // Auto-open the newly created thread if one was returned
+              if (data?.thread?.id) {
+                const newThread = threads?.find((t: any) => t.id === data.thread.id)
+                if (newThread) {
+                  setActiveThread(newThread)
+                  setView('messages')
+                }
+              }
+            })
+            .catch(() => null)
+        }
+        fetch(`/api/jobs/${jobId}/interests`).then(ir => { if (ir?.ok) ir.json().then(d => setPostedJobInterests(prev => ({ ...prev, [jobId]: d || [] }))) }).catch(() => null)
+        showToast(data?.thread?.id ? `Job awarded to ${contractorName}! You can now message them.` : `Job awarded to ${contractorName}!`)
       } else { res.json().then(d => setDashboardError(d?.error || 'Failed to award job.')).catch(() => setDashboardError('Failed to award job.')) }
     } catch { setDashboardError('Failed to award job.') } finally { setAwardingJob(null) }
   }
@@ -402,6 +460,71 @@ export default function Dashboard() {
                       </div>
                     </div>
                   ))}
+                </div>
+              </div>
+            )}
+
+            {/* Completed Work — jobs this contractor was awarded and completed */}
+            {completedJobsWithReview.length > 0 && (
+              <div style={{ marginBottom: 32 }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
+                  <h2 style={{ fontSize: 12, fontWeight: 700, color: 'var(--color-text-muted)', letterSpacing: '0.06em', textTransform: 'uppercase' }}>Completed Work</h2>
+                  <span style={{ fontSize: 11, fontWeight: 600, padding: '2px 8px', borderRadius: 20, backgroundColor: 'var(--color-green-soft)', color: 'var(--color-green)' }}>{completedJobsWithReview.length}</span>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                  {completedJobsWithReview.map((job: any) => {
+                    const posterName = job.poster?.name || job.poster?.company || job.poster?.full_name || 'the homeowner'
+                    const alreadyReviewed = reviewSubmitted.has(job.id)
+                    const showForm = showReviewForm === job.id
+                    return (
+                      <div key={job.id} style={{ backgroundColor: 'var(--color-surface-raised)', border: '1px solid var(--color-border)', borderRadius: 14, padding: '18px 22px', borderLeft: '3px solid var(--color-green)' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 16, marginBottom: alreadyReviewed || showForm ? 0 : 12 }}>
+                          <div style={{ flex: 1 }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 5 }}>
+                              <h3 style={{ fontSize: 14, fontWeight: 700, color: 'var(--color-text)' }}>{job.title}</h3>
+                              <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 9px', borderRadius: 20, backgroundColor: 'var(--color-green-soft)', color: 'var(--color-green)' }}>Completed</span>
+                            </div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+                              {job.area && <span style={{ fontSize: 12, color: 'var(--color-text-muted)' }}>{job.area}</span>}
+                              {job.budget_min && <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--color-green)' }}>${job.budget_min.toLocaleString()}</span>}
+                            </div>
+                          </div>
+                          {!alreadyReviewed && !showForm && (
+                            <button onClick={() => setShowReviewForm(job.id)} style={{ padding: '7px 14px', borderRadius: 8, fontSize: 12, fontWeight: 700, backgroundColor: '#F59E0B', color: '#fff', border: 'none', cursor: 'pointer', flexShrink: 0, boxShadow: '0 2px 8px rgba(245,158,11,0.3)' }}>Leave Review</button>
+                          )}
+                          {alreadyReviewed && (
+                            <span style={{ padding: '6px 14px', borderRadius: 8, fontSize: 12, fontWeight: 600, backgroundColor: 'var(--color-green-soft)', color: 'var(--color-green)', flexShrink: 0 }}>✓ Review Submitted</span>
+                          )}
+                        </div>
+                        {showForm && (
+                          <div style={{ marginTop: 14, paddingTop: 14, borderTop: '1px solid var(--color-divider)' }}>
+                            <p style={{ fontSize: 12, color: 'var(--color-text-muted)', marginBottom: 12 }}>
+                              How was working with {posterName} on <strong>{job.title}</strong>?
+                            </p>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
+                              {[1,2,3,4,5].map(star => (
+                                <button key={star} onClick={() => setReviewForm(prev => ({ ...prev, [job.contractor_id]: { ...(prev[job.contractor_id] || {}), rating: star, comment: prev[job.contractor_id]?.comment || '' } }))} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 24, lineHeight: 1, padding: '0 2px', color: (reviewForm[job.contractor_id]?.rating || 0) >= star ? '#F59E0B' : 'var(--color-border-strong)' }}>★</button>
+                              ))}
+                              {(reviewForm[job.contractor_id]?.rating || 0) > 0 && (
+                                <span style={{ fontSize: 12, fontWeight: 600, color: '#F59E0B' }}>{(reviewForm[job.contractor_id]?.rating || 0)}/5</span>
+                              )}
+                            </div>
+                            <textarea
+                              value={reviewForm[job.contractor_id]?.comment || ''}
+                              onChange={e => setReviewForm(prev => ({ ...prev, [job.contractor_id]: { ...(prev[job.contractor_id] || {}), comment: e.target.value } }))}
+                              placeholder="Share your experience (optional)…"
+                              rows={3}
+                              style={{ width: '100%', padding: '10px 12px', borderRadius: 10, border: '1.5px solid var(--color-input-border)', backgroundColor: 'var(--color-input-bg)', color: 'var(--color-input-text)', fontSize: 13, fontFamily: 'inherit', resize: 'vertical', outline: 'none', marginBottom: 10 }}
+                            />
+                            <div style={{ display: 'flex', gap: 8 }}>
+                              <button onClick={() => handleSubmitReview(job.contractor_id, job.id, posterName)} disabled={!reviewForm[job.contractor_id]?.rating} style={{ padding: '7px 16px', borderRadius: 8, fontSize: 12, fontWeight: 700, backgroundColor: reviewForm[job.contractor_id]?.rating ? '#F59E0B' : 'var(--color-border)', color: reviewForm[job.contractor_id]?.rating ? '#fff' : 'var(--color-text-subtle)', border: 'none', cursor: reviewForm[job.contractor_id]?.rating ? 'pointer' : 'not-allowed', opacity: reviewForm[job.contractor_id]?.rating ? 1 : 0.6 }}>Submit Review</button>
+                              <button onClick={() => setShowReviewForm(null)} style={{ padding: '7px 14px', borderRadius: 8, fontSize: 12, fontWeight: 600, backgroundColor: 'transparent', color: 'var(--color-text-muted)', border: '1px solid var(--color-border)', cursor: 'pointer' }}>Cancel</button>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )
+                  })}
                 </div>
               </div>
             )}

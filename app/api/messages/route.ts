@@ -23,14 +23,21 @@ export async function GET(request: Request) {
 
     // Verify the authenticated user is a participant in this thread.
     // Founders/admins bypass this check.
+    // Participants are: the contractor on the thread OR the job poster (homeowner).
     if (!access.isFounderEmail && access.userId) {
       const { data: thread } = await supabase
         .from('message_threads')
-        .select('contractor_id')
+        .select('contractor_id, jobs(poster_id)')
         .eq('id', threadId)
         .single()
 
-      if (!thread || thread.contractor_id !== access.userId) {
+      if (!thread) {
+        return NextResponse.json({ error: 'Thread not found' }, { status: 404 })
+      }
+
+      const jobPosterId = (thread as any).jobs?.poster_id
+      const isParticipant = thread.contractor_id === access.userId || jobPosterId === access.userId
+      if (!isParticipant) {
         return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
       }
     }
@@ -70,6 +77,25 @@ export async function POST(request: Request) {
     }
 
     const supabase = await getSupabaseAdminClient()
+
+    // Verify sender is a thread participant (contractor or job poster)
+    if (!access.isFounderEmail && access.userId) {
+      const { data: thread } = await supabase
+        .from('message_threads')
+        .select('contractor_id, jobs(poster_id)')
+        .eq('id', thread_id)
+        .single()
+
+      if (!thread) {
+        return NextResponse.json({ error: 'Thread not found' }, { status: 404 })
+      }
+
+      const jobPosterId = (thread as any).jobs?.poster_id
+      const isParticipant = thread.contractor_id === access.userId || jobPosterId === access.userId
+      if (!isParticipant) {
+        return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+      }
+    }
 
     const { data, error } = await supabase
       .from('messages')

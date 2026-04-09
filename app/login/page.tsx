@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
+import { isFounderEmail } from '@/lib/auth/access'
 
 export default function Login() {
   const router = useRouter()
@@ -20,7 +21,10 @@ export default function Login() {
       if (error) {
         setError(error.message)
       } else {
-        router.push('/dashboard')
+        // Check if this is a founder account → redirect to /admin
+        const { data: { user } } = await supabase.auth.getUser()
+        const isFounder = user?.email ? isFounderEmail(user.email) : false
+        router.push(isFounder ? '/admin' : '/dashboard')
         router.refresh()
       }
     } catch {

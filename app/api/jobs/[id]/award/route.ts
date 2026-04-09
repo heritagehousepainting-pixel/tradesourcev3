@@ -4,6 +4,7 @@ import type { NextRequest } from 'next/server'
 
 // POST /api/jobs/[id]/award — award a job to a contractor
 // Requires: authenticated user (poster or founder/admin)
+// Side-effect: auto-creates a message_threads row so both parties can communicate.
 export async function POST(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
@@ -30,7 +31,7 @@ export async function POST(
     // Verify the job exists and is open
     const { data: job, error: jobError } = await supabase
       .from('jobs')
-      .select('id, status, contractor_id, poster_id')
+      .select('id, status, contractor_id, poster_id, homeowner_email, homeowner_name')
       .eq('id', jobId)
       .single()
 
@@ -72,17 +73,61 @@ export async function POST(
       return NextResponse.json({ error: updateError.message }, { status: 500 })
     }
 
-    // Get the awarded contractor's info for notification
+    // Get the awarded contractor's info
     const { data: contractor } = await supabase
       .from('contractor_applications')
       .select('name, email')
       .eq('id', contractor_id)
       .single()
 
+    // ── Auto-create message thread ─────────────────────────────────────────────
+    // Resolves the poster's email from homeowner_email or contractor_applications.
+    // Creates a thread so both the poster and awarded contractor can communicate.
+    let posterEmail: string | null = job.homeowner_email || null
+    if (!posterEmail && job.poster_id) {
+      const { data: poster } = await supabase
+        .from('contractor_applications')
+        .select('email')
+        .eq('id', job.poster_id)
+        .single()
+      posterEmail = poster?.email || null
+    }
+
+    let thread: { id: string } | null = null
+    if (posterEmail) {
+      // Check for existing thread (safe on retry)
+      const { data: existing } = await supabase
+        .from('message_threads')
+        .select('id')
+        .eq('job_id', jobId)
+        .eq('contractor_id', contractor_id)
+        .single()
+
+      if (existing) {
+        thread = { id: existing.id }
+      } else {
+        const { data: newThread, error: threadError } = await supabase
+          .from('message_threads')
+          .insert([{
+            job_id: jobId,
+            homeowner_email: posterEmail,
+            contractor_id,
+          }])
+          .select()
+          .single()
+
+        if (!threadError) {
+          thread = { id: newThread.id }
+        }
+        // Thread creation failure is non-fatal — award still succeeds
+      }
+    }
+
     return NextResponse.json({
       job: updatedJob,
       awarded_to: contractor,
       message: 'Job awarded successfully',
+      thread,
     })
   } catch (error: any) {
     return NextResponse.json({ error: error.message || 'Server error' }, { status: 500 })
