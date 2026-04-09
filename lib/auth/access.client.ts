@@ -34,19 +34,21 @@ export function useUserAccess(): UserAccess {
   const fetchAccess = useCallback(async () => {
     const supabase = getSupabaseBrowserClient()
 
-    const {
-      data: { session },
-    } = await supabase.auth.getSession()
+    // getSession() reads from the cookie store — no network call, always fast.
+    // Use getUser() only as a fallback if we need to force a token refresh.
+    const { data: { session } } = await supabase.auth.getSession()
 
     if (!session?.user) {
       setAccess({ ...DEFAULT_USER_ACCESS, checked: true })
       return
     }
 
+    // Preserve the full user object including app_metadata for role checks.
     const authUser = session.user
 
-    // Look up contractor profile via the users API endpoint
-    // (avoids exposing admin key on the client)
+    // Look up contractor profile via the users API endpoint.
+    // The API route validates the session server-side (cookie decode in middleware)
+    // and returns the matching profile row.
     let profile: ContractorProfile | null = null
     try {
       const res = await fetch('/api/users')

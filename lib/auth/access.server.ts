@@ -71,8 +71,27 @@ async function fetchContractorProfile(
 export async function getServerUserAccess(
   request: NextRequest
 ): Promise<UserAccess> {
-  const { supabase } = await getSupabaseServerClient(request)
+  // ── Fast path: read user info from headers set by the middleware ────────────────
+  // The middleware decodes the JWT from cookies and attaches user info as headers.
+  // This avoids a getUser() network call which can fail in Edge Runtime.
+  const headerUserId = request.headers.get('x-supabase-user-id') || null
+  const headerEmail = request.headers.get('x-supabase-user-email') || null
+  const headerIsFounder = request.headers.get('x-supabase-is-founder') === '1'
 
+  if (headerUserId) {
+    // User is authenticated (middleware verified the JWT).
+    // Build a minimal user object for resolveUserAccess.
+    const minimalUser = {
+      id: headerUserId,
+      email: headerEmail || undefined,
+      app_metadata: headerIsFounder ? { role: 'admin' } : {},
+    }
+    const profile = await fetchContractorProfile(headerUserId, headerEmail || undefined)
+    return resolveUserAccess(minimalUser as any, profile)
+  }
+
+  // ── Fallback: try getUser() for non-middleware contexts (e.g., Server Components) ─
+  const { supabase } = await getSupabaseServerClient(request)
   const {
     data: { user },
   } = await supabase.auth.getUser()

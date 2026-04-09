@@ -3,7 +3,6 @@
 import { useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
-import { isFounderEmail } from '@/lib/auth/access.types'
 
 export default function Login() {
   const router = useRouter()
@@ -17,15 +16,30 @@ export default function Login() {
     setLoading(true)
     setError('')
     try {
-      const { error } = await supabase.auth.signInWithPassword({ email, password })
+      const { error, data } = await supabase.auth.signInWithPassword({ email, password })
       if (error) {
         setError(error.message)
       } else {
-        // Check if this is a founder account → redirect to /admin
-        const { data: { user } } = await supabase.auth.getUser()
-        const isFounder = user?.email ? isFounderEmail(user.email) : false
-        router.push(isFounder ? '/admin' : '/dashboard')
-        router.refresh()
+        // Decode the JWT from the session directly to determine the user's role.
+        // This avoids an extra network round-trip to the Supabase Auth server.
+        let isFounder = false
+        try {
+          const token = data?.session?.access_token
+          if (token) {
+            const payload = token.split('.')[1]
+            if (payload) {
+              const base64 = payload.replace(/-/g, '+').replace(/_/g, '/')
+              const padded = base64 + '=='.slice(0, (4 - base64.length % 4) % 4)
+              const decoded = JSON.parse(atob(padded))
+              isFounder = (decoded.app_metadata as Record<string, unknown>)?.role === 'admin'
+            }
+          }
+        } catch {
+          // JWT decode failed — fall through to non-founder redirect
+        }
+        // Short delay to ensure the session cookie is fully written.
+        await new Promise(r => setTimeout(r, 200))
+        window.location.href = isFounder ? '/admin' : '/dashboard'
       }
     } catch {
       setError('Something went wrong. Please try again.')

@@ -23,7 +23,7 @@
 
 export type { UserAccess, UserRole, VettingStatus, AccountStatus } from './access.types'
 export type { ContractorProfile } from './access.types'
-export { DEFAULT_USER_ACCESS, resolveUserAccess, isFounderEmail } from './access.types'
+export { DEFAULT_USER_ACCESS, resolveUserAccess, getFounderEmailFromEnv } from './access.types'
 
 // ─── Server helpers (from access.server — server-only) ───────────────────────
 

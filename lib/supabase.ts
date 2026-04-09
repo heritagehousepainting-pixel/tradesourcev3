@@ -34,7 +34,7 @@ export type {
 export {
   DEFAULT_USER_ACCESS,
   resolveUserAccess,
-  isFounderEmail,
+  getFounderEmailFromEnv,
 } from '@/lib/auth/access.types'
 
 export { useUserAccess } from '@/lib/auth/access.client'

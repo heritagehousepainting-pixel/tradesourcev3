@@ -105,15 +105,60 @@ export async function middleware(request: NextRequest) {
   )
 
   // Read the current user from the Supabase session cookie.
-  // No network call — just verifies the JWT and extracts the email/user ID.
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  //
+  // Approach: decode the JWT from the access_token cookie directly (no network call).
+  // This avoids Edge Runtime network restrictions that can cause getUser() to fail.
+  // The JWT payload contains: sub (user ID), email, and app_metadata.
+  //
+  // Supabase access tokens are stored by @supabase/ssr in the
+  // sb-{anon_key_short_hash}-auth-token cookie as a JSON string:
+  // { accessToken, refreshToken, ... }
 
-  const userEmail = user?.email ?? null
-  const userId = user?.id ?? null
-  const isFounder = isFounderEmail(userEmail)
-  const isAuthed = !!user
+  let userId: string | null = null
+  let userEmail: string | null = null
+  let isJwtAdmin = false
+
+  try {
+    const cookies = request.cookies.getAll()
+    const authCookie = cookies.find(c =>
+      c.name.includes('auth-token') || c.name.startsWith('sb-')
+    )
+    if (authCookie?.value) {
+      // @supabase/ssr v0.10+ stores session as base64-{base64string}
+      // The inner session is a JSON string that itself contains the JWT access token.
+      let sessionJson = authCookie.value
+      if (sessionJson.startsWith('base64-')) {
+        const inner = atob(sessionJson.slice(7))
+        sessionJson = inner
+      }
+      const parsed = JSON.parse(sessionJson)
+      // accessToken key format: camelCase in v0.10+
+      const token = parsed?.accessToken || parsed?.access_token
+      if (token) {
+        const parts = token.split('.')
+        if (parts[1]) {
+          const base64 = parts[1].replace(/-/g, '+').replace(/_/g, '/')
+          const padded = base64 + '=='.slice(0, (4 - base64.length % 4) % 4)
+          const decoded = JSON.parse(atob(padded))
+          userId = decoded.sub ?? null
+          userEmail = decoded.email ?? null
+          isJwtAdmin = (decoded.app_metadata as Record<string, unknown>)?.role === 'admin'
+        }
+      }
+    }
+  } catch {
+    // Cookie parse/decode failed — treat as unauthenticated
+  }
+
+  const isFounder = isJwtAdmin || isFounderEmail(userEmail)
+  const isAuthed = !!userId
+
+  // Attach authenticated user info as request headers so the API route can read it
+  // without needing to call getUser() (which may fail in Edge Runtime).
+  const authHeaders = new Headers(request.headers)
+  authHeaders.set('x-supabase-user-id', userId || '')
+  authHeaders.set('x-supabase-user-email', userEmail || '')
+  authHeaders.set('x-supabase-is-founder', isFounder ? '1' : '0')
 
   // ── /admin guard ──────────────────────────────────────────────────────────
   //
@@ -130,6 +175,9 @@ export async function middleware(request: NextRequest) {
       url.searchParams.set('reason', 'admin_required')
       return NextResponse.redirect(url)
     }
+    supabaseResponse.headers.set('x-supabase-user-id', userId || '')
+    supabaseResponse.headers.set('x-supabase-user-email', userEmail || '')
+    supabaseResponse.headers.set('x-supabase-is-founder', '1')
     return supabaseResponse
   }
 
@@ -149,5 +197,9 @@ export async function middleware(request: NextRequest) {
   }
 
   // ── Passthrough for all other routes ──────────────────────────────────────
+  // Attach auth headers so API routes can read them without calling getUser().
+  supabaseResponse.headers.set('x-supabase-user-id', userId || '')
+  supabaseResponse.headers.set('x-supabase-user-email', userEmail || '')
+  supabaseResponse.headers.set('x-supabase-is-founder', isFounder ? '1' : '0')
   return supabaseResponse
 }

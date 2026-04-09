@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { getSession } from '@/lib/auth/client'
-import { isFounderEmail } from '@/lib/auth/access.types'
+import { getFounderEmailFromEnv } from '@/lib/auth/access.types'
 
 interface AssistantMessage {
   id: string
@@ -66,7 +66,7 @@ export function useAssistant({
       try {
         const { data } = await getSession()
         const email = data?.session?.user?.email ?? ''
-        const allowed = isFounderEmail(email)
+        const allowed = getFounderEmailFromEnv(email)
         setIsVisible(allowed)
       } catch {
         setIsVisible(false)

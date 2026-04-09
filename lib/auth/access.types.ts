@@ -130,7 +130,7 @@ function getFounderEmails(): Set<string> {
  * Check if an email is a founder email.
  * Works in both client and server contexts — no network calls.
  */
-export function isFounderEmail(email: string | null | undefined): boolean {
+export function getFounderEmailFromEnv(email: string | null | undefined): boolean {
   if (!email) return false
   return getFounderEmails().has(email.toLowerCase())
 }
@@ -143,16 +143,25 @@ export function isFounderEmail(email: string | null | undefined): boolean {
  * Pure function — no network calls, no side effects.
  * Used by both server-side and client-side helpers.
  *
- * @param authUser  — Supabase auth user object (null if signed out)
+ * @param authUser  — Supabase auth user object (null if signed out).
+ *                   Should include app_metadata for role-based founder detection.
  * @param profile   — contractor_applications row (null if not found)
  */
 export function resolveUserAccess(
-  authUser: { id: string; email?: string } | null,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  authUser: Record<string, any> | null,
   profile: ContractorProfile | null
 ): UserAccess {
   const email = authUser?.email ?? null
   const userId = authUser?.id ?? null
-  const isFounder = isFounderEmail(email)
+  // Primary founder check: app_metadata.role = 'admin' (set via Supabase Management API).
+  // Fallback: isFounderEmail() from NEXT_PUBLIC_FOUNDER_EMAILS env var.
+  // Primary founder check: app_metadata.role = 'admin' (set via Supabase Management API).
+  // If not set in JWT, fall back to env var.
+  const appMeta = (authUser as Record<string, unknown>)?.app_metadata as Record<string, unknown> | null
+  const isJwtAdmin = appMeta?.role === 'admin'
+  // Note: getFounderEmailFromEnv is the env-var fallback, defined below
+  const isFounder = isJwtAdmin || getFounderEmailFromEnv(email)
 
   // ── Guest (not signed in) ──────────────────────────────────────────────────
   if (!authUser) {
