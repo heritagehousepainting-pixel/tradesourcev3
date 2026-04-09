@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { useSearchParams } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import { useNavContext } from '@/app/components/NavContext'
 import QuickAvailabilityModal from '@/components/QuickAvailabilityModal'
@@ -139,9 +138,6 @@ function PostedJobCard({ job, interests, onAward, awardingId }: { job: any; inte
 }
 
 export default function Dashboard() {
-  const searchParams = useSearchParams()
-  // Canonical access — Supabase session + profile resolution.
-  // Gate uses access.canAccessContractorApp (approved contractor or founder).
   const { access } = useNavContext()
   const [user, setUser] = useState<any>(null)
   const [jobs, setJobs] = useState<any[]>([])

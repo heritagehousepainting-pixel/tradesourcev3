@@ -1,14 +1,11 @@
 /**
  * Server-side auth/session helpers
  *
- * These utilities safely read the current user's session in
- * Next.js Server Components, Server Actions, and API Route Handlers.
- *
- * They use the cookie-based Supabase session so no client-side
- * JavaScript is required to verify auth state on the server.
+ * @server-only — only import from API routes, Server Components, and Server Actions.
+ * Never import from 'use client' files.
  */
 
-import { getSupabaseServerClient, getSupabaseServerClientFromCookies } from '@/lib/supabase/server'
+import { getSupabaseServerClient, getSupabaseServerClientFromCookies } from '@/lib/supabase/server-only'
 
 export interface ServerSessionUser {
   id: string

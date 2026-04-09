@@ -1,32 +1,31 @@
 'use client'
 
-import { useState } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { Suspense, useState } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { signIn } from '@/lib/auth/client'
 
 /**
- * TradeSource founder/admin sign-in page.
- *
- * Replaced hardcoded FOUNDERS map with real Supabase Auth (v1).
- * Founder identity is now resolved by the shared access model:
- *   - NEXT_PUBLIC_FOUNDER_EMAILS determines who gets founder role
- *   - No localStorage token is written — Supabase session is the auth source of truth
- *   - After sign-in, NavContext / useUserAccess() picks up the session from cookies
- *
- * IMPORTANT: A founder account must exist in Supabase Auth for sign-in to work.
- * Add founders to Supabase Auth at: Supabase Dashboard → Authentication → Users
+ * The page shell — required export. The actual form is in FounderForm below,
+ * wrapped in Suspense so useSearchParams (a client-only hook) doesn't break
+ * static prerendering.
  */
 export default function FounderLoginPage() {
+  return (
+    <Suspense fallback={<div style={{ minHeight: '100vh', backgroundColor: '#0F172A' }} />}>
+      <FounderForm />
+    </Suspense>
+  )
+}
+
+/** Inner form — uses useSearchParams; safe inside Suspense boundary. */
+function FounderForm() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
-  const router = useRouter()
   const searchParams = useSearchParams()
 
-  // Middleware redirects non-founders to /founder-login?reason=admin_required
   const adminRequired = searchParams.get('reason') === 'admin_required'
-  // Middleware redirects unauthenticated users with a return path.
   const redirectTo = searchParams.get('redirect')
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -40,7 +39,6 @@ export default function FounderLoginPage() {
       const { error: authError } = await signIn(email.trim(), password)
 
       if (authError) {
-        // Surface Supabase auth errors cleanly
         const msg = authError.message?.toLowerCase()
         if (msg?.includes('invalid login')) {
           setError('Invalid email or password.')
@@ -53,9 +51,7 @@ export default function FounderLoginPage() {
         return
       }
 
-      // Supabase session is set via cookies (browser client with cookie persistence).
-      // useUserAccess() / getServerUserAccess() will pick it up automatically.
-      router.push('/dashboard')
+      window.location.href = '/dashboard'
     } catch (err: any) {
       setError(err.message || 'An unexpected error occurred.')
       setLoading(false)

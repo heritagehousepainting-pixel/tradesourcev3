@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import bcrypt from 'bcryptjs'
-import { getSupabaseAdmin } from '@/lib/supabase'
+import { getSupabaseAdminClient } from '@/lib/supabase/server-only'
 
 export async function POST(request: Request) {
   try {
@@ -26,7 +26,7 @@ export async function POST(request: Request) {
       ? await bcrypt.hash(password, 10)
       : null
 
-    const supabaseAdmin = getSupabaseAdmin()
+    const supabaseAdmin = await getSupabaseAdminClient()
 
     // Insert into contractor_applications
     const { data: contractor, error: contractorError } = await supabaseAdmin
