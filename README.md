@@ -1,38 +1,41 @@
-# TradeSource MVP v2
+# TradeSource
 
-A premium contractor network platform.
+A premium contractor-to-contractor network platform.
 
 ## Tech Stack
-- Next.js 14
-- TypeScript
-- Tailwind CSS
-- Supabase (API-only, no localStorage)
+- **Next.js 14** (App Router)
+- **TypeScript**
+- **Supabase** — cookie-based auth via `@supabase/ssr`
+- **Tailwind CSS**
 
-## Pages
-- `/` - Homepage
-- `/apply` - Contractor signup
-- `/login` - Login
-- `/dashboard` - Contractor dashboard
-- `/jobs` - Available jobs
-- `/post-job` - Post a job
-- `/my-jobs` - My jobs
-- `/pending` - Pending approval
-- `/admin` - Admin dashboard
+## Auth & Access Model
+- Auth truth: Supabase session (cookie-based, server + browser)
+- Access truth: canonical `UserAccess` object resolved via `resolveUserAccess()`
+- Founder/admin: `NEXT_PUBLIC_FOUNDER_EMAILS` env var + Supabase session
+- No `localStorage` used for auth or permission checks
 
-## API Routes
-- `/api/stats` - Platform stats
-- `/api/users` - User management
-- `/api/users/[id]` - User by ID
-- `/api/jobs` - Job management
+## Protected Pages
+| Route | Access |
+|-------|--------|
+| `/dashboard` | Any authenticated user |
+| `/profile` | Any authenticated user |
+| `/my-jobs` | Any authenticated user |
+| `/post-job` | Authenticated + approved contractor or founder |
+| `/admin` | Founder/admin only (middleware-enforced) |
 
 ## Development
 ```bash
-npm run dev   # Start dev server
-npm run build # Production build
+npm install
+npm run dev
 ```
 
-## v1 Learnings Applied
-1. No localStorage seeding in layout
-2. API-only data fetching (no localStorage fallbacks)
-3. Admin uses API not localStorage
-4. Premium UI with visible stats
+## Environment Variables
+See `.env.local.example` (do not commit secrets).
+
+Required:
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- `SUPABASE_SERVICE_ROLE_KEY`
+- `NEXT_PUBLIC_FOUNDER_EMAILS`
+- `ASSISTANT_ENABLED` (if using the assistant)
+- `MINIMAX_API_KEY` (if using the assistant)
