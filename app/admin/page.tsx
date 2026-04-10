@@ -183,14 +183,16 @@ export default function AdminPage() {
   const [toast, setToast] = useState<{ msg: string; type: 'success' | 'error' } | null>(null)
   const [rejectingId, setRejectingId] = useState<string | null>(null)
 
-  // Load users once the user has access
+  // Fetch users once on mount — auth is already validated by middleware.
+  // Do NOT depend on access.canViewApplicationPortal here; Supabase JWT refresh
+  // events can toggle it temporarily during token rotation, causing the effect
+  // to re-fire with stale auth and wipe the data array.
   useEffect(() => {
-    if (!access.canViewApplicationPortal) return
     fetch('/api/users')
-      .then(r => r.json())
+      .then(r => r.ok ? r.json() : Promise.reject())
       .then(data => { setUsers(Array.isArray(data) ? data : []); setLoading(false) })
       .catch(() => setLoading(false))
-  }, [access.canViewApplicationPortal])
+  }, [])
 
   // Loading state — show empty page while auth resolves
   if (!access.checked) return null

@@ -196,11 +196,16 @@ export default function Dashboard() {
         // Fallback: find by contractorId in fetched users
         const found = users.find((u: any) => String(u.id) === String(contractorId))
         if (found) setUser(found)
-      } else if (!user) {
-        // Last resort: first approved user (legacy behavior preserved)
-        const approved = users.find((u: any) => u.status === 'approved')
-        if (approved) setUser(approved)
+      } else if (access.email && !user) {
+        // Authenticated but no contractor profile row — verify via email match.
+        // This covers edge cases where the profile row exists but auth lookup missed it.
+        const byEmail = users.find((u: any) =>
+          u.email?.toLowerCase() === access.email?.toLowerCase()
+        )
+        if (byEmail) setUser(byEmail)
       }
+      // Do NOT add a 'last resort: first approved user' fallback — it would
+      // display a random contractor's data to the wrong person on auth edge cases.
       setJobs(jobsData || [])
       setMessageThreads(threadsData || [])
       if (reviewsData?.reviews) {
