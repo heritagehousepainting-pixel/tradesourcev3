@@ -1,6 +1,47 @@
 'use client'
 
+import { useState, useEffect } from 'react'
+
+type Job = {
+  id: string
+  title: string
+  area: string | null
+  budget_min: number | null
+  budget_max: number | null
+  status: string
+  created_at: string
+}
+
 export default function Home() {
+  const [jobs, setJobs] = useState<Job[]>([])
+  const [jobsLoaded, setJobsLoaded] = useState(false)
+
+  useEffect(() => {
+    fetch('/api/jobs')
+      .then(r => r.json())
+      .then(data => {
+        // Show only open jobs, most recent first, up to 3
+        const openJobs = (Array.isArray(data) ? data : [])
+          .filter((j: Job) => j.status === 'open')
+          .sort((a: Job, b: Job) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+          .slice(0, 3)
+        setJobs(openJobs)
+        setJobsLoaded(true)
+      })
+      .catch(() => setJobsLoaded(true))
+  }, [])
+
+  const formatPrice = (job: Job) => {
+    if (job.budget_min && job.budget_max && job.budget_min === job.budget_max) {
+      return '$' + job.budget_min.toLocaleString()
+    }
+    if (job.budget_min && job.budget_max) {
+      return '$' + job.budget_min.toLocaleString() + ' – $' + job.budget_max.toLocaleString()
+    }
+    if (job.budget_max) return '$' + job.budget_max.toLocaleString()
+    if (job.budget_min) return '$' + job.budget_min.toLocaleString()
+    return 'Rate TBD'
+  }
   return (
     <>
       {/* ─── HERO ─── */}
@@ -33,7 +74,7 @@ export default function Home() {
               {/* CTA row */}
               <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'center', marginBottom: 40 }}>
                 <a href="/apply" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, fontSize: 15, fontWeight: 600, padding: '14px 28px', borderRadius: 10, backgroundColor: 'var(--color-blue)', color: '#fff', textDecoration: 'none', boxShadow: '0 4px 20px rgba(37,99,235,0.4)', letterSpacing: '0.01em' }}>
-                  Request Access
+                  Apply to Join
                 </a>
                 <a href="/jobs" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, fontSize: 15, fontWeight: 500, padding: '14px 28px', borderRadius: 10, backgroundColor: 'transparent', color: 'var(--color-text)', border: '1px solid var(--color-border-strong)', textDecoration: 'none' }}>
                   See Open Jobs
@@ -58,27 +99,36 @@ export default function Home() {
                 {/* Panel header */}
                 <div style={{ padding: '16px 22px', borderBottom: '1px solid var(--color-divider)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                   <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--color-text)', letterSpacing: '-0.01em' }}>Open Opportunities</span>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                    <div style={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: 'var(--color-green)' }} />
-                    <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--color-green)' }}>Live</span>
-                  </div>
+                  {jobs.length > 0 && (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <div style={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: 'var(--color-green)' }} />
+                      <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--color-green)' }}>Live</span>
+                    </div>
+                  )}
                 </div>
 
-                {/* Job cards */}
-                {[
-                  { title: 'Interior Repaint — 4BR Colonial, Ambler', area: 'Ambler, PA', price: '$5,350', interested: 2 },
-                  { title: 'Kitchen + Hallway — Rental Turnover, Center City', area: 'Philadelphia, PA', price: '$2,300', interested: 1 },
-                  { title: 'Full Exterior Repaint — 1950s Cape Cod, Marcus Hook', area: 'Marcus Hook, PA', price: '$6,350', interested: 4 },
-                ].map((job, i) => (
-                  <div key={i} style={{ padding: '16px 22px', borderBottom: i < 2 ? '1px solid var(--color-divider)' : 'none' }}>
-                    <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--color-text)', marginBottom: 4, lineHeight: 1.35 }}>{job.title}</div>
-                    <div style={{ fontSize: 12, color: 'var(--color-text-subtle)', marginBottom: 10 }}>{job.area}</div>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                      <span style={{ fontSize: 15, fontWeight: 700, color: 'var(--color-green)', letterSpacing: '-0.02em' }}>{job.price}</span>
-                      <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--color-blue)' }}>{job.interested} contractor{job.interested !== 1 ? 's' : ''} interested</span>
-                    </div>
+                {/* Job cards — real data from API, or empty state if none */}
+                {!jobsLoaded ? (
+                  <div style={{ padding: '24px 22px', textAlign: 'center' }}>
+                    <div style={{ width: 20, height: 20, borderRadius: '50%', border: '2px solid rgba(59,130,246,0.3)', borderTopColor: 'var(--color-blue)', display: 'inline-block', animation: 'spin 1s linear infinite' }} />
                   </div>
-                ))}
+                ) : jobs.length > 0 ? (
+                  jobs.map((job, i) => (
+                    <div key={job.id} style={{ padding: '16px 22px', borderBottom: i < jobs.length - 1 ? '1px solid var(--color-divider)' : 'none' }}>
+                      <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--color-text)', marginBottom: 4, lineHeight: 1.35 }}>{job.title}</div>
+                      <div style={{ fontSize: 12, color: 'var(--color-text-subtle)', marginBottom: 10 }}>{job.area || 'Pennsylvania'}</div>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <span style={{ fontSize: 15, fontWeight: 700, color: 'var(--color-green)', letterSpacing: '-0.02em' }}>{formatPrice(job)}</span>
+                        <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--color-blue)' }}>Open</span>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div style={{ padding: '28px 22px', textAlign: 'center' }}>
+                    <div style={{ fontSize: 13, color: 'var(--color-text-muted)', marginBottom: 8 }}>No open jobs right now.</div>
+                    <div style={{ fontSize: 12, color: 'var(--color-text-subtle)' }}>Be the first to post overflow work.</div>
+                  </div>
+                )}
 
                 {/* Panel footer */}
                 <div style={{ padding: '14px 22px', borderTop: '1px solid var(--color-divider)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
