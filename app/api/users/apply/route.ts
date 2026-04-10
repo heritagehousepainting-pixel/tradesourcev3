@@ -113,6 +113,7 @@ export async function POST(request: Request) {
       license_state: g('license_state') || '',
       years_in_trade: gNum('yearsInTrade', 'years_in_trade'),
       trade_specialization: 'painting',
+      external_link: g('external_link') || null,
       w9_url,
       insurance_url,
     }

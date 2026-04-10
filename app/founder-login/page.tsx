@@ -184,6 +184,27 @@ function FounderForm() {
               </div>
             )}
 
+            {(adminRequired === false && redirectTo === null) && (() => {
+              const suspended = searchParams.get('reason') === 'account_suspended'
+              const revoked = searchParams.get('reason') === 'account_revoked'
+              if (!suspended && !revoked) return null
+              return (
+                <div style={{
+                  padding: '8px 12px',
+                  borderRadius: 6,
+                  backgroundColor: suspended ? '#FFF7ED' : '#FEF2F2',
+                  border: `1px solid ${suspended ? '#FED7AA' : '#FECACA'}`,
+                  color: suspended ? '#C2410C' : '#DC2626',
+                  fontSize: 12,
+                  fontWeight: 500,
+                }}>
+                  {suspended
+                    ? 'Your account has been suspended. Contact support for assistance.'
+                    : 'Your account access has been revoked.'}
+                </div>
+              )
+            })()}
+
             {error && (
               <div style={{
                 padding: '8px 12px',

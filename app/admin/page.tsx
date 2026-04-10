@@ -52,7 +52,7 @@ function timeAgo(dateStr: string | null | undefined): string {
   return new Date(dateStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
 }
 
-type Tab = 'pending' | 'approved' | 'rejected'
+type Tab = 'pending' | 'approved' | 'rejected' | 'suspended'
 
 // ─── Login Form ───────────────────────────────────────────────────────────────
 
@@ -237,6 +237,45 @@ export default function AdminPage() {
     setProcessing(null)
   }
 
+
+  const handleSuspend = async (userId: string) => {
+    setProcessing(userId)
+    try {
+      const res = await fetch(`/api/users/${userId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: 'suspended' }),
+      })
+      if (res.ok) {
+        setUsers(prev => prev.map(u => u.id === userId ? { ...u, status: 'suspended' } : u))
+        showToast('Contractor suspended.')
+      } else {
+        showToast('Failed to suspend.')
+      }
+    } catch { showToast('Failed to suspend.') }
+    setProcessing(null)
+  }
+
+
+  const handleRemove = async (userId: string) => {
+    if (!confirm('Remove this contractor from the network?')) return
+    setProcessing(userId)
+    try {
+      const res = await fetch(`/api/users/${userId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: 'removed' }),
+      })
+      if (res.ok) {
+        setUsers(prev => prev.map(u => u.id === userId ? { ...u, status: 'removed' } : u))
+        showToast('Contractor removed from network.')
+      } else {
+        showToast('Failed to remove contractor.')
+      }
+    } catch { showToast('Failed to remove contractor.') }
+    setProcessing(null)
+  }
+
   const showToast = (msg: string) => {
     setToast({ msg, type: 'success' })
     setTimeout(() => setToast(null), 3000)
@@ -245,7 +284,8 @@ export default function AdminPage() {
   const pending = users.filter(u => u.status === 'pending_review' || u.status === 'pending')
   const approved = users.filter(u => u.status === 'approved')
   const rejected = users.filter(u => u.status === 'rejected')
-  const displayed = tab === 'pending' ? pending : tab === 'approved' ? approved : rejected
+  const suspended = users.filter(u => u.status === 'suspended')
+  const displayed = tab === 'pending' ? pending : tab === 'approved' ? approved : tab === 'rejected' ? rejected : tab === 'suspended' ? suspended : []
 
   return (
     <div style={{ backgroundColor: 'var(--color-bg)', minHeight: '100vh' }}>
@@ -299,8 +339,8 @@ export default function AdminPage() {
 
         {/* Tabs */}
         <div style={{ display: 'flex', gap: 4, marginBottom: 20, borderBottom: '1px solid var(--color-border)' }}>
-          {(['pending', 'approved', 'rejected'] as Tab[]).map(t => {
-            const count = t === 'pending' ? pending.length : t === 'approved' ? approved.length : rejected.length
+          {(['pending', 'approved', 'rejected', 'suspended'] as Tab[]).map(t => {
+            const count = t === 'pending' ? pending.length : t === 'approved' ? approved.length : t === 'rejected' ? rejected.length : suspended.length
             return (
               <button
                 key={t}
@@ -320,7 +360,7 @@ export default function AdminPage() {
                   borderRadius: '8px 8px 0 0',
                 }}
               >
-                {t === 'pending' ? 'Pending Review' : t === 'approved' ? 'Approved' : 'Rejected'}
+                {t === 'pending' ? 'Pending Review' : t === 'approved' ? 'Approved' : t === 'rejected' ? 'Rejected' : 'Suspended'}
                 {count > 0 && (
                   <span style={{ marginLeft: 6, padding: '1px 7px', borderRadius: 9999, fontSize: 11, fontWeight: 700, backgroundColor: tab === t ? 'var(--color-blue)' : 'var(--color-surface-raised)', color: tab === t ? '#fff' : 'var(--color-text-muted)' }}>
                     {count}
@@ -341,7 +381,7 @@ export default function AdminPage() {
         ) : displayed.length === 0 ? (
           <div style={{ backgroundColor: 'var(--color-surface-raised)', border: '1px solid var(--color-border)', borderRadius: 12, padding: '48px', textAlign: 'center' }}>
             <p style={{ fontSize: 14, color: 'var(--color-text-muted)' }}>
-              {tab === 'pending' ? 'No pending applications.' : tab === 'approved' ? 'No approved contractors yet.' : 'No rejected applications.'}
+              {tab === 'pending' ? 'No pending applications.' : tab === 'approved' ? 'No approved contractors yet.' : tab === 'rejected' ? 'No rejected applications.' : 'No suspended contractors.'}
             </p>
           </div>
         ) : (
@@ -400,6 +440,26 @@ export default function AdminPage() {
                         </button>
                       </div>
                     )}
+                    {/* Approved contractor: suspend + remove */}
+                    {tab === 'approved' && (
+                      <div style={{ marginTop: 20, paddingTop: 20, borderTop: '1px solid var(--color-border)', display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+                        <button
+                          onClick={() => handleSuspend(u.id)}
+                          disabled={processing === u.id}
+                          style={{ padding: '10px 20px', borderRadius: 10, fontSize: 13, fontWeight: 700, backgroundColor: 'var(--color-orange)', color: '#fff', border: 'none', cursor: processing === u.id ? 'not-allowed' : 'pointer', opacity: processing === u.id ? 0.6 : 1 }}
+                        >
+                          {processing === u.id ? 'Processing…' : 'Suspend Contractor'}
+                        </button>
+                        <button
+                          onClick={() => handleRemove(u.id)}
+                          disabled={processing === u.id}
+                          style={{ padding: '10px 20px', borderRadius: 10, fontSize: 13, fontWeight: 700, backgroundColor: 'var(--color-red)', color: '#fff', border: 'none', cursor: processing === u.id ? 'not-allowed' : 'pointer', opacity: processing === u.id ? 0.6 : 1 }}
+                        >
+                          {processing === u.id ? 'Processing…' : 'Remove from Network'}
+                        </button>
+                      </div>
+                    )}
+
 
                     {/* Expand indicator */}
                     <svg

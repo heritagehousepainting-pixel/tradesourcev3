@@ -3,9 +3,10 @@ import { getSupabaseAdminClient } from '@/lib/supabase/server'
 import { getServerUserAccess } from '@/lib/auth/access.server'
 import type { NextRequest } from 'next/server'
 
-// GET /api/messages/threads — list threads for the authenticated user.
-// Non-founders see only threads they are a participant in (contractor or poster).
-// Founders/admins see all threads.
+// GET /api/messages/threads?contractor_id=xxx
+// List threads for the authenticated user.
+// Non-founders see only threads where they are the contractor.
+// Founders/admins see all threads, optionally filtered by contractor_id.
 export async function GET(request: Request) {
   try {
     const access = await getServerUserAccess(request as unknown as NextRequest)
@@ -20,14 +21,13 @@ export async function GET(request: Request) {
 
     let query = supabase
       .from('message_threads')
-      .select('*, jobs(title, area, status, poster_id)')
+      .select('*, jobs(title, area, status, poster_id, contractor_id)')
       .order('updated_at', { ascending: false })
 
     if (!access.isFounderEmail && access.userId) {
-      // Filter to threads where the user is either the contractor or the job poster
-      query = query.or(
-        `contractor_id.eq.${access.userId},jobs.poster_id.eq.${access.userId}`
-      )
+      // Non-founders: only threads where they are the contractor.
+      // Avoids the broken `.or()` query that fails on RLS in Edge Runtime.
+      query = query.eq('contractor_id', access.userId)
     }
 
     if (contractorId) query = query.eq('contractor_id', contractorId)
@@ -36,21 +36,25 @@ export async function GET(request: Request) {
     const { data, error } = await query
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
 
-    // Attach latest message preview
+    // Attach latest message preview — wrapped in try/catch to prevent cascading failures
     const threads = data || []
     const withPreviews = await Promise.all(
       threads.map(async (thread: any) => {
-        const { data: lastMsg } = await supabase
-          .from('messages')
-          .select('content, created_at')
-          .eq('thread_id', thread.id)
-          .order('created_at', { ascending: false })
-          .limit(1)
-          .single()
-        return {
-          ...thread,
-          last_message: lastMsg?.content || null,
-          last_message_at: lastMsg?.created_at || null,
+        try {
+          const { data: lastMsg } = await supabase
+            .from('messages')
+            .select('content, created_at')
+            .eq('thread_id', thread.id)
+            .order('created_at', { ascending: false })
+            .limit(1)
+            .single()
+          return {
+            ...thread,
+            last_message: lastMsg?.content || null,
+            last_message_at: lastMsg?.created_at || null,
+          }
+        } catch {
+          return { ...thread, last_message: null, last_message_at: null }
         }
       })
     )
@@ -61,7 +65,7 @@ export async function GET(request: Request) {
   }
 }
 
-// POST /api/messages/threads — authenticated create/open a thread.
+// POST /api/messages/threads — create/open a thread.
 // Requires: authenticated user who is the job poster or awarded contractor.
 // Idempotent: returns existing thread if one already exists for this job+contractor.
 export async function POST(request: Request) {
@@ -83,7 +87,6 @@ export async function POST(request: Request) {
 
     const supabase = await getSupabaseAdminClient()
 
-    // Verify the authenticated user is either the job poster or the awarded contractor
     const { data: job } = await supabase
       .from('jobs')
       .select('poster_id, contractor_id')

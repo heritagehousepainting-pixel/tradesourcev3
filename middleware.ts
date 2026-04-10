@@ -193,6 +193,32 @@ export async function middleware(request: NextRequest) {
       url.searchParams.set('redirect', pathname)
       return NextResponse.redirect(url)
     }
+
+    // Block suspended or removed contractors from all authenticated routes.
+    // Check the contractor_applications status via the Supabase server client.
+    if (userId && !isFounder) {
+      try {
+        const profileData = await supabase
+          .from('contractor_applications')
+          .select('status, auth_user_id')
+          .eq('auth_user_id', userId)
+          .maybeSingle()
+        const profileStatus = String(profileData?.status ?? '')
+        if (profileStatus === 'suspended') {
+          const url = new URL('/founder-login', request.url)
+          url.searchParams.set('reason', 'account_suspended')
+          return NextResponse.redirect(url)
+        }
+        if (profileStatus === 'removed' || profileStatus === 'rejected') {
+          const url = new URL('/founder-login', request.url)
+          url.searchParams.set('reason', 'account_revoked')
+          return NextResponse.redirect(url)
+        }
+      } catch {
+        // Profile lookup failed — let the page-level check handle it.
+      }
+    }
+
     return supabaseResponse
   }
 

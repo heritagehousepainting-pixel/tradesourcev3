@@ -17,6 +17,8 @@ export type AccountStatus =
   | 'pending'
   | 'approved'
   | 'rejected'
+  | 'suspended'
+  | 'removed'
   | null
 
 /** Raw profile row from contractor_applications */
@@ -27,7 +29,7 @@ export interface ContractorProfile {
   full_name?: string
   company?: string
   phone?: string
-  status: 'pending_review' | 'pending' | 'approved' | 'rejected'
+  status: 'pending_review' | 'pending' | 'approved' | 'rejected' | 'suspended' | 'removed'
   verified_insurance: boolean
   verified_license: boolean
   verified_w9: boolean
@@ -199,6 +201,8 @@ export function resolveUserAccess(
 
   const isApproved = profile.status === 'approved'
   const isRejected = profile.status === 'rejected'
+  const isSuspended = profile.status === 'suspended'
+  const isRemoved = profile.status === 'removed'
   const isPending =
     profile.status === 'pending_review' || profile.status === 'pending'
 
@@ -226,8 +230,8 @@ export function resolveUserAccess(
     }
   }
 
-  // Rejected — locked out of all contractor access
-  if (isRejected) {
+  // Rejected, suspended, or removed — locked out of all contractor access
+  if (isRejected || isSuspended || isRemoved) {
     return {
       checked: true,
       isAuthenticated: true,
@@ -236,8 +240,8 @@ export function resolveUserAccess(
       displayName:
         profile.full_name || profile.name || profile.company || email,
       role: 'contractor',
-      vettingStatus: 'rejected',
-      accountStatus: 'rejected',
+      vettingStatus: isRejected ? 'rejected' : null,
+      accountStatus: profile.status,
       hasProfile: true,
       canAccessContractorApp: false,
       canPostJobs: false,

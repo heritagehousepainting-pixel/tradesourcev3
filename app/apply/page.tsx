@@ -173,6 +173,7 @@ export default function Apply() {
     service_areas: [] as string[],
     trade_types: [] as string[],
     bio: '',
+    external_link: '',
   })
   const [w9File, setW9File] = useState<File | null>(null)
   const [insuranceFile, setInsuranceFile] = useState<File | null>(null)
@@ -215,6 +216,7 @@ export default function Apply() {
       formData.append('service_areas', JSON.stringify(form.service_areas))
       formData.append('trade_types', JSON.stringify(form.trade_types))
       formData.append('bio', form.bio)
+      if (form.external_link) formData.append('external_link', form.external_link)
       formData.append('w9', w9File)
       formData.append('insurance', insuranceFile)
 
@@ -635,6 +637,28 @@ export default function Apply() {
                   />
                   <p style={{ fontSize: 11, color: 'var(--color-text-subtle)', marginTop: 6 }}>
                     Optional — helps other contractors understand your work when routing overflow.
+                  </p>
+                </div>
+
+                {/* External Link */}
+                <div>
+                  <label htmlFor="apply-external-link" style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>
+                    External Review Link
+                  </label>
+                  <input
+                    id="apply-external-link"
+                    name="external_link"
+                    type="url"
+                    value={form.external_link || ''}
+                    onChange={e => update('external_link', e.target.value)}
+                    onInput={e => update('external_link', (e.target as HTMLInputElement).value)}
+                    placeholder="https://maps.google.com/maps/place/..."
+                    style={{ width: '100%', padding: '11px 14px', borderRadius: 10, fontSize: 14, border: '1.5px solid var(--color-input-border)', outline: 'none', transition: 'border-color 0.15s', color: 'var(--color-text)', backgroundColor: '#fff' }}
+                    onFocus={e => e.target.style.borderColor = 'var(--color-blue)'}
+                    onBlur={e => e.target.style.borderColor = 'var(--color-input-border)'}
+                  />
+                  <p style={{ fontSize: 11, color: 'var(--color-text-subtle)', marginTop: 6 }}>
+                    Optional — Google Business Profile, Houzz, Angi, or any verifiable review site link.
                   </p>
                 </div>
 

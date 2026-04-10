@@ -195,8 +195,6 @@ export default function PostJob() {
   const [error, setError] = useState('')
   const [submitted, setSubmitted] = useState(false)
   const [loggedInContractor, setLoggedInContractor] = useState<any>(null)
-  const [photos, setPhotos] = useState<File[]>([])
-  const [video, setVideo] = useState<File[]>([])
   const [form, setForm] = useState({
     title: '',
     scope: '',
@@ -250,8 +248,7 @@ export default function PostJob() {
         budget_min: parseFloat(form.fixed_price),
         budget_max: parseFloat(form.fixed_price),
         materials: form.materials,
-        photo_count: photos.length,
-        has_video: video.length > 0,
+        has_video: false,
       }
       if (loggedInContractor) {
         body.poster_id = loggedInContractor.id
@@ -572,25 +569,7 @@ export default function PostJob() {
                   </div>
                 </div>
 
-                {/* Uploads */}
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
-                  <FileUploadDropzone
-                    label="Photos"
-                    hint="JPEG, PNG, HEIC — helps contractors assess scope"
-                    accept=".jpg,.jpeg,.png,.heic,.webp"
-                    icon="photo"
-                    files={photos}
-                    onChange={setPhotos}
-                  />
-                  <FileUploadDropzone
-                    label="Video"
-                    hint="MP4, MOV — show access or complexity"
-                    accept=".mp4,.mov,.webm"
-                    icon="video"
-                    files={video}
-                    onChange={setVideo}
-                  />
-                </div>
+                {/* Photos & video coming soon — do not remove, future feature */}
 
                 {/* Description */}
                 <div>
