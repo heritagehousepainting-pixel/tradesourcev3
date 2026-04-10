@@ -142,8 +142,8 @@ function PendingContent({ user }: { user: any }) {
           {/* Bottom note */}
           <p style={{ fontSize: 12, color: 'var(--color-input-placeholder)', textAlign: 'center', marginTop: 20 }}>
             Questions? Email{' '}
-            <a href="mailto:hello@tradesource.co" style={{ color: 'var(--color-text-muted)', textDecoration: 'underline' }}>
-              hello@tradesource.co
+            <a href="mailto:info@tradesource.app" style={{ color: 'var(--color-text-muted)', textDecoration: 'underline' }}>
+              info@tradesource.app
             </a>
           </p>
         </div>

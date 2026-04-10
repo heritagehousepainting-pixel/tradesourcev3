@@ -196,6 +196,10 @@ export default function Apply() {
       setError('Please complete all required fields including service areas and services.')
       return
     }
+    if (!form.external_link.trim()) {
+      setError('Please provide an External Review Link — this is required to join the network.')
+      return
+    }
     if (!w9File) {
       setError('Please upload your W-9 form.')
       return
@@ -217,7 +221,7 @@ export default function Apply() {
       formData.append('service_areas', JSON.stringify(form.service_areas))
       formData.append('trade_types', JSON.stringify(form.trade_types))
       formData.append('bio', form.bio)
-      if (form.external_link) formData.append('external_link', form.external_link)
+      formData.append('external_link', form.external_link)
       if (form.password) formData.append('password', form.password)
       formData.append('w9', w9File)
       formData.append('insurance', insuranceFile)
@@ -263,7 +267,7 @@ export default function Apply() {
             Application received
           </h1>
           <p style={{ fontSize: 15, color: 'var(--color-text-muted)', lineHeight: 1.65, marginBottom: 32 }}>
-            We review every application personally. You&apos;ll hear from us within 1–2 business days at {form.email || 'your email address'}.
+            We review every application personally. You'll hear from us once a decision is made at {form.email || 'your email address'}.
           </p>
           <a href="/jobs" style={{
             display: 'inline-flex', alignItems: 'center', gap: 8,
@@ -275,8 +279,8 @@ export default function Apply() {
           </a>
           <p style={{ fontSize: 12, color: 'var(--color-input-placeholder)', marginTop: 20 }}>
             Questions? Email{' '}
-            <a href="mailto:hello@tradesource.co" style={{ color: 'var(--color-text-muted)', textDecoration: 'underline' }}>
-              hello@tradesource.co
+            <a href="mailto:info@tradesource.app" style={{ color: 'var(--color-text-muted)', textDecoration: 'underline' }}>
+              info@tradesource.app
             </a>
           </p>
         </div>
@@ -325,7 +329,7 @@ export default function Apply() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
             {[
               { icon: 'shield', title: 'License + insurance required', sub: 'Every contractor is verified before joining' },
-              { icon: 'clock', title: '1–2 business day review', sub: 'Real humans review every application' },
+              { icon: 'clock', title: 'Real humans review every application', sub: "You'll get an email when your application is reviewed" },
               { icon: 'dollar', title: 'Fixed-price work only', sub: 'No bids, no estimates, no surprises' },
             ].map(({ icon, title, sub }) => (
               <div key={title} style={{ display: 'flex', alignItems: 'flex-start', gap: 14 }}>
@@ -645,7 +649,7 @@ export default function Apply() {
                 {/* External Link */}
                 <div>
                   <label htmlFor="apply-external-link" style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>
-                    External Review Link
+                    External Review Link <span style={{ color: 'var(--color-red)' }}>*</span>
                   </label>
                   <input
                     id="apply-external-link"
@@ -654,13 +658,13 @@ export default function Apply() {
                     value={form.external_link || ''}
                     onChange={e => update('external_link', e.target.value)}
                     onInput={e => update('external_link', (e.target as HTMLInputElement).value)}
-                    placeholder="https://maps.google.com/maps/place/..."
+                    required
                     style={{ width: '100%', padding: '11px 14px', borderRadius: 10, fontSize: 14, border: '1.5px solid var(--color-input-border)', outline: 'none', transition: 'border-color 0.15s', color: 'var(--color-text)', backgroundColor: '#fff' }}
                     onFocus={e => e.target.style.borderColor = 'var(--color-blue)'}
                     onBlur={e => e.target.style.borderColor = 'var(--color-input-border)'}
                   />
                   <p style={{ fontSize: 11, color: 'var(--color-text-subtle)', marginTop: 6 }}>
-                    Optional — Google Business Profile, Houzz, Angi, or any verifiable review site link.
+                    Optional — Google Business Profile, Houzz, Angi, or any verifiable review site.
                   </p>
                 </div>
 

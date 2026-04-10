@@ -71,7 +71,7 @@ We strongly encourage all parties to document agreements in writing before comme
         </div>
 
         <div className="mt-6 text-center" style={{ fontSize: '14px', color: 'rgba(248,250,252,0.3)' }}>
-          Questions? Contact us at <a href="mailto:legal@tradesource.co" className="underline" style={{ color: '#60A5FA' }}>legal@tradesource.co</a>
+          Questions? Contact us at <a href="mailto:info@tradesource.app" className="underline" style={{ color: '#60A5FA' }}>info@tradesource.app</a>
         </div>
       </div>
     </div>

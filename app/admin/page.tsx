@@ -113,7 +113,7 @@ function LoginForm() {
               type="email"
               value={email}
               onChange={e => setEmail(e.target.value)}
-              placeholder="admin@tradesource.co"
+              placeholder="info@tradesource.app"
               autoComplete="email"
               style={{ width: '100%', padding: '11px 14px', borderRadius: 10, fontSize: 14, backgroundColor: 'var(--color-bg)', color: 'var(--color-text)', border: '1px solid var(--color-border)', outline: 'none', boxSizing: 'border-box' }}
               onFocus={e => e.currentTarget.style.borderColor = 'var(--color-blue)'}
