@@ -99,7 +99,7 @@ export default function Home() {
         <div style={{ maxWidth: 960, margin: '0 auto', padding: '0 24px' }}>
           <div style={{ display: 'flex', alignItems: 'stretch' }}>
             {[
-              { label: 'Verified Painters Only', sub: 'license and insurance confirmed' },
+              { label: 'Verified Painters Only', sub: 'license \u00b7 insurance \u00b7 W-9 \u00b7 experience \u00b7 external review' },
               { label: 'Fixed Price. No Bidding.', sub: 'you set the terms upfront' },
               { label: 'Work Stays in Network', sub: 'private between contractors' },
               { label: 'No Lead Fees or Ads', sub: 'you control who sees your work' },

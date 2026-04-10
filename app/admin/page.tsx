@@ -200,13 +200,20 @@ export default function AdminPage() {
     return <LoginForm />
   }
 
-  const handleApprove = async (userId: string, verifyLicense: boolean, verifyInsurance: boolean) => {
+  const handleApprove = async (userId: string, verifyLicense: boolean, verifyInsurance: boolean, password?: string) => {
     setProcessing(userId)
     try {
+      const body: Record<string, unknown> = {
+        status: 'approved',
+        verified_license: verifyLicense,
+        verified_insurance: verifyInsurance,
+        verified_w9: true,
+      }
+      if (password) body.password = password
       const res = await fetch(`/api/users/${userId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: 'approved', verified_license: verifyLicense, verified_insurance: verifyInsurance, verified_w9: true }),
+        body: JSON.stringify(body),
       })
       if (res.ok) {
         setUsers(prev => prev.map(u => u.id === userId ? { ...u, status: 'approved', verified_license: verifyLicense, verified_insurance: verifyInsurance } : u))

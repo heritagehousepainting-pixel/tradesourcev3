@@ -10,9 +10,11 @@ export default function Login() {
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [resetMode, setResetMode] = useState(false)
+  const [resetSent, setResetSent] = useState(false)
+  const [resetLoading, setResetLoading] = useState(false)
+  const [resetError, setResetError] = useState('')
 
-  // Redirect already-authenticated users away from the login page.
-  // Check the cookie-based session on mount — no network call needed.
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
       if (!data.session?.user) return
@@ -37,11 +39,7 @@ export default function Login() {
     setError('')
     try {
       const { error, data } = await supabase.auth.signInWithPassword({ email, password })
-      if (error) {
-        setError(error.message)
-      } else {
-        // Decode the JWT from the session directly to determine the user's role.
-        // This avoids an extra network round-trip to the Supabase Auth server.
+      if (error) { setError(error.message) } else {
         let isFounder = false
         try {
           const token = data?.session?.access_token
@@ -54,112 +52,89 @@ export default function Login() {
               isFounder = (decoded.app_metadata as Record<string, unknown>)?.role === 'admin'
             }
           }
-        } catch {
-          // JWT decode failed — fall through to non-founder redirect
-        }
-        // Short delay to ensure the session cookie is fully written.
+        } catch {}
         await new Promise(r => setTimeout(r, 200))
         window.location.href = isFounder ? '/admin' : '/dashboard'
       }
-    } catch {
-      setError('Something went wrong. Please try again.')
-    } finally {
-      setLoading(false)
-    }
+    } catch { setError('Something went wrong. Please try again.') } finally { setLoading(false) }
+  }
+
+  const handleResetPassword = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setResetLoading(true)
+    setResetError('')
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/login?reset=true`,
+      })
+      if (error) { setResetError(error.message) } else { setResetSent(true) }
+    } catch { setResetError('Something went wrong. Please try again.') } finally { setResetLoading(false) }
   }
 
   return (
     <div style={{ backgroundColor: 'var(--color-bg)', minHeight: '100vh', display: 'flex', alignItems: 'stretch' }}>
 
-      {/* ─── Left Panel — Dark branding ─── */}
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'space-between',
-          width: '42%',
-          padding: '48px 56px',
-          backgroundColor: 'var(--color-bg-alt)',
-          backgroundImage: 'repeating-linear-gradient(-45deg, transparent, transparent 8px, rgba(255,255,255,0.012) 8px, rgba(255,255,255,0.012) 9px)',
-          borderRight: '1px solid rgba(255,255,255,0.07)',
-          position: 'relative',
-          overflow: 'hidden',
-        }}
-      >
-        {/* Decorative glow */}
+      {/* ─── Left Panel ─── */}
+      <div style={{
+        display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
+        width: '42%', padding: '48px 56px',
+        backgroundColor: 'var(--color-bg-alt)',
+        backgroundImage: 'repeating-linear-gradient(-45deg, transparent, transparent 8px, rgba(255,255,255,0.012) 8px, rgba(255,255,255,0.012) 9px)',
+        borderRight: '1px solid rgba(255,255,255,0.07)',
+        position: 'relative', overflow: 'hidden',
+      }}>
         <div style={{ position: 'absolute', top: -120, right: -120, width: 360, height: 360, borderRadius: '50%', background: 'radial-gradient(circle, rgba(37,99,235,0.08) 0%, transparent 70%)' }} />
 
-        {/* Top */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <div style={{ width: 30, height: 30, borderRadius: 7, backgroundColor: 'var(--color-blue)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M13 10V3L4 14h7v7l9-11h-7z" />
-            </svg>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
           </div>
           <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--color-text)' }}>TradeSource</span>
         </div>
 
-        {/* Middle */}
         <div>
           <div style={{ width: 32, height: 3, borderRadius: 2, backgroundColor: 'var(--color-orange)', marginBottom: 20 }} />
           <h1 style={{ fontSize: 'clamp(28px, 3.5vw, 44px)', fontWeight: 800, color: 'var(--color-text)', letterSpacing: '-0.03em', lineHeight: 1.1, marginBottom: 16 }}>
-            Your network<br />
-            <span style={{ color: 'var(--color-blue)' }}>of vetted painters.</span>
+            Your network<br /><span style={{ color: 'var(--color-blue)' }}>of vetted painters.</span>
           </h1>
           <p style={{ fontSize: 15, color: 'var(--color-text-muted)', lineHeight: 1.7, marginBottom: 32 }}>
             Sign in to access overflow work in Montgomery, Bucks, and Delaware Counties and Philadelphia. Fixed price. No bidding. Private.
           </p>
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-            {[
-              { icon: 'check', text: 'Access your open job interests' },
-              { icon: 'check', text: 'Message contractors directly' },
-              { icon: 'check', text: 'Track your active and completed work' },
-            ].map(({ text }) => (
-              <div key={text} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                <div style={{ width: 20, height: 20, borderRadius: '50%', backgroundColor: 'var(--color-green-soft)', border: '1px solid rgba(16,185,129,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--color-green)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M5 13l4 4L19 7" />
-                  </svg>
-                </div>
-                <span style={{ fontSize: 13, color: 'var(--color-text-muted)' }}>{text}</span>
+          {[
+            { text: 'Access your open job interests' },
+            { text: 'Message contractors directly' },
+            { text: 'Track your active and completed work' },
+          ].map(({ text }) => (
+            <div key={text} style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 14 }}>
+              <div style={{ width: 20, height: 20, borderRadius: '50%', backgroundColor: 'var(--color-green-soft)', border: '1px solid rgba(16,185,129,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--color-green)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M5 13l4 4L19 7" /></svg>
               </div>
-            ))}
-          </div>
+              <span style={{ fontSize: 13, color: 'var(--color-text-muted)' }}>{text}</span>
+            </div>
+          ))}
         </div>
 
-        {/* Bottom */}
         <div>
           <p style={{ fontSize: 12, color: 'var(--color-input-placeholder)', marginBottom: 8 }}>New to TradeSource?</p>
-          <a href="/apply" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 600, color: 'var(--color-blue)', textDecoration: 'none' }}>
-            Apply to join the network →
-          </a>
+          <a href="/apply" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 600, color: 'var(--color-blue)', textDecoration: 'none' }}>Apply to join the network →</a>
         </div>
       </div>
 
-      {/* ─── Right Panel — Form ─── */}
+      {/* ─── Right Panel ─── */}
       <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '56px 48px' }}>
         <div style={{ width: '100%', maxWidth: 440 }}>
 
-          {/* Page header */}
           <div style={{ marginBottom: 28 }}>
             <h2 style={{ fontSize: 24, fontWeight: 800, color: 'var(--color-text)', letterSpacing: '-0.03em', marginBottom: 6 }}>
-              Welcome back
+              {resetMode ? 'Reset Password' : resetSent ? 'Email Sent' : 'Welcome back'}
             </h2>
             <p style={{ fontSize: 14, color: 'var(--color-text-muted)', lineHeight: 1.6 }}>
-              Sign in to your TradeSource account.
+              {resetSent ? 'Check your inbox for a reset link.' : resetMode ? 'We\'ll send a link to your email.' : 'Sign in to your TradeSource account.'}
             </p>
           </div>
 
-          {/* Form card */}
-          <div className="form-card" style={{
-            borderRadius: 16,
-            overflow: 'hidden',
-            boxShadow: '0 8px 40px var(--color-shadow-lg)',
-          }}>
-            {/* Blue accent bar */}
+          <div style={{ borderRadius: 16, overflow: 'hidden', boxShadow: '0 8px 40px var(--color-shadow-lg)' }}>
             <div style={{ height: 4, backgroundColor: 'var(--color-blue)' }} />
-
             <div style={{ padding: '28px 32px' }}>
 
               {error && (
@@ -168,107 +143,107 @@ export default function Login() {
                 </div>
               )}
 
-              <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
-
-                {/* Email */}
-                <div>
-                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>
-                    Email address
-                  </label>
-                  <input
-                    type="email"
-                    value={email}
-                    onChange={e => setEmail(e.target.value)}
-                    placeholder="you@company.com"
-                    required
-                    style={{ width: '100%', padding: '12px 14px', borderRadius: 10, fontSize: 14, border: '1.5px solid var(--color-input-border)', outline: 'none', transition: 'border-color 0.15s', color: 'var(--color-text)' }}
-                    onFocus={e => e.target.style.borderColor = 'var(--color-blue)'}
-                    onBlur={e => e.target.style.borderColor = 'var(--color-input-border)'}
-                  />
-                </div>
-
-                {/* Password */}
-                <div>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
-                    <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-                      Password
-                    </label>
-                    <a href="#" style={{ fontSize: 12, fontWeight: 500, color: 'var(--color-blue)', textDecoration: 'none' }}>
-                      Forgot password?
-                    </a>
+              {resetSent ? (
+                <div style={{ textAlign: 'center', padding: '20px 0' }}>
+                  <div style={{ width: 48, height: 48, borderRadius: '50%', backgroundColor: 'var(--color-green-soft)', border: '1px solid rgba(16,185,129,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--color-green)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 13l4 4L19 7" /></svg>
                   </div>
-                  <input
-                    type="password"
-                    value={password}
-                    onChange={e => setPassword(e.target.value)}
-                    placeholder="••••••••"
-                    required
-                    style={{ width: '100%', padding: '12px 14px', borderRadius: 10, fontSize: 14, border: '1.5px solid var(--color-input-border)', outline: 'none', transition: 'border-color 0.15s', color: 'var(--color-text)' }}
-                    onFocus={e => e.target.style.borderColor = 'var(--color-blue)'}
-                    onBlur={e => e.target.style.borderColor = 'var(--color-input-border)'}
-                  />
+                  <h3 style={{ fontSize: 16, fontWeight: 700, color: 'var(--color-text)', marginBottom: 8 }}>Check your email</h3>
+                  <p style={{ fontSize: 13, color: 'var(--color-text-muted)', lineHeight: 1.6 }}>
+                    We sent a password reset link to <strong>{email}</strong>. The link expires in 1 hour.
+                  </p>
+                  <button
+                    onClick={() => { setResetMode(false); setResetSent(false); setEmail(''); setResetError('') }}
+                    style={{ marginTop: 20, background: 'none', border: 'none', fontSize: 13, color: 'var(--color-blue)', cursor: 'pointer', fontWeight: 600 }}
+                  >
+                    Back to sign in
+                  </button>
                 </div>
+              ) : resetMode ? (
+                <form onSubmit={handleResetPassword} style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+                  {resetError && (
+                    <div style={{ padding: '10px 14px', borderRadius: 8, fontSize: 13, backgroundColor: 'var(--color-red-soft)', color: 'var(--color-red)', border: '1px solid var(--color-border)' }}>{resetError}</div>
+                  )}
+                  <div>
+                    <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>Email address</label>
+                    <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="you@company.com" required
+                      style={{ width: '100%', padding: '12px 14px', borderRadius: 10, fontSize: 14, border: '1.5px solid var(--color-input-border)', outline: 'none', transition: 'border-color 0.15s', color: 'var(--color-text)' }}
+                      onFocus={e => e.target.style.borderColor = 'var(--color-blue)'}
+                      onBlur={e => e.target.style.borderColor = 'var(--color-input-border)'}
+                    />
+                  </div>
+                  <button type="submit" disabled={resetLoading}
+                    style={{ width: '100%', padding: '14px', borderRadius: 10, fontSize: 14, fontWeight: 700, color: '#fff', backgroundColor: 'var(--color-blue)', border: 'none', cursor: resetLoading ? 'default' : 'pointer', boxShadow: '0 4px 14px var(--color-shadow)', letterSpacing: '0.01em' }}>
+                    {resetLoading ? 'Sending…' : 'Send Reset Link'}
+                  </button>
+                  <div style={{ textAlign: 'center' }}>
+                    <button type="button"
+                      onClick={() => { setResetMode(false); setResetError('') }}
+                      style={{ background: 'none', border: 'none', fontSize: 13, color: 'var(--color-text-muted)', cursor: 'pointer' }}>
+                      Back to sign in
+                    </button>
+                  </div>
+                </form>
+              ) : (
+                <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+                  <div>
+                    <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>Email address</label>
+                    <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="you@company.com" required
+                      style={{ width: '100%', padding: '12px 14px', borderRadius: 10, fontSize: 14, border: '1.5px solid var(--color-input-border)', outline: 'none', transition: 'border-color 0.15s', color: 'var(--color-text)' }}
+                      onFocus={e => e.target.style.borderColor = 'var(--color-blue)'}
+                      onBlur={e => e.target.style.borderColor = 'var(--color-input-border)'}
+                    />
+                  </div>
+                  <div>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
+                      <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Password</label>
+                      <button type="button"
+                        onClick={() => { setResetMode(true); setResetSent(false); setResetError('') }}
+                        style={{ background: 'none', border: 'none', fontSize: 12, fontWeight: 500, color: 'var(--color-blue)', cursor: 'pointer' }}>
+                        Forgot password?
+                      </button>
+                    </div>
+                    <input type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="••••••••" required
+                      style={{ width: '100%', padding: '12px 14px', borderRadius: 10, fontSize: 14, border: '1.5px solid var(--color-input-border)', outline: 'none', transition: 'border-color 0.15s', color: 'var(--color-text)' }}
+                      onFocus={e => e.target.style.borderColor = 'var(--color-blue)'}
+                      onBlur={e => e.target.style.borderColor = 'var(--color-input-border)'}
+                    />
+                  </div>
+                  <button type="submit" disabled={loading}
+                    style={{ width: '100%', padding: '14px', borderRadius: 10, fontSize: 14, fontWeight: 700, color: '#fff', backgroundColor: 'var(--color-blue)', border: 'none', cursor: loading ? 'default' : 'pointer', boxShadow: loading ? 'none' : '0 4px 14px var(--color-shadow)', letterSpacing: '0.01em', transition: 'all 0.15s', marginTop: 4 }}>
+                    {loading ? (
+                      <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+                        <span style={{ width: 14, height: 14, borderRadius: '50%', border: '2px solid rgba(255,255,255,0.4)', borderTopColor: '#fff', display: 'block', animation: 'spin 1s linear infinite' }} />
+                        Signing in…
+                      </span>
+                    ) : 'Sign In'}
+                  </button>
+                </form>
+              )}
 
-                {/* Submit */}
-                <button
-                  type="submit"
-                  disabled={loading}
-                  style={{
-                    width: '100%',
-                    padding: '14px',
-                    borderRadius: 10,
-                    fontSize: 14,
-                    fontWeight: 700,
-                    color: '#fff',
-                    backgroundColor: loading ? 'var(--color-blue)' : 'var(--color-blue)',
-                    border: 'none',
-                    cursor: loading ? 'default' : 'pointer',
-                    boxShadow: loading ? 'none' : '0 4px 14px var(--color-shadow)',
-                    letterSpacing: '0.01em',
-                    transition: 'all 0.15s',
-                    marginTop: 4,
-                  }}
-                >
-                  {loading ? (
-                    <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
-                      <span style={{ width: 14, height: 14, borderRadius: '50%', border: '2px solid rgba(255,255,255,0.4)', borderTopColor: '#fff', display: 'block', animation: 'spin 1s linear infinite' }} />
-                      Signing in…
-                    </span>
-                  ) : 'Sign In'}
-                </button>
-
-              </form>
-
-              {/* Divider */}
               <div style={{ display: 'flex', alignItems: 'center', gap: 12, margin: '20px 0' }}>
                 <div style={{ flex: 1, height: 1, backgroundColor: 'var(--color-surface)' }} />
                 <span style={{ fontSize: 12, color: 'var(--color-text-subtle)' }}>or</span>
                 <div style={{ flex: 1, height: 1, backgroundColor: 'var(--color-surface)' }} />
               </div>
 
-              {/* Apply CTA */}
               <div style={{ textAlign: 'center', paddingBottom: 4 }}>
                 <span style={{ fontSize: 13, color: 'var(--color-text-muted)' }}>Don&apos;t have an account? </span>
                 <a href="/apply" style={{ fontSize: 13, fontWeight: 600, color: 'var(--color-blue)', textDecoration: 'none' }}>Apply to join</a>
               </div>
-
             </div>
           </div>
 
-          {/* Security line */}
           <div style={{ marginTop: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-subtle)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
               <path d="M7 11V7a5 5 0 0110 0v4" />
             </svg>
-            <span style={{ fontSize: 11, color: 'var(--color-text-subtle)' }}>
-              Your information is encrypted and private.
-            </span>
+            <span style={{ fontSize: 11, color: 'var(--color-text-subtle)' }}>Your information is encrypted and private.</span>
           </div>
 
         </div>
       </div>
-
     </div>
   )
 }

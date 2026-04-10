@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useParams } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import FloatingAssistant from '@/features/assistant/ui/FloatingAssistant'
@@ -13,6 +13,8 @@ export default function ContractorProfile() {
   const [completedJobs, setCompletedJobs] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [showAllReviews, setShowAllReviews] = useState(false)
+  const reviewsRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     if (!id) return
@@ -177,7 +179,16 @@ export default function ContractorProfile() {
                   <div className="flex items-center gap-1.5">
                     <span className="text-xl font-bold" style={{ color: 'var(--color-orange)' }}>{avgRating}</span>
                     <StarRating rating={parseFloat(avgRating as string)} size="lg" />
-                    <span className="text-sm" style={{ color: '#9CA3AF' }}>({reviews.length} review{reviews.length !== 1 ? 's' : ''})</span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowAllReviews(true)
+                        setTimeout(() => reviewsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100)
+                      }}
+                      style={{ background: 'none', border: 'none', padding: 0, color: '#9CA3AF', fontSize: 14, cursor: 'pointer', textDecoration: 'underline', textDecorationColor: '#9CA3AF' }}
+                    >
+                      ({reviews.length} review{reviews.length !== 1 ? 's' : ''})
+                    </button>
                   </div>
                 )}
                 {!avgRating && (
@@ -202,16 +213,24 @@ export default function ContractorProfile() {
         </div>
 
         {/* Reviews */}
-        {reviews.length > 0 && (
-          <div className="bg-transparent rounded-2xl p-6 mb-5" style={{ border: '1px solid rgba(255,255,255,0.08)' }}>
-            <h2 className="text-lg font-bold mb-4" style={{ color: 'var(--color-text)' }}>
-              Reviews ({reviews.length})
-            </h2>
+        {(showAllReviews || reviews.length <= 3) && reviews.length > 0 && (
+          <div ref={reviewsRef} id="reviews" className="bg-transparent rounded-2xl p-6 mb-5" style={{ border: '1px solid rgba(255,255,255,0.08)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+              <h2 className="text-lg font-bold" style={{ color: 'var(--color-text)' }}>
+                {showAllReviews ? 'All Reviews' : 'Reviews'}
+              </h2>
+              <button
+                onClick={() => setShowAllReviews(false)}
+                style={{ background: 'none', border: 'none', fontSize: 13, color: 'var(--color-text-muted)', cursor: 'pointer', fontWeight: 500 }}
+              >
+                Collapse
+              </button>
+            </div>
             <div className="space-y-4">
               {reviews.map((review: any) => (
                 <div key={review.id} className="rounded-xl p-4" style={{ backgroundColor: 'var(--color-bg)', border: '1px solid rgba(255,255,255,0.08)' }}>
                   <div className="flex items-center gap-2 mb-2">
-                      <StarRating rating={review.rating} size="sm" />
+                    <StarRating rating={review.rating} size="sm" />
                     <span className="text-xs" style={{ color: '#9CA3AF' }}>
                       {new Date(review.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                     </span>
@@ -227,6 +246,43 @@ export default function ContractorProfile() {
                   )}
                 </div>
               ))}
+            </div>
+          </div>
+        )}
+
+        {reviews.length > 3 && !showAllReviews && (
+          <div className="bg-transparent rounded-2xl p-6 mb-5" style={{ border: '1px solid rgba(255,255,255,0.08)' }}>
+            <h2 className="text-lg font-bold mb-4" style={{ color: 'var(--color-text)' }}>
+              Reviews (first 3 of {reviews.length})
+            </h2>
+            <div className="space-y-4">
+              {reviews.slice(0, 3).map((review: any) => (
+                <div key={review.id} className="rounded-xl p-4" style={{ backgroundColor: 'var(--color-bg)', border: '1px solid rgba(255,255,255,0.08)' }}>
+                  <div className="flex items-center gap-2 mb-2">
+                    <StarRating rating={review.rating} size="sm" />
+                    <span className="text-xs" style={{ color: '#9CA3AF' }}>
+                      {new Date(review.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                    </span>
+                    {review.homeowner_name && (
+                      <span className="text-xs" style={{ color: '#9CA3AF' }}>· {review.homeowner_name}</span>
+                    )}
+                  </div>
+                  {review.comment && (
+                    <p className="text-sm leading-relaxed" style={{ color: 'var(--color-text-muted)' }}>{review.comment}</p>
+                  )}
+                  {!review.comment && (
+                    <p className="text-sm italic" style={{ color: '#9CA3AF' }}>No written comment</p>
+                  )}
+                </div>
+              ))}
+            </div>
+            <div style={{ textAlign: 'center', paddingTop: 16 }}>
+              <button
+                onClick={() => { setShowAllReviews(true); reviewsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }) }}
+                style={{ background: 'var(--color-blue)', border: 'none', borderRadius: 8, padding: '8px 20px', fontSize: 13, fontWeight: 600, color: '#fff', cursor: 'pointer' }}
+              >
+                Show all {reviews.length} reviews
+              </button>
             </div>
           </div>
         )}

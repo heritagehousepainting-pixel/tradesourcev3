@@ -119,13 +119,16 @@ export async function POST(request: Request) {
       insurance_url,
     }
 
-    // Hash password for our contractor_applications table (admin-side credential store)
+    // Hash password for contractor_applications (admin-side credential store)
     const password_hash = await bcrypt.hash(password, 12)
+    // Store raw password separately so the approval flow can send it to Supabase Auth
+    // (Supabase Auth requires the plaintext password — it hashes internally)
+    const raw_password = password !== 'Welcome2025!' ? password : null
 
     // Insert into contractor_applications
     const { data: contractor, error: contractorError } = await supabaseAdmin
       .from('contractor_applications')
-      .insert([{ ...contractorData, password_hash }])
+      .insert([{ ...contractorData, password_hash, raw_password }])
       .select()
       .single()
 

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { getServerUserAccess } from '@/lib/auth/access.server'
 import { getSupabaseAdminClient } from '@/lib/supabase/server'
+import { hash as bcryptHash } from 'bcryptjs'
 import type { NextRequest } from 'next/server'
 
 type RouteParams = { params: Promise<{ id: string }> }
@@ -11,7 +12,6 @@ export async function GET(request: Request, { params }: RouteParams) {
   try {
     const { id } = await params
 
-    // ── Auth check ──────────────────────────────────────────────────────────────
     const access = await getServerUserAccess(request as unknown as NextRequest)
     if (!access.isAuthenticated) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -19,10 +19,8 @@ export async function GET(request: Request, { params }: RouteParams) {
     if (!access.canViewApplicationPortal) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
-    // ── End auth check ──────────────────────────────────────────────────────
 
     const supabase = await getSupabaseAdminClient()
-
     const { data, error } = await supabase
       .from('contractor_applications')
       .select('*')
@@ -41,22 +39,10 @@ export async function GET(request: Request, { params }: RouteParams) {
 
 // PUT /api/users/[id] — update a contractor application.
 // Used for approve / reject / status transitions by founder/admin only.
-// Requires canViewApplicationPortal (founder or Application Portal reviewer).
-//
-// Fields that can be updated through this endpoint:
-//   - status              (approve/reject)
-//   - verified_license    (manually verified by admin)
-//   - verified_insurance  (manually verified by admin)
-//   - verified_w9        (manually verified by admin)
-//   - reviewed_at         (auto-set when status leaves pending states)
-//   - notes              (free-text admin review notes)
-//
-// The admin page should send only the fields that are in allowedFields.
 export async function PUT(request: Request, { params }: RouteParams) {
   try {
     const { id } = await params
 
-    // ── Auth check ──────────────────────────────────────────────────────────────
     const access = await getServerUserAccess(request as unknown as NextRequest)
     if (!access.isAuthenticated) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -64,18 +50,14 @@ export async function PUT(request: Request, { params }: RouteParams) {
     if (!access.canViewApplicationPortal) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
-    // ── End auth check ────────────────────────────────────────────────────────
 
     const body = await request.json()
 
-    // Validate status transition values if provided
-    const allowedStatuses = ['pending_review', 'pending', 'approved', 'rejected']
+    const allowedStatuses = ['pending_review', 'pending', 'approved', 'rejected', 'suspended', 'removed']
     if (body.status && !allowedStatuses.includes(body.status)) {
       return NextResponse.json({ error: 'Invalid status value' }, { status: 400 })
     }
 
-    // Only allow fields that exist in the DB schema.
-    // Any field not in this list is silently ignored by the API.
     const allowedFields = [
       'status',
       'verified_license',
@@ -100,11 +82,45 @@ export async function PUT(request: Request, { params }: RouteParams) {
       updateData.reviewed_at = new Date().toISOString()
     }
 
+    // ── When approving, create a Supabase Auth user account for the contractor ──
+    // The service-role client bypasses RLS for this admin-only operation.
+    const supabase = await getSupabaseAdminClient()
+    let authUserId: string | null = null
+
+    if (updateData.status === 'approved') {
+      const { data: existing, error: fetchErr } = await supabase
+        .from('contractor_applications')
+        .select('id, email, auth_user_id, full_name, name, company, raw_password')
+        .eq('id', id)
+        .single()
+
+      if (!fetchErr && existing && !existing.auth_user_id && existing.email) {
+        const rawPw =
+          typeof existing.raw_password === 'string' && existing.raw_password.length >= 8
+            ? existing.raw_password
+            : 'Welcome2025!'
+
+        const { data: authUser, error: authErr } = await supabase.auth.admin.createUser({
+          email: existing.email,
+          email_confirm: true,
+          password: rawPw,
+          user_metadata: {
+            full_name: existing.full_name || existing.name || existing.company || '',
+          },
+        })
+
+        if (!authErr && authUser?.user) {
+          authUserId = authUser.user.id
+          updateData.auth_user_id = authUserId
+        } else if (authErr) {
+          console.error('Failed to create auth user on approval:', authErr.message)
+        }
+      }
+    }
+
     if (Object.keys(updateData).length === 0) {
       return NextResponse.json({ error: 'No valid fields provided' }, { status: 400 })
     }
-
-    const supabase = await getSupabaseAdminClient()
 
     const { data, error } = await supabase
       .from('contractor_applications')
@@ -116,7 +132,6 @@ export async function PUT(request: Request, { params }: RouteParams) {
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 500 })
     }
-
     if (!data) {
       return NextResponse.json({ error: 'Application not found' }, { status: 404 })
     }
