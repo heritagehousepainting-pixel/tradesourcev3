@@ -83,7 +83,6 @@ export async function POST(request: Request) {
       status: 'open',
       homeowner_email: homeownerEmail || body.homeowner_email || null,
       homeowner_name: body.homeowner_name || null,
-      homeowner_phone: body.homeowner_phone || null,
       is_verified_homeowner: isVerifiedHomeowner,
       poster_id: body.poster_id || null,
     }

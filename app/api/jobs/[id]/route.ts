@@ -57,9 +57,11 @@ export async function PATCH(request: Request, { params }: RouteParams) {
       return NextResponse.json({ error: 'Job not found' }, { status: 404 })
     }
 
-    // Founder/admin bypasses ownership check — product override.
+    // Founder/admin bypasses ownership check.
     // Non-founders: must be the job poster.
-    const isOwner = access.userId && job.poster_id && job.poster_id === access.userId
+    // poster_id = contractor_application.id; use contractorProfileId (also contractor_application.id).
+    const posterContractorId = access.contractorProfileId
+    const isOwner = !!(posterContractorId && job.poster_id && job.poster_id === posterContractorId)
     if (!access.isFounderEmail && !isOwner) {
       return NextResponse.json(
         { error: 'Forbidden — you did not post this job' },

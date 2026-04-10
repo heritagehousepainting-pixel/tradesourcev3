@@ -43,8 +43,11 @@ export async function POST(
       return NextResponse.json({ error: `Job is already ${job.status}` }, { status: 400 })
     }
 
-    // Non-founders must be the job poster to award
-    if (!access.isFounderEmail && job.poster_id && job.poster_id !== access.userId) {
+    // Non-founders must be the job poster to award.
+    // poster_id = contractor_application.id; access.contractorProfileId is also the contractor_application.id.
+    // For founders, access.contractorProfileId is null but isFounderEmail covers them.
+    const posterContractorId = access.contractorProfileId
+    if (!access.isFounderEmail && job.poster_id && job.poster_id !== posterContractorId) {
       return NextResponse.json({ error: 'Forbidden — you did not post this job' }, { status: 403 })
     }
 

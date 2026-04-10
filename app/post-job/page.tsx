@@ -513,6 +513,7 @@ export default function PostJob() {
                   <div style={{ position: 'relative', maxWidth: 220 }}>
                     <span style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', fontSize: 16, color: 'var(--color-text-muted)', fontWeight: 600, pointerEvents: 'none' }}>$</span>
                     <input
+                      id="job-price"
                       type="text"
                       inputMode="numeric"
                       value={form.fixed_price}
@@ -597,6 +598,7 @@ export default function PostJob() {
                     Description <span style={{ color: 'var(--color-red)' }}>*</span>
                   </label>
                   <textarea
+                    id="job-description"
                     value={form.description}
                     onChange={e => update('description', e.target.value)}
                     placeholder="Describe the full scope — surfaces, prep, access, paint specs, anything contractors need to know before responding."

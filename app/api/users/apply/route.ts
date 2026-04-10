@@ -97,22 +97,21 @@ export async function POST(request: Request) {
       insurance_url = await uploadDocumentToStorage(supabaseAdmin as any, insuranceFile, email, 'insurance')
     }
 
-    // Map camelCase form fields to snake_case DB columns
+    // Map form fields (both camelCase and snake_case) to DB columns.
+    // Browser form sends snake_case: full_name, business_name.
+    const g = (key: string) => (fields[key] as string | undefined) ?? ''
+    const gNum = (k1: string, k2: string) => (fields[k1] ?? fields[k2] ?? 0) as number
+    const nameVal = g('fullName') || g('name') || g('full_name') || ''
+
     const contractorData: Record<string, unknown> = {
-      name: (fields.fullName || fields.name) as string || '',
-      full_name: (fields.fullName || fields.name) as string || '',
-      company: (fields.businessName || fields.company) as string || '',
+      name: nameVal,
+      full_name: nameVal,
+      company: g('businessName') || g('company') || g('business_name') || '',
       email,
-      phone: (fields.phone as string) || '',
-      license_number:
-        (fields.licenseNumber as string) ||
-        (fields.license_number as string) ||
-        '',
-      license_state: (fields.license_state as string) || '',
-      years_in_trade:
-        (fields.years_in_trade as number) ||
-        (fields.yearsInTrade as number) ||
-        0,
+      phone: g('phone'),
+      license_number: g('licenseNumber') || g('license_number'),
+      license_state: g('license_state') || '',
+      years_in_trade: gNum('yearsInTrade', 'years_in_trade'),
       trade_specialization: 'painting',
       w9_url,
       insurance_url,

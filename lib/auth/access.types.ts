@@ -86,6 +86,9 @@ export interface UserAccess {
 
   /** True if the user's email is in NEXT_PUBLIC_FOUNDER_EMAILS */
   isFounderEmail: boolean
+
+  /** The contractor_applications.id for this user (null if no profile row) */
+  contractorProfileId: string | null
 }
 
 // ─── Default (signed-out) access ─────────────────────────────────────────────
@@ -107,6 +110,7 @@ export const DEFAULT_USER_ACCESS: UserAccess = {
   canUseAssistant: false,
   profile: null,
   isFounderEmail: false,
+  contractorProfileId: null,
 }
 
 // ─── Founder email resolution ─────────────────────────────────────────────────
@@ -187,6 +191,7 @@ export function resolveUserAccess(
       canUseAssistant: isFounder,
       profile: null,
       isFounderEmail: isFounder,
+      contractorProfileId: null,
     }
   }
 
@@ -217,6 +222,7 @@ export function resolveUserAccess(
       canUseAssistant: true,
       profile,
       isFounderEmail: true,
+      contractorProfileId: profile?.id ?? null,
     }
   }
 
@@ -240,6 +246,7 @@ export function resolveUserAccess(
       canUseAssistant: false,
       profile,
       isFounderEmail: false,
+      contractorProfileId: profile?.id ?? null,
     }
   }
 
@@ -263,6 +270,7 @@ export function resolveUserAccess(
       canUseAssistant: false,
       profile,
       isFounderEmail: false,
+      contractorProfileId: profile?.id ?? null,
     }
   }
 
@@ -285,5 +293,6 @@ export function resolveUserAccess(
     canUseAssistant: false,
     profile,
     isFounderEmail: false,
+    contractorProfileId: profile?.id ?? null,
   }
 }
