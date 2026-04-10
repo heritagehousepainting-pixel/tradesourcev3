@@ -196,6 +196,14 @@ export default function Apply() {
       setError('Please complete all required fields including service areas and services.')
       return
     }
+    if (!form.phone.trim()) {
+      setError('Please enter your phone number — this is required to join the network.')
+      return
+    }
+    if (!form.license_number.trim()) {
+      setError('Please enter your PA License number — this is required to join the network.')
+      return
+    }
     if (!form.external_link.trim()) {
       setError('Please provide an External Review Link — this is required to join the network.')
       return
@@ -452,7 +460,7 @@ export default function Apply() {
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
                   <div>
                     <label htmlFor="apply-phone" style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>
-                      Phone
+                      Phone <span style={{ color: 'var(--color-red)' }}>*</span>
                     </label>
                     <input
                       id="apply-phone"
@@ -461,6 +469,7 @@ export default function Apply() {
                       value={form.phone}
                       onChange={e => update('phone', e.target.value)}
                       placeholder="(215) 555-0100"
+                      required
                       style={{ width: '100%', padding: '11px 14px', borderRadius: 10, fontSize: 14, border: '1.5px solid var(--color-input-border)', outline: 'none', transition: 'border-color 0.15s', color: 'var(--color-text)', backgroundColor: '#fff' }}
                       onFocus={e => e.target.style.borderColor = 'var(--color-blue)'}
                       onBlur={e => e.target.style.borderColor = 'var(--color-input-border)'}
@@ -488,7 +497,7 @@ export default function Apply() {
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
                   <div>
                     <label htmlFor="apply-license" style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>
-                      PA License #
+                      PA License # <span style={{ color: 'var(--color-red)' }}>*</span>
                     </label>
                     <input
                       id="apply-license"
@@ -497,6 +506,7 @@ export default function Apply() {
                       value={form.license_number}
                       onChange={e => update('license_number', e.target.value)}
                       placeholder="PA123456"
+                      required
                       style={{ width: '100%', padding: '11px 14px', borderRadius: 10, fontSize: 14, border: '1.5px solid var(--color-input-border)', outline: 'none', transition: 'border-color 0.15s', color: 'var(--color-text)', backgroundColor: '#fff' }}
                       onFocus={e => e.target.style.borderColor = 'var(--color-blue)'}
                       onBlur={e => e.target.style.borderColor = 'var(--color-input-border)'}
@@ -664,7 +674,7 @@ export default function Apply() {
                     onBlur={e => e.target.style.borderColor = 'var(--color-input-border)'}
                   />
                   <p style={{ fontSize: 11, color: 'var(--color-text-subtle)', marginTop: 6 }}>
-                    Optional — Google Business Profile, Houzz, Angi, or any verifiable review site.
+                    Google Business Profile, Houzz, Angi, or any verifiable review site.
                   </p>
                 </div>
 
