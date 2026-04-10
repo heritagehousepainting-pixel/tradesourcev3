@@ -32,35 +32,10 @@ export async function POST(request: NextRequest) {
       .single()
 
     if (error) {
-      // If the table doesn't exist yet, create it via raw SQL and retry once.
-      if (error.code === '42P01') {
-        await supabase.query(`
-          CREATE TABLE IF NOT EXISTS early_access_submissions (
-            id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-            name TEXT NOT NULL,
-            email TEXT NOT NULL,
-            county TEXT NOT NULL,
-            work_type TEXT NOT NULL,
-            created_at TIMESTAMPTZ DEFAULT now()
-          );
-          ALTER TABLE early_access_submissions ENABLE ROW LEVEL SECURITY;
-          CREATE POLICY "public_insert_early_access" ON early_access_submissions
-            FOR INSERT WITH CHECK (true);
-          CREATE POLICY "admin_read_early_access" ON early_access_submissions
-            FOR SELECT USING (
-              (auth.jwt() -> 'app_metadata' ->> 'role') = 'admin'
-            );
-        `)
-        // Retry insert
-        const retry = await supabase
-          .from('early_access_submissions')
-          .insert([{ name: name.trim(), email: email.trim().toLowerCase(), county: county.trim(), work_type: work_type.trim() }])
-          .select()
-          .single()
-        if (retry.error) return NextResponse.json({ error: retry.error.message }, { status: 500 })
-        return NextResponse.json({ success: true, id: retry.data?.id }, { status: 200 })
-      }
-      return NextResponse.json({ error: error.message }, { status: 500 })
+      return NextResponse.json(
+        { error: 'Database unavailable. Please run migration 011_early_access_submissions.sql in the Supabase SQL Editor.' },
+        { status: 500 }
+      )
     }
 
     return NextResponse.json({ success: true, id: data?.id }, { status: 200 })
