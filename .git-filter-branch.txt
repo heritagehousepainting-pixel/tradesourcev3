@@ -1,0 +1,79 @@
+import sys
+
+old_secret = b'sb_secret_2xOBvVC-6pQta74D6q7xsw_ZwFqLrJP'
+new_secret = b'[SUPABASE_SERVICE_ROLE_KEY_REDACTED]'
+
+paths_to_remove = {
+    b'final_fix_verify.mjs',
+    b'final_v.mjs',
+    b'final_v2.mjs',
+    b'final_verify.mjs',
+    b'gauntlet_ph2_12.mjs',
+    b'gauntlet_ph1.mjs',
+    b'gauntlet_deep.mjs',
+    b'gauntlet_ph1.mjs',
+    b'retest2.mjs',
+    b'retest3.mjs',
+    b'retest4.mjs',
+    b'retest_blockers.mjs',
+    b'retest.mjs',
+    b'debug_admin.mjs',
+    b'debug_admin2.mjs',
+    b'debug_admin3.mjs',
+    b'debug_admin4.mjs',
+    b'debug_admin5.mjs',
+    b'debug_postjob.mjs',
+    b'debug_p0_4.mjs',
+    b'debug_interests.mjs',
+    b'debug_interests2.mjs',
+    b'check_cols.mjs',
+    b'check_ext_link.mjs',
+    b'check_api_response.mjs',
+    b'check_api_auth.mjs',
+    b'check_admin_users.mjs',
+    b'check_all_tabs.mjs',
+    b'admin_extlink_deep.mjs',
+    b'admin_extlink_v3.mjs',
+    b'admin_extlink_final.mjs',
+    b'admin_extlink_deep.mjs',
+    b'debug_admin_extlink.mjs',
+    b'debug_admin_extlink2.mjs',
+    b'debug_admin_detail.mjs',
+    b'check_apply.mjs',
+    b'debug_apply.mjs',
+    b'debug_apply2.mjs',
+    b'verify_extlink.mjs',
+    b'verify_admin_extlink.mjs',
+    b'e2e_extlink.mjs',
+    b'e2e_extlink_final.mjs',
+    b'e2e_final.mjs',
+    b'e2e_final.mjs',
+    b'quick_check2.mjs',
+    b'post_p0_verify.mjs',
+    b'final_verify.mjs',
+    b'final_v.mjs',
+    b'final_v2.mjs',
+    b'gauntlet_deep.mjs',
+    b'live_smoke_final.mjs',
+    b'live_smoke2.mjs',
+    b'audit_auth.mjs',
+    b'audit_pub.mjs',
+    b'audit_pass.mjs',
+    b'surgical_pass.mjs',
+    b'migrate_external_link.mjs',
+    b'run_migration.mjs',
+    b'test_ext_link.mjs',
+    b'test_interests.mjs',
+}
+
+def process_blob(blob_id, content, metadata, event):
+    # Remove test files entirely
+    if metadata.filename in paths_to_remove:
+        return b''
+
+    # Replace old secret in all other files
+    if old_secret in content:
+        print(f"  [REDACTED] {metadata.filename.decode()} (blob {blob_id.decode()})")
+        return content.replace(old_secret, new_secret)
+
+    return content

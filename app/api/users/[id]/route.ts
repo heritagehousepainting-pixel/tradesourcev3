@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server'
 import { getServerUserAccess } from '@/lib/auth/access.server'
 import { getSupabaseAdminClient } from '@/lib/supabase/server'
-import { hash as bcryptHash } from 'bcryptjs'
 import type { NextRequest } from 'next/server'
 
 type RouteParams = { params: Promise<{ id: string }> }
@@ -82,38 +81,28 @@ export async function PUT(request: Request, { params }: RouteParams) {
       updateData.reviewed_at = new Date().toISOString()
     }
 
-    // ── When approving, create a Supabase Auth user account for the contractor ──
-    // The service-role client bypasses RLS for this admin-only operation.
     const supabase = await getSupabaseAdminClient()
-    let authUserId: string | null = null
 
+    // ── On approval: send invite email to contractor ─────────────────────────
+    // Auth account is created when the contractor clicks the invite link and
+    // sets their own password. This ensures no account exists before approval.
     if (updateData.status === 'approved') {
-      const { data: existing, error: fetchErr } = await supabase
+      const { data: existing } = await supabase
         .from('contractor_applications')
-        .select('id, email, auth_user_id, full_name, name, company, raw_password')
+        .select('email, auth_user_id')
         .eq('id', id)
         .single()
 
-      if (!fetchErr && existing && !existing.auth_user_id && existing.email) {
-        const rawPw =
-          typeof existing.raw_password === 'string' && existing.raw_password.length >= 8
-            ? existing.raw_password
-            : 'Welcome2025!'
+      if (!existing?.email) {
+        return NextResponse.json({ error: 'No email on application — cannot send invite' }, { status: 400 })
+      }
 
-        const { data: authUser, error: authErr } = await supabase.auth.admin.createUser({
-          email: existing.email,
-          email_confirm: true,
-          password: rawPw,
-          user_metadata: {
-            full_name: existing.full_name || existing.name || existing.company || '',
-          },
-        })
-
-        if (!authErr && authUser?.user) {
-          authUserId = authUser.user.id
-          updateData.auth_user_id = authUserId
-        } else if (authErr) {
-          console.error('Failed to create auth user on approval:', authErr.message)
+      // Only send invite if no auth_user_id already exists (avoid duplicate invites)
+      if (!existing.auth_user_id) {
+        const { error: inviteErr } = await supabase.auth.admin.inviteUserByEmail(existing.email)
+        if (inviteErr) {
+          console.error('Failed to send invite on approval:', inviteErr.message)
+          // Non-fatal: approval still succeeds; admin can manually resend invite
         }
       }
     }

@@ -1,5 +1,4 @@
 import { NextResponse } from 'next/server'
-import bcrypt from 'bcryptjs'
 import { getSupabaseAdminClient } from '@/lib/supabase/server-only'
 import type { SupabaseClient } from '@supabase/supabase-js'
 
@@ -56,13 +55,6 @@ export async function POST(request: Request) {
       body = await request.json()
     }
 
-    // ── Password handling: use provided password, or auto-generate for browser FormData ──
-    // When the apply form is submitted from the browser (FormData, no password field),
-    // we auto-generate a temp password so the Supabase Auth user is always created.
-    // Approved contractors can log in with this temp password after the admin reviews.
-    // In production this is sent via email; for now we use a fixed temp password.
-    const rawPassword = (body as Record<string, unknown>).password as string | undefined
-    const password = rawPassword || 'Welcome2025!'
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password: _removed, ...fields } = body
 
@@ -103,6 +95,11 @@ export async function POST(request: Request) {
     const gNum = (k1: string, k2: string) => (fields[k1] ?? fields[k2] ?? 0) as number
     const nameVal = g('fullName') || g('name') || g('full_name') || ''
 
+    // ── Insert application record only. NO auth account is created here. ─────────
+    // Auth account creation happens ONLY when a founder/admin explicitly approves
+    // the application via PUT /api/users/[id] with status: 'approved'.
+    // The contractor will receive a password-setup email via inviteUserByEmail.
+
     const contractorData: Record<string, unknown> = {
       name: nameVal,
       full_name: nameVal,
@@ -114,21 +111,13 @@ export async function POST(request: Request) {
       years_in_trade: gNum('yearsInTrade', 'years_in_trade'),
       trade_specialization: 'painting',
       external_link: g('external_link') || null,
-      // bio: not stored on contractor_applications
       w9_url,
       insurance_url,
     }
 
-    // Hash password for contractor_applications (admin-side credential store)
-    const password_hash = await bcrypt.hash(password, 12)
-    // Store raw password separately so the approval flow can send it to Supabase Auth
-    // (Supabase Auth requires the plaintext password — it hashes internally)
-    const raw_password = password !== 'Welcome2025!' ? password : null
-
-    // Insert into contractor_applications
     const { data: contractor, error: contractorError } = await supabaseAdmin
       .from('contractor_applications')
-      .insert([{ ...contractorData, password_hash, raw_password }])
+      .insert([contractorData])
       .select()
       .single()
 
@@ -141,37 +130,6 @@ export async function POST(request: Request) {
         },
         { status: 500 }
       )
-    }
-
-    // Also create a Supabase Auth user so they can sign in via supabase.auth.signInWithPassword()
-    if (contractor?.id) {
-      const { data: authData, error: signUpError } =
-        await supabaseAdmin.auth.admin.createUser({
-          email,
-          password,
-          email_confirm: true,
-          user_metadata: {
-            contractor_id: contractor.id,
-            name: contractorData.name,
-            company: contractorData.company,
-          },
-        })
-
-      // Bridge auth user ID to contractor row for RLS policy checks
-      const authUserId = (authData as { user?: { id: string } }).user?.id
-      if (authUserId) {
-        await supabaseAdmin
-          .from('contractor_applications')
-          .update({ auth_user_id: authUserId })
-          .eq('id', contractor.id)
-      }
-
-      if (signUpError) {
-        console.error(
-          'Supabase Auth user creation failed:',
-          signUpError.message
-        )
-      }
     }
 
     return NextResponse.json(contractor)
