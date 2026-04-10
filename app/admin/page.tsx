@@ -520,6 +520,15 @@ export default function AdminPage() {
                               <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--color-text)', wordBreak: 'break-all' }}>{value || '—'}</div>
                             </div>
                           ))}
+                          {/* External Review Link — special rendering as clickable link */}
+                          {u.external_link ? (
+                            <div style={{ gridColumn: '1 / -1' }}>
+                              <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--color-input-placeholder)', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 3 }}>External Review Link</div>
+                              <a href={u.external_link} target="_blank" rel="noopener noreferrer" style={{ fontSize: 13, fontWeight: 500, color: 'var(--color-blue)', textDecoration: 'underline' }}>
+                                {u.external_link}
+                              </a>
+                            </div>
+                          ) : null}
                         </div>
                       </div>
 

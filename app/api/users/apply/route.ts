@@ -114,6 +114,7 @@ export async function POST(request: Request) {
       years_in_trade: gNum('yearsInTrade', 'years_in_trade'),
       trade_specialization: 'painting',
       external_link: g('external_link') || null,
+      // bio: not stored on contractor_applications
       w9_url,
       insurance_url,
     }
