@@ -12,18 +12,26 @@ export default function FounderLoginPage() {
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
       if (!data.session?.user) return
-      const token = data.session.access_token
-      let isFounder = false
+      const userEmail = data.session.user.email || ''
+      // Check env var for founder email allowlist (matches middleware.ts isFounderEmail)
+      const founderEmails = (process.env.NEXT_PUBLIC_FOUNDER_EMAILS || '')
+        .split(',')
+        .map((e: string) => e.trim().toLowerCase())
+        .filter(Boolean)
+      const isFounderEmail = founderEmails.includes(userEmail.toLowerCase())
+      // Also accept JWT role=admin if it were set (future-proofing)
+      let isJwtAdmin = false
       try {
+        const token = data.session.access_token
         const payload = token.split('.')[1]
         if (payload) {
           const base64 = payload.replace(/-/g, '+').replace(/_/g, '/')
           const padded = base64 + '=='.slice(0, (4 - base64.length % 4) % 4)
           const decoded = JSON.parse(atob(padded))
-          isFounder = (decoded.app_metadata as Record<string, unknown>)?.role === 'admin'
+          isJwtAdmin = (decoded.app_metadata as Record<string, unknown>)?.role === 'admin'
         }
       } catch {}
-      window.location.href = isFounder ? '/admin' : '/dashboard'
+      window.location.href = isFounderEmail || isJwtAdmin ? '/admin' : '/dashboard'
     })
   }, [])
 
@@ -68,7 +76,14 @@ function FounderForm() {
         return
       }
 
-      window.location.href = '/dashboard'
+      // Check env var for founder allowlist after successful login.
+      // Matches middleware.ts isFounderEmail logic.
+      const founderEmails = (process.env.NEXT_PUBLIC_FOUNDER_EMAILS || '')
+        .split(',')
+        .map((e: string) => e.trim().toLowerCase())
+        .filter(Boolean)
+      const isFounderEmail = founderEmails.includes(email.trim().toLowerCase())
+      window.location.href = isFounderEmail ? '/admin' : '/dashboard'
     } catch (err: any) {
       setError(err.message || 'An unexpected error occurred.')
       setLoading(false)
@@ -118,7 +133,7 @@ function FounderForm() {
                 type="email"
                 value={email}
                 onChange={e => { setEmail(e.target.value); setError('') }}
-                placeholder="heritagehousepainting@gmail.com"
+                placeholder="info@tradesource.app"
                 required
                 autoComplete="email"
                 style={{

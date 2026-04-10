@@ -58,7 +58,7 @@ SET raw_app_meta_data = jsonb_set(
     '{role}',
     '"admin"'
   )
-WHERE email = 'heritagehousepainting@gmail.com'
+WHERE email = 'info@tradesource.app'
   AND (raw_app_meta_data->>'role') IS DISTINCT FROM 'admin';
 
 -- ─────────────────────────────────────────────────────────────────────────
