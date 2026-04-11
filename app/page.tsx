@@ -3,16 +3,6 @@
 import { useState, useEffect } from 'react'
 import { useNavContext } from '@/app/components/NavContext'
 
-type Job = {
-  id: string
-  title: string
-  area: string | null
-  budget_min: number | null
-  budget_max: number | null
-  status: string
-  created_at: string
-}
-
 // ─── Nav ───────────────────────────────────────────────────────────────────────
 
 function HomepageNav() {
@@ -27,137 +17,45 @@ function HomepageNav() {
 
   return (
     <header style={{
-      position: 'sticky',
-      top: 0,
-      zIndex: 50,
+      position: 'sticky', top: 0, zIndex: 100,
+      background: scrolled ? 'rgba(13,27,42,0.94)' : 'rgba(13,27,42,0.96)',
       backdropFilter: 'blur(16px)',
-      WebkitBackdropFilter: 'blur(16px)',
-      backgroundColor: scrolled ? 'rgba(13,27,42,0.85)' : 'rgba(13,27,42,0.95)',
-      borderBottom: `1px solid ${scrolled ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.05)'}`,
-      transition: 'background-color 0.2s, border-color 0.2s',
+      borderBottom: `1px solid ${scrolled ? 'rgba(255,255,255,0.07)' : 'rgba(255,255,255,0.05)'}`,
+      padding: '0 56px',
+      height: 64,
+      display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+      transition: 'background 0.2s, border-color 0.2s',
     }}>
-      <div style={{ maxWidth: 1160, margin: '0 auto', padding: '0 32px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 64 }}>
-        {/* Logo */}
-        <a href="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 10 }}>
-          <div style={{ width: 30, height: 30, borderRadius: 7, backgroundColor: 'var(--color-blue)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M13 10V3L4 14h7v7l9-11h-7z" />
-            </svg>
-          </div>
-          <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 17, fontWeight: 700, letterSpacing: '0.03em', color: 'var(--color-text)', lineHeight: 1 }}>
-            TradeSource
-          </span>
+      <a href="/" style={{ fontSize: 18, fontWeight: 800, color: 'var(--color-text)', textDecoration: 'none', letterSpacing: '-0.3px' }}>
+        Trade<span style={{ color: 'var(--color-blue)' }}>Source</span>
+      </a>
+      <div style={{ display: 'flex', gap: 28, alignItems: 'center' }}>
+        <a href="/jobs" style={{ color: 'var(--color-text-muted)', textDecoration: 'none', fontSize: 14, fontWeight: 500, transition: 'color 0.2s' }}
+          onMouseEnter={e => (e.currentTarget.style.color = 'var(--color-text)')}
+          onMouseLeave={e => (e.currentTarget.style.color = 'var(--color-text-muted)')}>
+          Browse Jobs
         </a>
-
-        {/* Nav links */}
-        <nav style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <a href="/jobs" style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-text-muted)', textDecoration: 'none', padding: '8px 12px', borderRadius: 8, transition: 'color 0.15s' }}
-            onMouseEnter={e => (e.currentTarget.style.color = 'var(--color-text)')}
-            onMouseLeave={e => (e.currentTarget.style.color = 'var(--color-text-muted)')}>
-            Browse Jobs
-          </a>
-          {access.isAuthenticated ? (
-            <a href="/dashboard" style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-text-muted)', textDecoration: 'none', padding: '8px 12px', borderRadius: 8 }}>
-              Dashboard
-            </a>
-          ) : (
-            <a href="/apply" style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-text-muted)', textDecoration: 'none', padding: '8px 12px', borderRadius: 8 }}>
-              Apply
-            </a>
-          )}
-          {!access.isAuthenticated && (
-            <a href="/founder-login" style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-text-muted)', textDecoration: 'none', padding: '8px 12px', borderRadius: 8 }}>
-              Sign In
-            </a>
-          )}
-          <a href="/apply" style={{ fontSize: 13, fontWeight: 700, padding: '8px 20px', borderRadius: 8, backgroundColor: 'var(--color-blue)', color: '#fff', textDecoration: 'none', letterSpacing: '0.01em' }}>
-            Apply to Join
-          </a>
-        </nav>
+        <a href="/apply" style={{ color: 'var(--color-text-muted)', textDecoration: 'none', fontSize: 14, fontWeight: 500, transition: 'color 0.2s' }}
+          onMouseEnter={e => (e.currentTarget.style.color = 'var(--color-text)')}
+          onMouseLeave={e => (e.currentTarget.style.color = 'var(--color-text-muted)')}>
+          Apply
+        </a>
+        <a href="/founder-login" style={{ color: 'var(--color-text-muted)', textDecoration: 'none', fontSize: 14, fontWeight: 500, transition: 'color 0.2s' }}
+          onMouseEnter={e => (e.currentTarget.style.color = 'var(--color-text)')}
+          onMouseLeave={e => (e.currentTarget.style.color = 'var(--color-text-muted)')}>
+          Sign In
+        </a>
+        <a href="/apply" style={{
+          background: 'var(--color-blue)', color: '#fff !important',
+          padding: '8px 20px', borderRadius: 8, fontWeight: 600, fontSize: 14,
+          textDecoration: 'none', transition: 'background 0.2s',
+        }}
+          onMouseEnter={e => (e.currentTarget.style.background = 'rgba(59,130,246,0.85)')}
+          onMouseLeave={e => (e.currentTarget.style.background = 'var(--color-blue)')}>
+          Request Access
+        </a>
       </div>
     </header>
-  )
-}
-
-// ─── Footer ───────────────────────────────────────────────────────────────────
-
-function Footer() {
-  const counties = ['Montgomery County', 'Bucks County', 'Delaware County', 'Philadelphia County']
-  return (
-    <footer style={{ backgroundColor: 'var(--color-bg-primary)', borderTop: '1px solid var(--color-border)' }}>
-      <div style={{ maxWidth: 1160, margin: '0 auto', padding: '56px 32px 32px' }}>
-        {/* Top row */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 48, marginBottom: 48 }}>
-          {/* Brand */}
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
-              <div style={{ width: 28, height: 28, borderRadius: 6, backgroundColor: 'var(--color-blue)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M13 10V3L4 14h7v7l9-11h-7z" />
-                </svg>
-              </div>
-              <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 16, fontWeight: 700, letterSpacing: '0.03em', color: 'var(--color-text)' }}>TradeSource</span>
-            </div>
-            <p style={{ fontSize: 13, color: 'var(--color-text-muted)', lineHeight: 1.65, maxWidth: 260 }}>
-              A private contractor network built for painters. Route overflow work to vetted contractors in your area.
-            </p>
-          </div>
-
-          {/* Product links */}
-          <div>
-            <p style={{ fontSize: 11, fontWeight: 700, color: 'var(--color-text-subtle)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 14 }}>Product</p>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-              {[
-                { href: '/jobs', label: 'Browse Jobs' },
-                { href: '/apply', label: 'Apply to Join' },
-                { href: '/post-job', label: 'Post Overflow Work' },
-                { href: '/founder-login', label: 'Sign In' },
-              ].map(l => (
-                <a key={l.href} href={l.href} style={{ fontSize: 13, color: 'var(--color-text-muted)', textDecoration: 'none', transition: 'color 0.15s' }}
-                  onMouseEnter={e => (e.currentTarget.style.color = 'var(--color-text)')}
-                  onMouseLeave={e => (e.currentTarget.style.color = 'var(--color-text-muted)')}>
-                  {l.label}
-                </a>
-              ))}
-            </div>
-          </div>
-
-          {/* Company links */}
-          <div>
-            <p style={{ fontSize: 11, fontWeight: 700, color: 'var(--color-text-subtle)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 14 }}>Company</p>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-              {[
-                { href: '/terms', label: 'Terms of Service' },
-                { href: '/privacy-policy', label: 'Privacy Policy' },
-              ].map(l => (
-                <a key={l.href} href={l.href} style={{ fontSize: 13, color: 'var(--color-text-muted)', textDecoration: 'none', transition: 'color 0.15s' }}
-                  onMouseEnter={e => (e.currentTarget.style.color = 'var(--color-text)')}
-                  onMouseLeave={e => (e.currentTarget.style.color = 'var(--color-text-muted)')}>
-                  {l.label}
-                </a>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Bottom row */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: 24, borderTop: '1px solid var(--color-border)', flexWrap: 'wrap', gap: 12 }}>
-          <p style={{ fontSize: 12, color: 'var(--color-text-subtle)' }}>
-            © {new Date().getFullYear()} TradeSource. All rights reserved.
-          </p>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-            {counties.map(c => (
-              <span key={c} style={{ fontSize: 11, fontWeight: 600, padding: '3px 10px', borderRadius: 20, backgroundColor: 'rgba(59,130,246,0.1)', border: '1px solid rgba(59,130,246,0.2)', color: '#93C5FD' }}>
-                {c}, PA
-              </span>
-            ))}
-            <span style={{ fontSize: 11, fontWeight: 600, padding: '3px 10px', borderRadius: 20, backgroundColor: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.2)', color: 'var(--color-green)' }}>
-              Painting only
-            </span>
-          </div>
-        </div>
-      </div>
-    </footer>
   )
 }
 
@@ -202,46 +100,106 @@ function EarlyAccessForm() {
             <path d="M5 13l4 4L19 7" />
           </svg>
         </div>
-        <p style={{ fontSize: 15, fontWeight: 700, color: 'var(--color-green)', marginBottom: 8 }}>You're on the list.</p>
-        <p style={{ fontSize: 13, color: 'var(--color-text-muted)', lineHeight: 1.65 }}>We'll be in touch when the network opens in your area.</p>
+        <p style={{ fontSize: 15, fontWeight: 700, color: 'var(--color-green)', marginBottom: 8 }}>You&apos;re on the list.</p>
+        <p style={{ fontSize: 13, color: 'var(--color-text-muted)', lineHeight: 1.65 }}>We&apos;ll be in touch when the network opens in your area.</p>
       </div>
     )
   }
 
-  const inputBase = {
-    width: '100%', padding: '12px 14px', borderRadius: 10, fontSize: 14,
-    border: '1.5px solid var(--color-border-md)', backgroundColor: 'var(--color-bg-primary)',
-    color: 'var(--color-text)', outline: 'none', transition: 'border-color 0.15s',
+  const fieldStyle = {
+    background: 'var(--color-bg-primary)',
+    border: '1px solid var(--color-border-md)',
+    borderRadius: 10,
+    padding: '12px 16px',
+    color: 'var(--color-text)',
+    fontFamily: 'Inter, sans-serif',
+    fontSize: 14,
+    outline: 'none',
+    transition: 'border-color 0.2s',
     boxSizing: 'border-box' as const,
+    width: '100%' as const,
   }
+
+  const labelStyle = { fontSize: 13, fontWeight: 600, color: 'var(--color-text-muted)', display: 'block' as const, marginBottom: 6 }
 
   return (
     <form onSubmit={handleSubmit} style={{ maxWidth: 560, margin: '0 auto' }}>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, marginBottom: 14 }}>
-        <input type="text" value={form.name} onChange={e => update('name', e.target.value)} placeholder="Full name" style={inputBase}
-          onFocus={e => e.target.style.borderColor = 'var(--color-blue)'}
-          onBlur={e => e.target.style.borderColor = 'var(--color-border-md)'} />
-        <input type="email" value={form.email} onChange={e => update('email', e.target.value)} placeholder="Email address" style={inputBase}
-          onFocus={e => e.target.style.borderColor = 'var(--color-blue)'}
-          onBlur={e => e.target.style.borderColor = 'var(--color-border-md)'} />
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+        <div>
+          <label style={labelStyle}>Full Name</label>
+          <input
+            type="text"
+            value={form.name}
+            onChange={e => update('name', e.target.value)}
+            placeholder="John Smith"
+            style={fieldStyle}
+            onFocus={e => e.target.style.borderColor = 'var(--color-blue)'}
+            onBlur={e => e.target.style.borderColor = 'var(--color-border-md)'}
+          />
+        </div>
+        <div>
+          <label style={labelStyle}>Email Address</label>
+          <input
+            type="email"
+            value={form.email}
+            onChange={e => update('email', e.target.value)}
+            placeholder="you@company.com"
+            style={fieldStyle}
+            onFocus={e => e.target.style.borderColor = 'var(--color-blue)'}
+            onBlur={e => e.target.style.borderColor = 'var(--color-border-md)'}
+          />
+        </div>
       </div>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, marginBottom: 14 }}>
-        <select value={form.county} onChange={e => update('county', e.target.value)} style={{ ...inputBase, cursor: 'pointer' }}
-          onFocus={e => e.target.style.borderColor = 'var(--color-blue)'}
-          onBlur={e => e.target.style.borderColor = 'var(--color-border-md)'}>
-          <option value="">Select county</option>
-          <option>Montgomery County, PA</option>
-          <option>Bucks County, PA</option>
-          <option>Delaware County, PA</option>
-          <option>Philadelphia County, PA</option>
-        </select>
-        <input type="text" value={form.work_type} onChange={e => update('work_type', e.target.value)} placeholder="Type of work" style={inputBase}
-          onFocus={e => e.target.style.borderColor = 'var(--color-blue)'}
-          onBlur={e => e.target.style.borderColor = 'var(--color-border-md)'} />
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginTop: 16 }}>
+        <div>
+          <label style={labelStyle}>County</label>
+          <select
+            value={form.county}
+            onChange={e => update('county', e.target.value)}
+            style={{ ...fieldStyle, cursor: 'pointer' }}
+            onFocus={e => e.target.style.borderColor = 'var(--color-blue)'}
+            onBlur={e => e.target.style.borderColor = 'var(--color-border-md)'}
+          >
+            <option value="">Select county</option>
+            <option value="Montgomery County, PA">Montgomery County, PA</option>
+            <option value="Bucks County, PA">Bucks County, PA</option>
+            <option value="Delaware County, PA">Delaware County, PA</option>
+            <option value="Philadelphia County, PA">Philadelphia County, PA</option>
+          </select>
+        </div>
+        <div>
+          <label style={labelStyle}>Type of Work</label>
+          <input
+            type="text"
+            value={form.work_type}
+            onChange={e => update('work_type', e.target.value)}
+            placeholder="e.g., Interior painting"
+            style={fieldStyle}
+            onFocus={e => e.target.style.borderColor = 'var(--color-blue)'}
+            onBlur={e => e.target.style.borderColor = 'var(--color-border-md)'}
+          />
+        </div>
       </div>
-      {error && <div style={{ marginBottom: 12, padding: '10px 14px', borderRadius: 8, fontSize: 13, backgroundColor: 'var(--color-red-soft)', border: '1px solid rgba(239,68,68,0.2)', color: 'var(--color-red)' }}>{error}</div>}
-      <button type="submit" disabled={submitting} style={{ width: '100%', padding: '15px', borderRadius: 10, fontSize: 15, fontWeight: 700, backgroundColor: 'var(--color-blue)', color: '#fff', border: 'none', cursor: submitting ? 'default' : 'pointer', boxShadow: submitting ? 'none' : '0 4px 14px rgba(37,99,235,0.3)', letterSpacing: '0.01em', opacity: submitting ? 0.7 : 1, transition: 'all 0.15s' }}>
-        {submitting ? 'Submitting…' : 'Request Early Access →'}
+      {error && (
+        <div style={{ marginTop: 12, padding: '10px 14px', borderRadius: 8, fontSize: 13, backgroundColor: 'var(--color-red-soft)', border: '1px solid rgba(239,68,68,0.2)', color: 'var(--color-red)' }}>
+          {error}
+        </div>
+      )}
+      <button
+        type="submit"
+        disabled={submitting}
+        style={{
+          width: '100%', marginTop: 8,
+          background: 'var(--color-blue)', color: '#fff',
+          border: 'none', padding: '15px', borderRadius: 10,
+          fontSize: 15, fontWeight: 700,
+          cursor: submitting ? 'default' : 'pointer',
+          fontFamily: 'Inter, sans-serif',
+          opacity: submitting ? 0.7 : 1,
+          transition: 'background 0.2s',
+        }}
+      >
+        {submitting ? 'Submitting\u2026' : 'Request Early Access \u2192'}
       </button>
     </form>
   )
@@ -250,311 +208,315 @@ function EarlyAccessForm() {
 // ─── Page ──────────────────────────────────────────────────────────────────────
 
 export default function Home() {
-  const [jobs, setJobs] = useState<Job[]>([])
-  const [jobsLoaded, setJobsLoaded] = useState(false)
-
-  useEffect(() => {
-    fetch('/api/jobs')
-      .then(r => r.json())
-      .then(data => {
-        const openJobs = (Array.isArray(data) ? data : [])
-          .filter((j: Job) => j.status === 'open')
-          .slice(0, 3)
-        setJobs(openJobs)
-        setJobsLoaded(true)
-      })
-      .catch(() => setJobsLoaded(true))
-  }, [])
-
-  const openJobCount = jobs.length
-
   return (
-    <div style={{ backgroundColor: 'var(--color-bg-primary)', minHeight: '100vh' }}>
+    <div style={{ backgroundColor: 'var(--color-bg-primary)', color: 'var(--color-text)', fontFamily: 'Inter, sans-serif', WebkitFontSmoothing: 'antialiased' }}>
 
-      {/* ─── NAV ─── */}
+      {/* NAV */}
       <HomepageNav />
 
-      {/* ─── 2. HERO — Split Panel ─── */}
-      <section style={{ background: 'linear-gradient(to bottom, var(--color-bg-secondary), var(--color-bg-primary))', borderBottom: '1px solid var(--color-border)' }}>
-        <div style={{ maxWidth: 1160, margin: '0 auto', padding: '72px 32px 64px', display: 'grid', gridTemplateColumns: '1fr auto', gap: 56, alignItems: 'center' }}>
+      {/* HERO */}
+      <section style={{ background: 'var(--color-bg-primary)', borderBottom: '1px solid var(--color-border)' }}>
+        <div style={{ maxWidth: 1160, margin: '0 auto', padding: '80px 56px 0' }}>
 
-          {/* Left */}
-          <div>
-            <div style={{ marginBottom: 20 }}>
-              <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--color-blue)', letterSpacing: '0.12em', textTransform: 'uppercase' }}>
-                Phase 1 — Philadelphia Area
-              </span>
+          {/* Top row */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', alignItems: 'start', gap: 56, paddingBottom: 64, borderBottom: '1px solid var(--color-border)' }}>
+
+            {/* Left */}
+            <div style={{ paddingTop: 16 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24 }}>
+                <div style={{ width: 32, height: 1, backgroundColor: 'var(--color-blue)' }} />
+                <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: 3, textTransform: 'uppercase', color: 'var(--color-blue)' }}>
+                  Phase 1 — Philadelphia Region
+                </span>
+              </div>
+
+              <h1 style={{ fontSize: 'clamp(44px, 6vw, 80px)', fontWeight: 900, lineHeight: 1.0, letterSpacing: '-2.5px', maxWidth: 760, marginBottom: 24 }}>
+                More work than<br />your crew can handle?
+              </h1>
+
+              <p style={{ fontSize: 17, color: 'var(--color-text-muted)', maxWidth: 480, lineHeight: 1.7, marginBottom: 36 }}>
+                A private network of vetted painting contractors in the four-county Philadelphia area. Post your work at your rate. Choose who you send it to.
+              </p>
+
+              <div style={{ display: 'flex', gap: 12 }}>
+                <a href="/apply"
+                  style={{ background: 'var(--color-blue)', color: '#fff', padding: '14px 28px', borderRadius: 10, fontWeight: 700, fontSize: 15, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 8, transition: 'background 0.2s, transform 0.15s' }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(59,130,246,0.85)'; (e.currentTarget as HTMLElement).style.transform = 'translateY(-1px)' }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'var(--color-blue)'; (e.currentTarget as HTMLElement).style.transform = 'none' }}>
+                  Apply to Join
+                </a>
+                <a href="/jobs"
+                  style={{ background: 'transparent', color: 'var(--color-text)', border: '1px solid var(--color-border-md)', padding: '14px 28px', borderRadius: 10, fontWeight: 600, fontSize: 15, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 8, transition: 'border-color 0.2s, background 0.2s' }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,255,255,0.25)'; (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.04)' }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--color-border-md)'; (e.currentTarget as HTMLElement).style.background = 'transparent' }}>
+                  See Open Jobs
+                </a>
+              </div>
             </div>
-            <h1 style={{ fontSize: 'clamp(36px, 5.5vw, 64px)', fontWeight: 800, color: 'var(--color-text)', letterSpacing: '-0.035em', lineHeight: 1.05, maxWidth: 580, marginBottom: 24 }}>
-              Finding reliable labor shouldn't require a miracle. Here's the network that changes it.
-            </h1>
-            <p style={{ fontSize: 17, color: 'var(--color-text-muted)', lineHeight: 1.7, maxWidth: 480, marginBottom: 36 }}>
-              A private network of vetted painting contractors in the four-county Philadelphia area. Post your work at your rate. Choose who you send it to.
-            </p>
-            <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'center' }}>
-              <a href="/apply" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, fontSize: 15, fontWeight: 600, padding: '14px 28px', borderRadius: 10, backgroundColor: 'var(--color-blue)', color: '#fff', textDecoration: 'none', boxShadow: '0 4px 20px rgba(37,99,235,0.4)', letterSpacing: '0.01em' }}>
-                Apply to Join
-              </a>
-              <a href="/jobs" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, fontSize: 15, fontWeight: 500, padding: '14px 28px', borderRadius: 10, backgroundColor: 'transparent', color: 'var(--color-text)', border: '1px solid var(--color-border-md)', textDecoration: 'none' }}>
-                See Open Jobs →
-              </a>
+
+            {/* Right — stats panel */}
+            <div style={{ backgroundColor: 'var(--color-bg-card)', border: '1px solid var(--color-border-md)', borderRadius: 16, padding: 32, minWidth: 240 }}>
+              <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, textTransform: 'uppercase', color: 'var(--color-text-subtle)', marginBottom: 24 }}>
+                Network at a glance
+              </div>
+              {[
+                { n: '4', label: 'Counties Covered' },
+                { n: '5', label: 'Vetting Checks' },
+                { n: '0', label: 'Lead Fees' },
+                { n: '100%', label: 'Vetted Contractors' },
+              ].map(stat => (
+                <div key={stat.label} style={{ padding: '14px 0', borderBottom: '1px solid var(--color-border)' }}>
+                  <div style={{ fontSize: 28, fontWeight: 800, letterSpacing: '-1px', color: 'var(--color-text)', lineHeight: 1 }}>{stat.n}</div>
+                  <div style={{ fontSize: 12, color: 'var(--color-text-muted)', marginTop: 4, fontWeight: 500 }}>{stat.label}</div>
+                </div>
+              ))}
             </div>
           </div>
 
-          {/* Right — Stats panel */}
-          <div style={{ backgroundColor: 'var(--color-bg-card)', border: '1px solid var(--color-border-md)', borderRadius: 16, padding: '32px 32px', minWidth: 240, boxShadow: '0 12px 60px var(--color-shadow-lg)' }}>
-            <p style={{ fontSize: 11, fontWeight: 600, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 20 }}>Network at a glance</p>
+          {/* Hero trust row */}
+          <div style={{ display: 'flex', padding: '28px 0', flexWrap: 'wrap' }}>
             {[
-              { n: '4', label: 'Counties' },
-              { n: '5', label: 'Vetting Checks' },
-              { n: '0', label: 'Lead Fees' },
-              { n: '100%', label: 'Vetted Network' },
-            ].map(stat => (
-              <div key={stat.label} style={{ padding: '14px 0', borderBottom: '1px solid var(--color-border)' }}>
-                <div style={{ fontSize: 28, fontWeight: 800, color: 'var(--color-text)', letterSpacing: '-0.04em', lineHeight: 1, marginBottom: 4 }}>{stat.n}</div>
-                <div style={{ fontSize: 12, color: 'var(--color-text-muted)' }}>{stat.label}</div>
+              'License',
+              'Insurance',
+              'W-9',
+              'External Review',
+            ].map((chip, i) => (
+              <div key={chip} style={{
+                display: 'flex', alignItems: 'center', gap: 8,
+                fontSize: 12, color: 'var(--color-text-muted)', fontWeight: 500,
+                padding: '0 20px',
+                borderRight: i < 3 ? '1px solid var(--color-border)' : 'none',
+              }}>
+                <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="var(--color-green)" strokeWidth={2}>
+                  <path d="M5 13l4 4L19 7" />
+                </svg>
+                {chip}
               </div>
             ))}
-            {openJobCount > 0 && (
-              <div style={{ paddingTop: 16 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
-                  <div style={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: 'var(--color-green)' }} />
-                  <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--color-green)' }}>{openJobCount} Open Job{openJobCount !== 1 ? 's' : ''}</span>
-                </div>
-                <a href="/jobs" style={{ fontSize: 12, color: 'var(--color-blue)', textDecoration: 'none', fontWeight: 600 }}>View all jobs →</a>
-              </div>
-            )}
           </div>
         </div>
       </section>
 
-      {/* ─── 3. CENTERED TICKER STRIP ─── */}
-      <div style={{ backgroundColor: 'var(--color-bg-secondary)', borderTop: '1px solid var(--color-border)', borderBottom: '1px solid var(--color-border)' }}>
-        <div style={{ maxWidth: 1160, margin: '0 auto', padding: '0 32px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexWrap: 'wrap', gap: 0 }}>
+      {/* TICKER */}
+      <div style={{ background: 'var(--color-bg-secondary)', borderTop: '1px solid var(--color-border)', borderBottom: '1px solid var(--color-border)', padding: '14px 56px' }}>
+        <div style={{ maxWidth: 1160, margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'center', flexWrap: 'wrap' }}>
+          <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, textTransform: 'uppercase', color: 'var(--color-blue)', whiteSpace: 'nowrap', marginRight: 32 }}>
+            Verified
+          </div>
+          <div style={{ display: 'flex', flexWrap: 'wrap' }}>
             {[
-              'Verified',
               'PA Contractor License',
               'Insurance on File',
               'W-9 Verified',
               'Experience Checked',
               'External Review Required',
+              'Phase 1 \u2014 Painting Only',
             ].map((item, i) => (
-              <div key={item} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '16px 20px', borderRight: i < 5 ? '1px solid var(--color-border)' : 'none' }}>
-                {i === 0 ? (
-                  <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--color-blue)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{item}</span>
-                ) : (
-                  <>
-                    <span style={{ fontSize: 12, color: 'var(--color-text-muted)' }}>{item}</span>
-                    <span style={{ fontSize: 8, color: 'var(--color-green)', lineHeight: 1 }}>●</span>
-                  </>
-                )}
+              <div key={item} style={{
+                display: 'flex', alignItems: 'center', gap: 8,
+                fontSize: 13, color: 'var(--color-text-muted)',
+                padding: '0 24px',
+                borderRight: i < 5 ? '1px solid var(--color-border)' : 'none',
+              }}>
+                <div style={{ width: 5, height: 5, borderRadius: '50%', backgroundColor: 'var(--color-green)', flexShrink: 0 }} />
+                {item}
               </div>
             ))}
           </div>
         </div>
       </div>
 
-      {/* ─── 4. PROBLEM / SOLUTION — Two-column split ─── */}
-      <section style={{ backgroundColor: 'var(--color-bg-secondary)', borderTop: '1px solid var(--color-border)' }}>
-        <div style={{ maxWidth: 1160, margin: '0 auto', padding: '80px 32px' }}>
-          <h2 style={{ fontSize: 22, fontWeight: 700, color: 'var(--color-text)', letterSpacing: '-0.02em', marginBottom: 48 }}>
-            The way contractors find subs right now is broken.
-          </h2>
+      {/* PROBLEM / SOLUTION */}
+      <section style={{ background: 'var(--color-bg-secondary)', borderTop: '1px solid var(--color-border)', borderBottom: '1px solid var(--color-border)' }}>
+        <div style={{ maxWidth: 1160, margin: '0 auto', padding: '104px 56px' }}>
+          <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 3, textTransform: 'uppercase', color: 'var(--color-blue)', marginBottom: 20 }}>
+            The Problem
+          </div>
+          <div style={{ fontSize: 'clamp(32px, 4vw, 52px)', fontWeight: 800, letterSpacing: '-1.5px', lineHeight: 1.1, marginBottom: 20 }}>
+            The way contractors find<br />subs right now is broken.
+          </div>
+          <p style={{ fontSize: 16, color: 'var(--color-text-muted)', maxWidth: 540, lineHeight: 1.7, marginBottom: 56 }}>
+            When your regular crew can&apos;t cover a job, the options haven&apos;t changed in decades. And every one of them is a gamble.
+          </p>
 
-          <div style={{
-            border: '1px solid var(--color-border)', borderRadius: 20, overflow: 'hidden',
-            display: 'grid', gridTemplateColumns: '1fr 1px 1fr',
-          }}>
-            {/* Left pane — How it works today */}
-            <div style={{ padding: '48px 48px', backgroundColor: 'var(--color-bg-card)' }}>
-              <p style={{ fontSize: 11, fontWeight: 700, color: '#f87171', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 24 }}>
+          {/* Split */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1, background: 'var(--color-border)', border: '1px solid var(--color-border)', borderRadius: 20, overflow: 'hidden' }}>
+            <div style={{ padding: '56px 48px', backgroundColor: 'var(--color-bg-card)' }}>
+              <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, textTransform: 'uppercase', color: '#f87171', marginBottom: 24 }}>
                 How it works today
-              </p>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              </div>
+              <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 18 }}>
                 {[
-                  'Facebook Marketplace',
-                  'Craigslist',
-                  'A Google search',
-                  'Business cards from the paint store',
-                  'A referral from someone who knows someone',
+                  'Facebook Marketplace \u2014 you don\u2019t know who you\u2019re calling',
+                  'Craigslist \u2014 no vetting, no accountability',
+                  'Google search \u2014 pure luck, no verification',
+                  'Paint store cards \u2014 someone who knows someone',
+                  'Word of mouth \u2014 limited reach, inconsistent quality',
                 ].map(item => (
-                  <div key={item} style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
-                    <span style={{ fontSize: 14, color: '#f87171', fontWeight: 700, flexShrink: 0, marginTop: 1 }}>—</span>
-                    <span style={{ fontSize: 14, color: 'var(--color-text-muted)', lineHeight: 1.5 }}>{item}</span>
-                  </div>
+                  <li key={item} style={{ display: 'flex', alignItems: 'flex-start', gap: 14, fontSize: 15, color: 'var(--color-text-muted)', lineHeight: 1.5 }}>
+                    <span style={{ fontWeight: 700, fontSize: 16, color: '#f87171', flexShrink: 0 }}>\u2014</span>
+                    {item}
+                  </li>
                 ))}
-              </div>
-              <div style={{ marginTop: 32, paddingTop: 24, borderTop: '1px solid var(--color-border)' }}>
-                <p style={{ fontSize: 14, color: 'var(--color-text-muted)', lineHeight: 1.7 }}>
-                  You don't know who you're calling. You don't know if they show up. You don't know if they do good work. And if you pick wrong, you lose the job, lose the customer, or both.
-                </p>
-              </div>
+              </ul>
             </div>
-
-            {/* Divider */}
-            <div style={{ backgroundColor: 'var(--color-border)' }} />
-
-            {/* Right pane — How TradeSource works */}
-            <div style={{ padding: '48px 48px', backgroundColor: 'var(--color-bg-card)' }}>
-              <p style={{ fontSize: 11, fontWeight: 700, color: 'var(--color-green)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 24 }}>
+            <div style={{ padding: '56px 48px', backgroundColor: 'var(--color-bg-card)' }}>
+              <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, textTransform: 'uppercase', color: 'var(--color-green)', marginBottom: 24 }}>
                 How it works on TradeSource
-              </p>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              </div>
+              <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 18 }}>
                 {[
-                  'Every contractor vetted before joining',
-                  'Fixed rate — no one undercuts your price',
-                  'You choose who gets the job',
-                  'Work stays private between contractors',
-                  'No lead fees, no ads, no chasing leads',
+                  'Every contractor vetted before access \u2014 license, insurance, W-9, experience, review',
+                  'Post your job at your fixed rate \u2014 no one bids below it',
+                  'You choose who accepts \u2014 based on their profile and history',
+                  'Work stays private between the two contractors',
+                  'No lead fees. No ads. No algorithm deciding who wins.',
                 ].map(item => (
-                  <div key={item} style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
+                  <li key={item} style={{ display: 'flex', alignItems: 'flex-start', gap: 14, fontSize: 15, color: 'var(--color-text-muted)', lineHeight: 1.5 }}>
                     <div style={{ width: 18, height: 18, borderRadius: '50%', backgroundColor: 'var(--color-green-dim)', border: '1px solid var(--color-green-border)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 2 }}>
-                      <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="var(--color-green)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                      <svg width={9} height={9} viewBox="0 0 24 24" fill="none" stroke="var(--color-green)" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round">
                         <path d="M5 13l4 4L19 7" />
                       </svg>
                     </div>
-                    <span style={{ fontSize: 14, color: 'var(--color-text-muted)', lineHeight: 1.5 }}>{item}</span>
-                  </div>
+                    {item}
+                  </li>
                 ))}
-              </div>
-              <div style={{ marginTop: 32, paddingTop: 24, borderTop: '1px solid var(--color-border)' }}>
-                <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--color-text)', lineHeight: 1.7 }}>
-                  No contractor should have to trust their business to a random Google search.
-                </p>
-              </div>
+              </ul>
             </div>
           </div>
         </div>
       </section>
 
-      {/* ─── 5. WHAT TRADESOURCE IS ─── */}
-      <section style={{ backgroundColor: 'var(--color-bg-primary)', borderTop: '1px solid var(--color-border)' }}>
-        <div style={{ maxWidth: 800, margin: '0 auto', padding: '80px 32px' }}>
-          <h2 style={{ fontSize: 22, fontWeight: 700, color: 'var(--color-text)', letterSpacing: '-0.02em', marginBottom: 20 }}>
-            A vetted network. Fixed rates. No guessing.
-          </h2>
-          <p style={{ fontSize: 16, color: 'var(--color-text-muted)', lineHeight: 1.75, marginBottom: 24 }}>
-            TradeSource is a private contractor network built around one mechanism: you post a job at your rate, vetted contractors in the network see it and respond, and you choose who you send it to.
-          </p>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 28 }}>
-            {[
-              { label: 'No bidding.', body: 'No one undercuts your price to get the job.' },
-              { label: 'No lead fees.', body: "You're not paying for a list of maybe-interested contractors." },
-              { label: 'No wondering.', body: 'The person who shows up actually does the work.' },
-            ].map(item => (
-              <div key={item.label} style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
-                <div style={{ width: 22, height: 22, borderRadius: 6, backgroundColor: 'var(--color-green-dim)', border: '1px solid var(--color-green-border)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 2 }}>
-                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="var(--color-green)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M5 13l4 4L19 7" />
-                  </svg>
-                </div>
-                <p style={{ fontSize: 15, color: 'var(--color-text-muted)', lineHeight: 1.6 }}>
-                  <strong style={{ color: 'var(--color-text)', fontWeight: 600 }}>{item.label}</strong> {item.body}
-                </p>
-              </div>
-            ))}
+      {/* PROCESS */}
+      <section style={{ padding: '104px 56px', background: 'var(--color-bg-primary)' }}>
+        <div style={{ maxWidth: 1160, margin: '0 auto' }}>
+          <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 3, textTransform: 'uppercase', color: 'var(--color-blue)', marginBottom: 20 }}>
+            Process
           </div>
-          <p style={{ fontSize: 15, color: 'var(--color-text-muted)', lineHeight: 1.7 }}>
-            Every contractor in the network is verified before they get access — license, insurance, W-9, experience, and at least one real customer review.
+          <div style={{ fontSize: 'clamp(32px, 4vw, 52px)', fontWeight: 800, letterSpacing: '-1.5px', lineHeight: 1.1, marginBottom: 20 }}>
+            How TradeSource works.
+          </div>
+          <p style={{ fontSize: 16, color: 'var(--color-text-muted)', maxWidth: 540, lineHeight: 1.7, marginBottom: 56 }}>
+            From application to first job in days. No black box, no long wait.
           </p>
+
+          {[
+            { n: '01', title: 'Apply', body: 'Submit your business information, contractor license, proof of insurance, W-9, trade experience, and at least one external review.' },
+            { n: '02', title: 'We Review Your Application', body: 'Every application is reviewed personally. We verify every document and check that everything is legitimate before you get access.' },
+            { n: '03', title: 'Get Approved and Access the Network', body: 'Once approved, you receive an email and create your password. Full access to the network of vetted painting contractors.' },
+            { n: '04', title: 'Post Overflow Work at Your Rate', body: 'When you have work that needs a sub, post it at a fixed price. Describe the scope, set the timeline, post. Contractors in the network see it and respond.' },
+            { n: '05', title: 'Choose Who You Want to Work With', body: 'Review profiles, see experience and past work. You decide who gets the job \u2014 no algorithm, no bidding, no surprises.' },
+          ].map((step, i) => (
+            <div key={step.n} style={{
+              display: 'grid', gridTemplateColumns: '72px 1fr', gap: 0,
+              borderBottom: i < 4 ? '1px solid var(--color-border)' : 'none',
+              padding: '40px 0',
+            }}>
+              <div style={{ fontSize: 56, fontWeight: 900, letterSpacing: '-3px', lineHeight: 1, color: 'var(--color-bg-elevated)', WebkitTextStroke: '1px rgba(59,130,246,0.2)', paddingTop: 4 }}>
+                {step.n}
+              </div>
+              <div style={{ paddingLeft: 16 }}>
+                <div style={{ fontSize: 18, fontWeight: 700, marginBottom: 8, letterSpacing: '-0.2px' }}>{step.title}</div>
+                <div style={{ fontSize: 14, color: 'var(--color-text-muted)', lineHeight: 1.7, maxWidth: 520 }}>{step.body}</div>
+              </div>
+            </div>
+          ))}
         </div>
       </section>
 
-      {/* ─── 6. WHO IT'S FOR — Three Cards with ghost numbers ─── */}
-      <section style={{ backgroundColor: 'var(--color-bg-secondary)', borderTop: '1px solid var(--color-border)', borderBottom: '1px solid var(--color-border)' }}>
-        <div style={{ maxWidth: 1160, margin: '0 auto', padding: '80px 32px' }}>
-          <div style={{ marginBottom: 10 }}>
-            <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--color-blue)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>Network</span>
+      {/* VALUE PROPS */}
+      <section style={{ background: 'var(--color-bg-secondary)', borderTop: '1px solid var(--color-border)', borderBottom: '1px solid var(--color-border)', padding: '104px 56px' }}>
+        <div style={{ maxWidth: 1160, margin: '0 auto' }}>
+          <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 3, textTransform: 'uppercase', color: 'var(--color-blue)', marginBottom: 20 }}>
+            Why TradeSource
           </div>
-          <h2 style={{ fontSize: 22, fontWeight: 700, color: 'var(--color-text)', letterSpacing: '-0.02em', marginBottom: 40 }}>
-            Built for three types of contractors.
-          </h2>
+          <div style={{ fontSize: 'clamp(32px, 4vw, 52px)', fontWeight: 800, letterSpacing: '-1.5px', lineHeight: 1.1, marginBottom: 20 }}>
+            Built around one idea.
+          </div>
+          <p style={{ fontSize: 16, color: 'var(--color-text-muted)', maxWidth: 540, lineHeight: 1.7, marginBottom: 48 }}>
+            Contractors should control their own work. Not another lead-gen directory. A private network.
+          </p>
+
+          {[
+            {
+              icon: <svg width={22} height={22} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5}><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>,
+              title: 'Fixed Price. No Bidding.',
+              body: 'You set the rate upfront. No one undercuts your price to get the job. The contractor who gets the work is the one you chose.',
+              tag: 'Core mechanic',
+            },
+            {
+              icon: <svg width={22} height={22} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5}><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>,
+              title: 'Work Stays in Network',
+              body: 'Every job is private between the contractor who posted and the contractor who accepts. Your clients, your reputation, your relationships.',
+              tag: 'Private',
+            },
+            {
+              icon: <svg width={22} height={22} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5}><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>,
+              title: 'No Lead Fees. No Ads.',
+              body: 'You are not buying a list. You are not paying per click. You are accessing a network of contractors who have all been verified before they got in.',
+              tag: 'No ads',
+            },
+          ].map(item => (
+            <div key={item.title} style={{
+              display: 'grid', gridTemplateColumns: '48px 1fr auto', gap: 24, alignItems: 'start',
+              background: 'var(--color-bg-card)', border: '1px solid var(--color-border)',
+              padding: '32px 36px', borderRadius: 12, marginBottom: 2,
+              transition: 'border-color 0.2s',
+            }}
+              onMouseEnter={e => (e.currentTarget.style.borderColor = 'var(--color-blue-border)')}
+              onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--color-border)')}>
+              <div style={{ width: 48, height: 48, background: 'var(--color-blue-dim)', border: '1px solid var(--color-blue-border)', borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-blue)' }}>
+                {item.icon}
+              </div>
+              <div>
+                <div style={{ fontSize: 16, fontWeight: 700, marginBottom: 6 }}>{item.title}</div>
+                <div style={{ fontSize: 14, color: 'var(--color-text-muted)', lineHeight: 1.65, maxWidth: 480 }}>{item.body}</div>
+              </div>
+              <div style={{ fontSize: 12, fontWeight: 600, background: 'rgba(59,130,246,0.1)', border: '1px solid rgba(59,130,246,0.2)', color: 'var(--color-blue)', padding: '6px 12px', borderRadius: 100, whiteSpace: 'nowrap', marginTop: 4 }}>
+                {item.tag}
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* WHO IT'S FOR */}
+      <section style={{ padding: '104px 56px', background: 'var(--color-bg-primary)', borderTop: '1px solid var(--color-border)' }}>
+        <div style={{ maxWidth: 1160, margin: '0 auto' }}>
+          <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 3, textTransform: 'uppercase', color: 'var(--color-blue)', marginBottom: 20 }}>
+            Who It&apos;s For
+          </div>
+          <div style={{ fontSize: 'clamp(32px, 4vw, 52px)', fontWeight: 800, letterSpacing: '-1.5px', lineHeight: 1.1, marginBottom: 20 }}>
+            Built for three types of contractors
+          </div>
+          <p style={{ fontSize: 16, color: 'var(--color-text-muted)', maxWidth: 540, lineHeight: 1.7, marginBottom: 48 }}>
+            The network works because everyone in it has something to offer and something they need.
+          </p>
+
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20 }}>
             {[
-              {
-                num: '01',
-                tag: 'Overflow Route',
-                title: 'Contractors with more work than their crew can handle.',
-                body: "You landed the job. You need reliable help to finish it without hiring someone full-time. Post the work at your rate, connect with a vetted sub in the network, keep the customer, move on to the next job.",
-              },
-              {
-                num: '02',
-                tag: 'Finding Work',
-                title: 'Subcontractors who do good work but can\'t find enough of it.',
-                body: "You're solid. You show up. You do the job right. But consistent work isn't guaranteed — you're always chasing the next gig. TradeSource puts you inside a network of contractors who need exactly what you offer.",
-              },
-              {
-                num: '03',
-                tag: 'Next-Gen',
-                title: 'Next-generation operators who sell without building a crew.',
-                body: "You can close a job. You don't want to manage a crew. TradeSource lets you post the work, find the right sub, and fulfill what you sold — without the overhead.",
-              },
-            ].map((card) => (
+              { num: '01', tag: 'Overflow', title: 'Contractors with more work than their crew can handle', body: 'You landed the job. You need reliable help to finish it. Post the work at your rate, connect with a vetted sub, keep the customer, move on.' },
+              { num: '02', tag: 'Subs', title: "Subcontractors who do good work but can't find enough of it", body: "You're solid. You show up. You do the job right. But consistent work isn't guaranteed. TradeSource puts you inside a network that needs exactly what you offer." },
+              { num: '03', tag: 'Next-Gen', title: 'Next-generation operators who sell without building a crew', body: "You can close a job. You don't want to manage a crew. Post the work, find the right sub, fulfill what you sold \u2014 without the overhead." },
+            ].map(card => (
               <div key={card.num} style={{
-                padding: '28px 28px 32px',
-                backgroundColor: 'var(--color-bg-card)',
-                border: '1px solid var(--color-border)',
-                borderRadius: 16,
-                boxShadow: '0 8px 32px var(--color-shadow)',
-                position: 'relative',
-                overflow: 'hidden',
+                background: 'var(--color-bg-card)', border: '1px solid var(--color-border)', borderRadius: 16,
+                padding: '40px 36px', position: 'relative', overflow: 'hidden',
                 transition: 'border-color 0.2s',
               }}
                 onMouseEnter={e => (e.currentTarget.style.borderColor = 'var(--color-blue-border)')}
                 onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--color-border)')}>
-                {/* Ghost number watermark */}
-                <div style={{
-                  position: 'absolute', top: -10, right: 16,
-                  fontSize: 120, fontWeight: 900, lineHeight: 1,
-                  color: 'var(--color-bg-elevated)',
-                  WebkitTextStroke: '1px rgba(59,130,246,0.12)',
-                  userSelect: 'none', pointerEvents: 'none',
-                }}>
+                <div style={{ position: 'absolute', top: -16, right: 20, fontSize: 120, fontWeight: 900, letterSpacing: '-5px', color: 'var(--color-bg-elevated)', WebkitTextStroke: '1px rgba(59,130,246,0.12)', lineHeight: 1, pointerEvents: 'none' }}>
                   {card.num}
                 </div>
-                {/* Tag */}
-                <span style={{ display: 'inline-block', fontSize: 10, fontWeight: 700, padding: '3px 10px', borderRadius: 20, backgroundColor: 'rgba(59,130,246,0.15)', border: '1px solid rgba(59,130,246,0.25)', color: '#93C5FD', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 16 }}>
+                <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.5, textTransform: 'uppercase', color: 'var(--color-blue)', marginBottom: 12, position: 'relative', zIndex: 1 }}>
                   {card.tag}
-                </span>
-                <h3 style={{ fontSize: 15, fontWeight: 600, color: 'var(--color-text)', marginBottom: 12, lineHeight: 1.4, position: 'relative' }}>{card.title}</h3>
-                <p style={{ fontSize: 13, color: 'var(--color-text-muted)', lineHeight: 1.7, position: 'relative' }}>{card.body}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ─── 7. HOW IT WORKS — Ghost number list ─── */}
-      <section style={{ backgroundColor: 'var(--color-bg-primary)', borderTop: '1px solid var(--color-border)' }}>
-        <div style={{ maxWidth: 800, margin: '0 auto', padding: '80px 32px' }}>
-          <h2 style={{ fontSize: 22, fontWeight: 700, color: 'var(--color-text)', letterSpacing: '-0.02em', marginBottom: 48 }}>
-            How TradeSource works.
-          </h2>
-          <div style={{ display: 'flex', flexDirection: 'column' }}>
-            {[
-              { n: '01', title: 'Apply', body: "Submit your basic business information, contractor license, proof of insurance, W-9, experience, and at least one link to your work." },
-              { n: '02', title: 'We review your application', body: "Every application is reviewed personally. We verify your documents and check that everything is legitimate before you get access." },
-              { n: '03', title: 'Get approved and access the network', body: "Once approved, you receive an email and create your password. You get full access to the network of vetted painting contractors." },
-              { n: '04', title: 'Post overflow work at your rate', body: "When you have work that needs a sub, post it at a fixed price. Describe the scope, set the timeline, and post. Contractors in the network see it and respond." },
-              { n: '05', title: 'Choose who you want to work with', body: "Review profiles, see experience and past work. You decide who gets the job — no algorithm, no bidding, no surprises." },
-            ].map((step, i) => (
-              <div key={step.n} style={{
-                display: 'grid', gridTemplateColumns: '80px 1fr', gap: 32, alignItems: 'start',
-                padding: '28px 0', borderBottom: i < 4 ? '1px solid var(--color-border)' : 'none',
-              }}>
-                {/* Ghost number */}
-                <div style={{
-                  fontSize: 56, fontWeight: 900, lineHeight: 1,
-                  color: 'var(--color-bg-elevated)',
-                  WebkitTextStroke: '1px rgba(59,130,246,0.2)',
-                  letterSpacing: '-0.04em', paddingTop: 4,
-                }}>
-                  {step.n}
                 </div>
-                <div>
-                  <h3 style={{ fontSize: 18, fontWeight: 700, color: 'var(--color-text)', marginBottom: 8 }}>{step.title}</h3>
-                  <p style={{ fontSize: 14, color: 'var(--color-text-muted)', lineHeight: 1.7 }}>{step.body}</p>
+                <div style={{ fontSize: 16, fontWeight: 700, marginBottom: 12, letterSpacing: '-0.2px', position: 'relative', zIndex: 1 }}>
+                  {card.title}
+                </div>
+                <div style={{ fontSize: 14, color: 'var(--color-text-muted)', lineHeight: 1.7, position: 'relative', zIndex: 1 }}>
+                  {card.body}
                 </div>
               </div>
             ))}
@@ -562,81 +524,139 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ─── 8. HOW WE VET — 2-column grid ─── */}
-      <section style={{ backgroundColor: 'var(--color-bg-secondary)', borderTop: '1px solid var(--color-border)', borderBottom: '1px solid var(--color-border)' }}>
-        <div style={{ maxWidth: 960, margin: '0 auto', padding: '72px 32px' }}>
-          <div style={{ marginBottom: 10 }}>
-            <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--color-blue)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>Vetting</span>
+      {/* VETTING */}
+      <section style={{ background: 'var(--color-bg-secondary)', borderTop: '1px solid var(--color-border)', borderBottom: '1px solid var(--color-border)', padding: '104px 56px' }}>
+        <div style={{ maxWidth: 1160, margin: '0 auto' }}>
+          <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 3, textTransform: 'uppercase', color: 'var(--color-blue)', marginBottom: 20 }}>
+            Trust
           </div>
-          <h2 style={{ fontSize: 22, fontWeight: 700, color: 'var(--color-text)', letterSpacing: '-0.02em', marginBottom: 12 }}>
-            How We Vet Every Contractor in the Network
-          </h2>
-          <p style={{ fontSize: 15, color: 'var(--color-text-muted)', lineHeight: 1.7, marginBottom: 40 }}>
-            Every contractor is verified before they get access. Here is exactly what we check:
+          <div style={{ fontSize: 'clamp(32px, 4vw, 52px)', fontWeight: 800, letterSpacing: '-1.5px', lineHeight: 1.1, marginBottom: 20 }}>
+            How we vet every contractor
+          </div>
+          <p style={{ fontSize: 16, color: 'var(--color-text-muted)', maxWidth: 540, lineHeight: 1.7, marginBottom: 48 }}>
+            Every contractor is verified before they get access. No exceptions, no shortcuts.
           </p>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
             {[
-              { label: 'Valid PA Contractor License', body: 'We verify your license number against Pennsylvania state records before you get access.' },
-              { label: 'Proof of Insurance', body: 'We require a current certificate of insurance. No insurance, no exceptions.' },
-              { label: 'W-9 Tax Documentation', body: 'We collect a W-9 to confirm your business identity and tax information.' },
-              { label: 'Trade Experience Verification', body: "We verify that you have documented experience in your trade — not just a license, but actual work history." },
+              { title: 'Valid PA Contractor License', body: 'We verify your license number against Pennsylvania state records before you get access.' },
+              { title: 'Proof of Insurance', body: 'We require a current certificate of insurance. No insurance, no exceptions.' },
+              { title: 'W-9 Tax Documentation', body: 'We collect a W-9 to confirm your business identity and tax information before access is granted.' },
+              { title: 'Trade Experience Verification', body: "We verify documented experience in your trade \u2014 not just a license, but actual work history." },
             ].map(item => (
-              <div key={item.label} style={{
-                display: 'flex', alignItems: 'flex-start', gap: 16, padding: '20px',
-                backgroundColor: 'var(--color-bg-card)', border: '1px solid var(--color-border)',
-                borderRadius: 12, transition: 'border-color 0.2s',
+              <div key={item.title} style={{
+                background: 'var(--color-bg-card)', border: '1px solid var(--color-border)', borderRadius: 14,
+                padding: '28px 32px', display: 'flex', gap: 20, alignItems: 'flex-start',
+                transition: 'border-color 0.2s',
               }}
                 onMouseEnter={e => (e.currentTarget.style.borderColor = 'var(--color-green-border)')}
                 onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--color-border)')}>
-                <div style={{ width: 36, height: 36, borderRadius: 10, backgroundColor: 'var(--color-green-dim)', border: '1px solid var(--color-green-border)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-green)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M5 13l4 4L19 7" />
+                <div style={{ width: 36, height: 36, minWidth: 36, background: 'var(--color-green-dim)', border: '1px solid var(--color-green-border)', borderRadius: 9, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="var(--color-green)" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="20 6 9 17 4 12" />
                   </svg>
                 </div>
                 <div>
-                  <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--color-text)', marginBottom: 4 }}>{item.label}</div>
-                  <div style={{ fontSize: 13, color: 'var(--color-text-muted)', lineHeight: 1.65 }}>{item.body}</div>
+                  <div style={{ fontSize: 15, fontWeight: 700, marginBottom: 4 }}>{item.title}</div>
+                  <div style={{ fontSize: 13, color: 'var(--color-text-muted)', lineHeight: 1.6 }}>{item.body}</div>
                 </div>
               </div>
             ))}
-          </div>
-          {/* Full-width item 5 */}
-          <div style={{
-            display: 'flex', alignItems: 'flex-start', gap: 16, padding: '20px',
-            backgroundColor: 'var(--color-bg-card)', border: '1px solid var(--color-border)',
-            borderRadius: 12, marginTop: 20, transition: 'border-color 0.2s',
-          }}
-            onMouseEnter={e => (e.currentTarget.style.borderColor = 'var(--color-green-border)')}
-            onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--color-border)')}>
-            <div style={{ width: 36, height: 36, borderRadius: 10, backgroundColor: 'var(--color-green-dim)', border: '1px solid var(--color-green-border)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-green)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M5 13l4 4L19 7" />
-              </svg>
-            </div>
-            <div>
-              <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--color-text)', marginBottom: 4 }}>At Least One External Review</div>
-              <div style={{ fontSize: 13, color: 'var(--color-text-muted)', lineHeight: 1.65 }}>We confirm at least one review from a real customer or trade reference — a Google Business Profile, Houzz, Angi, or equivalent.</div>
+            <div style={{
+              gridColumn: '1 / -1',
+              background: 'var(--color-bg-card)', border: '1px solid var(--color-border)', borderRadius: 14,
+              padding: '28px 32px', display: 'flex', gap: 20, alignItems: 'flex-start',
+              transition: 'border-color 0.2s',
+            }}
+              onMouseEnter={e => (e.currentTarget.style.borderColor = 'var(--color-green-border)')}
+              onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--color-border)')}>
+              <div style={{ width: 36, height: 36, minWidth: 36, background: 'var(--color-green-dim)', border: '1px solid var(--color-green-border)', borderRadius: 9, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="var(--color-green)" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+              </div>
+              <div>
+                <div style={{ fontSize: 15, fontWeight: 700, marginBottom: 4 }}>At Least One External Review</div>
+                <div style={{ fontSize: 13, color: 'var(--color-text-muted)', lineHeight: 1.6 }}>We confirm at least one review from a real customer or trade reference \u2014 Google Business Profile, Houzz, Angi, or equivalent. Not self-reported. Verified.</div>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* ─── 9. EARLY ACCESS CTA ─── */}
-      <section style={{ backgroundColor: 'var(--color-bg-primary)', borderTop: '1px solid var(--color-border)' }}>
-        <div style={{ maxWidth: 700, margin: '0 auto', padding: '80px 32px', textAlign: 'center' }}>
-          <h2 style={{ fontSize: 'clamp(28px, 4vw, 48px)', fontWeight: 800, color: 'var(--color-text)', letterSpacing: '-0.03em', lineHeight: 1.1, marginBottom: 16 }}>
-            Ready to stop trusting your business to{' '}
-            <em style={{ fontStyle: 'normal', color: 'var(--color-blue)' }}>random Google searches?</em>
-          </h2>
-          <p style={{ fontSize: 15, color: 'var(--color-text-muted)', lineHeight: 1.7, marginBottom: 40 }}>
-            TradeSource is opening to a limited number of contractors in Montgomery County, Bucks County, Delaware County, and Philadelphia, PA. Request access and we'll notify you when the network opens in your area.
+      {/* EARLY ACCESS */}
+      <section style={{ background: 'var(--color-bg-secondary)', borderTop: '1px solid var(--color-border)', borderBottom: '1px solid var(--color-border)', padding: '104px 56px' }}>
+        <div style={{ maxWidth: 700, margin: '0 auto', textAlign: 'center' }}>
+          <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 3, textTransform: 'uppercase', color: 'var(--color-blue)', marginBottom: 20 }}>
+            Early Access
+          </div>
+          <div style={{ fontSize: 'clamp(30px, 4vw, 48px)', fontWeight: 800, letterSpacing: '-1.5px', lineHeight: 1.1, marginBottom: 16 }}>
+            Ready to stop trusting your<br />business to <em style={{ fontStyle: 'normal', color: 'var(--color-blue)' }}>random Google searches?</em>
+          </div>
+          <p style={{ fontSize: 16, color: 'var(--color-text-muted)', marginBottom: 48, lineHeight: 1.7 }}>
+            TradeSource is opening to a limited number of contractors in Montgomery County, Bucks County, Delaware County, and Philadelphia, PA.
           </p>
           <EarlyAccessForm />
         </div>
       </section>
 
-      {/* ─── FOOTER ─── */}
-      <Footer />
+      {/* FOOTER */}
+      <footer style={{ background: 'var(--color-bg-primary)', borderTop: '1px solid var(--color-border)', padding: '56px' }}>
+        <div style={{ maxWidth: 1160, margin: '0 auto' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 40, gap: 40, flexWrap: 'wrap' }}>
+            <div>
+              <a href="/" style={{ fontSize: 18, fontWeight: 800, color: 'var(--color-text)', textDecoration: 'none', letterSpacing: '-0.3px' }}>
+                Trade<span style={{ color: 'var(--color-blue)' }}>Source</span>
+              </a>
+              <p style={{ fontSize: 13, color: 'var(--color-text-muted)', marginTop: 8, maxWidth: 240, lineHeight: 1.6 }}>
+                Private contractor-to-contractor overflow network. Fixed price, no bidding, no lead fees.
+              </p>
+            </div>
+            <div style={{ display: 'flex', gap: 64 }}>
+              <div>
+                <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.5, textTransform: 'uppercase', color: 'var(--color-text-subtle)', marginBottom: 14 }}>Product</div>
+                {[
+                  { href: '/jobs', label: 'Browse Jobs' },
+                  { href: '/apply', label: 'Apply' },
+                  { href: '/founder-login', label: 'Sign In' },
+                ].map(l => (
+                  <a key={l.href} href={l.href} style={{ display: 'block', color: 'var(--color-text-muted)', textDecoration: 'none', fontSize: 13, marginBottom: 10, transition: 'color 0.2s' }}
+                    onMouseEnter={e => (e.currentTarget.style.color = 'var(--color-text)')}
+                    onMouseLeave={e => (e.currentTarget.style.color = 'var(--color-text-muted)')}>
+                    {l.label}
+                  </a>
+                ))}
+              </div>
+              <div>
+                <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.5, textTransform: 'uppercase', color: 'var(--color-text-subtle)', marginBottom: 14 }}>Company</div>
+                {[
+                  { href: '/privacy-policy', label: 'Privacy Policy' },
+                  { href: '/terms', label: 'Terms of Service' },
+                ].map(l => (
+                  <a key={l.href} href={l.href} style={{ display: 'block', color: 'var(--color-text-muted)', textDecoration: 'none', fontSize: 13, marginBottom: 10, transition: 'color 0.2s' }}
+                    onMouseEnter={e => (e.currentTarget.style.color = 'var(--color-text)')}
+                    onMouseLeave={e => (e.currentTarget.style.color = 'var(--color-text-muted)')}>
+                    {l.label}
+                  </a>
+                ))}
+              </div>
+            </div>
+          </div>
+          <div style={{ paddingTop: 24, borderTop: '1px solid var(--color-border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
+            <p style={{ fontSize: 12, color: 'var(--color-text-subtle)' }}>
+              2026 TradeSource. All rights reserved. Phase 1 Early Access.
+            </p>
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+              {['Montgomery County', 'Bucks County', 'Delaware County', 'Philadelphia', 'Painting Only'].map(tag => (
+                <span key={tag} style={{ fontSize: 11, fontWeight: 600, background: 'rgba(59,130,246,0.1)', border: '1px solid rgba(59,130,246,0.2)', color: 'var(--color-blue)', padding: '4px 10px', borderRadius: 100 }}>
+                  {tag}
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
+      </footer>
+
     </div>
   )
 }
