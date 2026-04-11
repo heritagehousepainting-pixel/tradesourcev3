@@ -107,12 +107,11 @@ export function LayoutHeader() {
   const { access, handleSignOut } = useNavContext()
   const pathname = usePathname()
 
-  // Never render a site-wide header on the homepage — HomepageNav is self-contained
-  const isHomepage = pathname === '/'
-  if (isHomepage) return null
+  // Never render LayoutHeader on the homepage — HomepageNav in page.tsx handles it
+  if (pathname === '/') return null
 
   // Don't render anything until auth state is resolved.
-  // This prevents a flash of the public nav when the user is actually signed in.
+  // This prevents a flash of the wrong nav variant.
   if (!access.checked) {
     return (
       <header
