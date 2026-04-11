@@ -65,6 +65,14 @@ function HomepageNav() {
               onMouseLeave={e => (e.currentTarget.style.color = 'var(--color-text-muted)')}>
               Browse Jobs
             </a>
+            <a href="/apply" style={{
+              color: 'var(--color-text-muted)', textDecoration: 'none',
+              fontSize: 14, fontWeight: 500, transition: 'color 0.2s',
+            }}
+              onMouseEnter={e => (e.currentTarget.style.color = 'var(--color-text)')}
+              onMouseLeave={e => (e.currentTarget.style.color = 'var(--color-text-muted)')}>
+              Apply
+            </a>
             <a href="/founder-login" style={{
               color: 'var(--color-text-muted)', textDecoration: 'none',
               fontSize: 14, fontWeight: 500, transition: 'color 0.2s',
@@ -128,7 +136,6 @@ function HomepageNav() {
         }}>
           {[
             { href: '/jobs', label: 'Browse Jobs' },
-            { href: '/apply', label: 'Apply' },
             { href: '/founder-login', label: 'Sign In' },
           ].map(({ href, label }) => (
             <a key={href} href={href} style={{
