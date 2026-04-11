@@ -182,7 +182,12 @@ body {
     grid-template-columns: 1fr !important;
   }
 
-  /* Stats panel: full width */
+  /* Stats panel: full width — matches React minWidth:240 → min-width:240px */
+  [style*="min-width:240px"] {
+    min-width: unset !important;
+    width: 100% !important;
+    margin-top: 24px;
+  }
   [style*="min-width: 240px"] {
     min-width: unset !important;
     width: 100% !important;
@@ -370,8 +375,8 @@ body {
     grid-template-columns: repeat(2, 1fr) !important;
   }
 
-  /* Stats panel: adjust width */
-  [style*="min-width: 240px"] {
+  /* Stats panel: adjust width — matches min-width:240px (no space in React HTML) */
+  [style*="min-width:240px"] {
     min-width: unset !important;
     width: 220px !important;
   }
