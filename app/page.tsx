@@ -274,15 +274,6 @@ export default function Home() {
       {/* ─── NAV ─── */}
       <HomepageNav />
 
-      {/* ─── 1. PRE-HEADING STRIP ─── */}
-      <div style={{ backgroundColor: 'var(--color-bg-secondary)', borderBottom: '1px solid var(--color-border)' }}>
-        <div style={{ maxWidth: 1160, margin: '0 auto', padding: '10px 32px', textAlign: 'center' }}>
-          <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--color-blue)', letterSpacing: '0.12em', textTransform: 'uppercase' }}>
-            Phase 1 — Serving Montgomery County, Bucks County, Delaware County, and Philadelphia, PA · Painting services only
-          </span>
-        </div>
-      </div>
-
       {/* ─── 2. HERO — Split Panel ─── */}
       <section style={{ background: 'linear-gradient(to bottom, var(--color-bg-secondary), var(--color-bg-primary))', borderBottom: '1px solid var(--color-border)' }}>
         <div style={{ maxWidth: 1160, margin: '0 auto', padding: '72px 32px 64px', display: 'grid', gridTemplateColumns: '1fr auto', gap: 56, alignItems: 'center' }}>
@@ -348,9 +339,8 @@ export default function Home() {
               'W-9 Verified',
               'Experience Checked',
               'External Review Required',
-              'Phase 1 — Painting',
             ].map((item, i) => (
-              <div key={item} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '16px 20px', borderRight: i < 6 ? '1px solid var(--color-border)' : 'none' }}>
+              <div key={item} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '16px 20px', borderRight: i < 5 ? '1px solid var(--color-border)' : 'none' }}>
                 {i === 0 ? (
                   <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--color-blue)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{item}</span>
                 ) : (
