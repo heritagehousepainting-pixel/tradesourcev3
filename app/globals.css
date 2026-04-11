@@ -746,23 +746,25 @@ body.no-shell {
 
 
 /* ═══════════════════════════════════════════════════
+
+/* ═══════════════════════════════════════════════════
    TRADESOURCE — HOMEPAGE MOBILE POLISH
-   Injected before existing @media queries
-   All selectors use React-rendered style attribute values:
-   - No space after colon (React renders: padding:80px not padding: 80px)
-   - CSS property names in kebab-case (React converts camelCase)
-   - gap values without 'px' (gap:12 not gap:12px)
+   React renders inline styles WITHOUT space after colon
+   Selector guide:
+   - padding:104px 56px (no space) matches style="padding:104px 56px"
+   - gap:12 (no px) matches style="gap:12px"
+   - min-width:240px matches style="min-width:240px"
    Mobile: ≤640px | Tablet: 641–1024px | Desktop: 1025px+
 ═══════════════════════════════════════════════════ */
 
 @media (max-width: 640px) {
 
-  /* ── Hero: reduce top padding ── */
+  /* Hero: reduce top padding */
   [style*="padding:80px 56px 0"] {
     padding: 36px 20px 0 !important;
   }
 
-  /* ── Hero grid: stack on mobile ── */
+  /* Hero grid: stack on mobile */
   [style*="grid-template-columns:1fr auto"],
   [style*="gridTemplateColumns:1fr auto"] {
     grid-template-columns: 1fr !important;
@@ -771,7 +773,7 @@ body.no-shell {
     padding-bottom: 0 !important;
   }
 
-  /* ── Stats panel: full width card below hero text ── */
+  /* Stats panel: full width below hero text */
   [style*="min-width:240px"],
   [style*="minWidth:240"] {
     min-width: unset !important;
@@ -782,45 +784,54 @@ body.no-shell {
     flex-shrink: 0 !important;
   }
 
-  /* Stats panel: remove last stat border for clean look */
+  /* Stats panel: remove last stat border */
   [style*="min-width:240px"] > div:last-child,
   [style*="minWidth:240"] > div:last-child {
     border-bottom: none !important;
   }
 
-  /* ── Hero headline: tighter clamp ── */
+  /* Stats panel label: compact */
+  [style*="letter-spacing:2px"][style*="text-transform:uppercase"][style*="margin-bottom:24"],
+  [style*="letterSpacing:2px"][style*="textTransform:uppercase"][style*="marginBottom:24"] {
+    font-size: 9px !important;
+    letter-spacing: 2px !important;
+    margin-bottom: 14px !important;
+  }
+
+  /* Hero headline: tighter clamp */
   [style*="clamp(44px"] {
     font-size: clamp(32px, 9vw, 80px) !important;
     letter-spacing: -1.5px !important;
     margin-bottom: 14px !important;
   }
 
-  /* ── Hero sub-copy: smaller ── */
+  /* Hero sub-copy: smaller */
   [style*="font-size:17px"][style*="max-width:480"] {
     font-size: 14px !important;
     margin-bottom: 24px !important;
   }
 
-  /* ── Hero CTA row: stack buttons vertically ── */
+  /* Hero CTA row: stack buttons vertically */
   [style*="display:flex"][style*="gap:12"] {
     flex-direction: column !important;
     gap: 10px !important;
   }
 
-  /* ── Hero CTA buttons: full width, centered ── */
+  /* Hero CTA buttons: full width */
   [style*="padding:14px 28px"][style*="border-radius:10"] {
     width: 100% !important;
     justify-content: center !important;
     text-align: center !important;
   }
 
-  /* ── Trust strip: tighten ── */
+  /* Trust strip: tighten */
   [style*="padding:14px 56px"] {
     padding: 10px 16px !important;
   }
 
-  /* Verified label: compact, on own line */
-  [style*="white-space:nowrap"][style*="margin-right:32"] {
+  /* Verified label: compact, own line */
+  [style*="white-space:nowrap"][style*="margin-right:32"],
+  [style*="whiteSpace:nowrap"][style*="marginRight:32"] {
     display: block !important;
     margin-right: 0 !important;
     margin-bottom: 4px !important;
@@ -828,19 +839,19 @@ body.no-shell {
     letter-spacing: 2px !important;
   }
 
-  /* Trust strip items: compact, no side borders */
+  /* Trust strip items: compact */
   [style*="padding:0 24px"] {
     padding: 4px 10px !important;
     border-right: none !important;
     font-size: 11px !important;
   }
 
-  /* ── Problem/solution section padding ── */
+  /* Problem/solution section padding */
   [style*="padding:104px 56px"] {
     padding: 52px 20px !important;
   }
 
-  /* Problem/solution split panels: stack vertically */
+  /* Problem/solution split panels: stack */
   [style*="grid-template-columns:1fr 1fr"][style*="border-radius:20"] {
     grid-template-columns: 1fr !important;
   }
@@ -850,7 +861,7 @@ body.no-shell {
     padding: 32px 20px !important;
   }
 
-  /* ── Process ghost numbers: smaller ── */
+  /* Process ghost numbers: smaller */
   [style*="font-size:56px"] {
     font-size: 36px !important;
     letter-spacing: -2px !important;
@@ -861,7 +872,7 @@ body.no-shell {
     padding: 24px 0 !important;
   }
 
-  /* ── Who section: single column ── */
+  /* Who section: single column */
   [style*="grid-template-columns:repeat(3, 1fr)"] {
     grid-template-columns: 1fr !important;
     gap: 12px !important;
@@ -872,24 +883,24 @@ body.no-shell {
     padding: 20px !important;
   }
 
-  /* Who ghost numbers: hide on mobile */
+  /* Who ghost numbers: hide */
   [style*="font-size:120px"] {
     display: none !important;
   }
 
-  /* ── Value props: stack grid, hide tag badge ── */
+  /* Value props: stack grid, hide tag badge */
   [style*="grid-template-columns:48px 1fr auto"] {
     grid-template-columns: 40px 1fr !important;
     gap: 12px !important;
     padding: 20px !important;
   }
 
-  /* Value prop tag badge: hide on mobile (cramped) */
+  /* Value prop tag badge: hide */
   [style*="grid-template-columns:48px 1fr auto"] > div:last-child {
     display: none !important;
   }
 
-  /* ── Vetting grid: single column ── */
+  /* Vetting grid: single column */
   [style*="grid-template-columns:1fr 1fr"][style*="gap:16"] {
     grid-template-columns: 1fr !important;
     gap: 10px !important;
@@ -900,8 +911,8 @@ body.no-shell {
     padding: 16px !important;
   }
 
-  /* ── Early access form: single column fields ── */
-  [style*="grid-template-columns:1fr 1fr"][style*="gap:16"][style*="margin-top"] {
+  /* Early access form: single column fields */
+  [style*="grid-template-columns:1fr 1fr"][style*="gap:16"] {
     grid-template-columns: 1fr !important;
     gap: 10px !important;
     margin-top: 10px !important;
@@ -914,19 +925,19 @@ body.no-shell {
     margin-top: 10px !important;
   }
 
-  /* Submit button spacing */
+  /* Submit button */
   [style*="margin-top:8px"][style*="width:100%"][style*="padding:15px"] {
     margin-top: 10px !important;
   }
 
-  /* ── Section uppercase labels: compact ── */
+  /* Section uppercase labels: compact */
   [style*="text-transform:uppercase"][style*="letter-spacing:3"] {
     font-size: 9px !important;
     letter-spacing: 2px !important;
     margin-bottom: 10px !important;
   }
 
-  /* ── Section titles: tighter ── */
+  /* Section titles: tighter */
   [style*="clamp(32px"] {
     font-size: clamp(22px, 6vw, 52px) !important;
     margin-bottom: 10px !important;
@@ -938,7 +949,7 @@ body.no-shell {
     margin-bottom: 24px !important;
   }
 
-  /* ── Footer: tighten ── */
+  /* Footer: tighten */
   [style*="padding:56px"] {
     padding: 32px 20px !important;
   }
@@ -949,105 +960,90 @@ body.no-shell {
     flex-direction: column !important;
   }
 
-  /* ── Stat numbers: smaller on mobile ── */
+  /* Stat numbers: smaller */
   [style*="font-size:28px"][style*="font-weight:800"] {
     font-size: 22px !important;
   }
 
-  /* ── Process section title clamp ── */
-  [style*="clamp(32px"][style*="letter-spacing:-1.5px"] {
+  /* Process section clamp */
+  [style*="letter-spacing:-1.5px"] {
     font-size: clamp(22px, 6vw, 52px) !important;
   }
 
-  /* ── Early access title clamp ── */
+  /* Early access title clamp */
   [style*="clamp(30px"] {
     font-size: clamp(22px, 6.5vw, 48px) !important;
   }
 
-  /* ── Early access success state: compact ── */
-  [style*="padding:28px 32px"][style*="border-radius:14"] {
-    padding: 16px !important;
-  }
-
-  /* ── Who section subtitle ── */
-  [style*="font-size:16px"][style*="max-width:540"][style*="margin-bottom:48"] {
+  /* Section subtitles with margins */
+  [style*="max-width:540"][style*="margin-bottom:48"] {
     margin-bottom: 20px !important;
   }
 
-  /* ── Vetting section subtitle ── */
-  [style*="font-size:16px"][style*="max-width:540"][style*="margin-bottom:48"] {
-    margin-bottom: 20px !important;
-  }
-
-  /* ── Process section subtitle ── */
-  [style*="font-size:16px"][style*="max-width:540"][style*="margin-bottom:56"] {
+  [style*="max-width:540"][style*="margin-bottom:56"] {
     margin-bottom: 28px !important;
   }
 
-  /* ── Vetting item titles: smaller ── */
+  /* Vetting titles: smaller */
   [style*="font-size:15px"][style*="font-weight:700"][style*="margin-bottom:4"] {
     font-size: 13px !important;
   }
 
-  /* ── Who card titles: smaller ── */
+  /* Who card titles: smaller */
   [style*="font-size:16px"][style*="letter-spacing:-0.2px"] {
     font-size: 13px !important;
     letter-spacing: 0 !important;
   }
 
-  /* ── Who card body text: smaller ── */
+  /* Who card body: smaller */
   [style*="font-size:14px"][style*="line-height:1.7"] {
     font-size: 12px !important;
     line-height: 1.5 !important;
   }
 
-  /* ── Value prop body text: smaller ── */
+  /* Value prop body: smaller */
   [style*="font-size:14px"][style*="max-width:480"] {
     font-size: 12px !important;
     max-width: none !important;
   }
 
-  /* ── Value prop titles: smaller ── */
+  /* Value prop titles: smaller */
   [style*="font-size:16px"][style*="font-weight:700"][style*="margin-bottom:6"] {
     font-size: 13px !important;
     margin-bottom: 4px !important;
   }
 
-  /* ── Problem bullet list: tighter ── */
+  /* Problem bullets: tighter */
   ul[style*="flex-direction:column"] {
     gap: 10px !important;
   }
 
-  /* ── Hero divider line: smaller ── */
+  /* Hero divider: smaller */
   [style*="width:32px"][style*="height:1px"] {
     width: 20px !important;
   }
 
-  /* ── Phase 1 badge: compact on mobile ── */
+  /* Phase badge: compact */
   [style*="letter-spacing:3"][style*="text-transform:uppercase"][style*="color:var(--color-blue)"] {
     font-size: 9px !important;
     letter-spacing: 1.5px !important;
     margin-bottom: 12px !important;
   }
 
-  /* ── Nav: hamburger tap targets ── */
+  /* Nav button tap targets */
   button[aria-label] {
     min-height: 44px !important;
     min-width: 44px !important;
   }
 
-  /* ── Trust strip: Verified label on own line ── */
-  [style*="white-space:nowrap"][style*="margin-right:32"] {
-    width: 100% !important;
-    border-right: none !important;
+  /* Early access success state: compact */
+  [style*="padding:28px 32px"][style*="border-radius:14"] {
+    padding: 16px !important;
   }
-
 }
 
-/* ── Tablet polish ── */
+/* Tablet polish */
 @media (min-width: 641px) and (max-width: 1024px) {
-
-  /* Stats panel: visible but narrower */
   [style*="min-width:240px"],
   [style*="minWidth:240"] {
     width: 190px !important;
@@ -1055,28 +1051,25 @@ body.no-shell {
     padding: 20px !important;
   }
 
-  /* Hero padding */
   [style*="padding:80px 56px 0"] {
     padding: 52px 32px 0 !important;
   }
 
-  /* Section padding */
   [style*="padding:104px 56px"] {
     padding: 68px 32px !important;
   }
 
-  /* Who cards: 3-col → 2-col */
   [style*="grid-template-columns:repeat(3, 1fr)"] {
     grid-template-columns: repeat(2, 1fr) !important;
   }
 
-  /* Footer columns: 2-col */
   [style*="display:flex"][style*="gap:64"] {
     gap: 32px !important;
   }
 }
 
-/* ── Desktop: restore defaults (inline styles handle this) ── */
+/* Desktop: restore defaults */
 @media (min-width: 1025px) {
   /* No overrides needed */
 }
+
