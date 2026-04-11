@@ -1,34 +1,31 @@
 'use client'
 
-/**
- * NavContext — thin context wrapper around the canonical useUserAccess() hook.
- *
- * All nav and shell decisions flow through this context.
- * The actual auth logic lives in @/lib/auth/access.ts (useUserAccess).
- * NavContext exists so LayoutHeader can access state without prop-drilling.
- *
- * Usage:
- *   const { access, handleSignOut } = useNavContext()
- *   const access = useNavContext()  // read-only
- *
- * For pages/components that don't need the context, import useUserAccess directly:
- *   import { useUserAccess } from '@/lib/auth/access'
- */
-
-import { createContext, useContext } from 'react'
+import { createContext, useContext, useState, useEffect } from 'react'
 import { useUserAccess } from '@/lib/auth/access.client'
 import { signOut } from '@/lib/auth/client'
 import type { UserAccess } from '@/lib/auth/access.types'
 import { ThemeToggle } from '@/app/theme-toggle'
-import { usePathname, useRouter } from 'next/navigation'
+import { usePathname } from 'next/navigation'
 import Link from 'next/link'
+
+// ─── Responsive hook ─────────────────────────────────────────────────────────────
+
+function useWindowWidth() {
+  const [width, setWidth] = useState<number | undefined>(undefined)
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    const handle = () => setWidth(window.innerWidth)
+    handle()
+    window.addEventListener('resize', handle)
+    return () => window.removeEventListener('resize', handle)
+  }, [])
+  return width
+}
 
 // ─── Context value ───────────────────────────────────────────────────────────
 
 interface NavContextValue {
-  /** The canonical access object — use this for all nav/shell decisions */
   access: UserAccess
-  /** Sign out — clears the Supabase session from cookies */
   handleSignOut: () => Promise<void>
 }
 
@@ -40,32 +37,6 @@ export function useNavContext(): NavContextValue {
     throw new Error('useNavContext must be used within NavProvider')
   }
   return ctx
-}
-
-/**
- * @deprecated Use useNavContext() instead. This alias exists only to avoid
- * breaking existing imports during the nav refactor step.
- *
- * OLD shape: { isSignedIn, isVetted, user, handleSignOut }
- * NEW shape: { access: UserAccess, handleSignOut }
- *
- * Migrate usages in app/profile/page.tsx and components/ProfileSection.tsx
- * to use const { access, handleSignOut } = useNavContext()
- * then access.isAuthenticated, access.vettingStatus, access.profile.
- */
-export function useNavVariant(): {
-  isSignedIn: boolean
-  isVetted: boolean
-  user: any
-  handleSignOut: () => Promise<void>
-} {
-  const { access, handleSignOut } = useNavContext()
-  return {
-    isSignedIn: access.isAuthenticated,
-    isVetted: access.vettingStatus === 'approved',
-    user: access.profile ?? (access.email ? { email: access.email } : null),
-    handleSignOut,
-  }
 }
 
 // ─── Provider ────────────────────────────────────────────────────────────────
@@ -102,6 +73,9 @@ export function NavProvider({ children }: { children: React.ReactNode }) {
  *
  * Loading state: nothing renders until access.check completes, preventing
  * a flash of the wrong nav variant.
+ *
+ * Responsive: desktop shows full nav links; mobile (≤640px) shows hamburger
+ * menu with a slide-down drawer containing all links stacked vertically.
  */
 export function LayoutHeader() {
   const { access, handleSignOut } = useNavContext()
@@ -128,6 +102,13 @@ export function LayoutHeader() {
   }
 
   const showPublicNav = !access.isAuthenticated
+  const width = useWindowWidth()
+  const isMobile = (width ?? 1024) <= 640
+
+  const [mobileOpen, setMobileOpen] = useState(false)
+
+  // Close mobile menu on route change
+  useEffect(() => { setMobileOpen(false) }, [pathname])
 
   return (
     <header
@@ -139,7 +120,7 @@ export function LayoutHeader() {
         zIndex: 30,
       }}
     >
-      <div style={{ maxWidth: 1100, margin: '0 auto', padding: '0 32px' }}>
+      <div style={{ maxWidth: 1100, margin: '0 auto', padding: isMobile ? '0 16px' : '0 32px' }}>
         <div
           style={{
             display: 'flex',
@@ -161,103 +142,122 @@ export function LayoutHeader() {
                 justifyContent: 'center',
               }}
             >
-              <svg
-                width="14"
-                height="14"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="white"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M13 10V3L4 14h7v7l9-11h-7z" />
               </svg>
             </div>
-            <Link
-              href="/"
-              style={{
-                fontSize: 14,
-                fontWeight: 700,
-                color: 'var(--color-text)',
-                textDecoration: 'none',
-                letterSpacing: '-0.01em',
-              }}
-            >
+            <Link href="/" style={{ fontSize: 14, fontWeight: 700, color: 'var(--color-text)', textDecoration: 'none', letterSpacing: '-0.01em' }}>
               TradeSource
             </Link>
           </div>
 
-          {/* ─ PUBLIC NAV — homepage OR signed-out visitors ─ */}
-          {showPublicNav && (
-            <nav style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
-              <NavLink href="/jobs">Browse Jobs</NavLink>
-              <NavLink href="/apply">Apply</NavLink>
-              <NavLink
-                href="/founder-login"
-                button
-              >
-                Sign In
-              </NavLink>
-              <ThemeToggle />
-            </nav>
+          {/* ─ Desktop nav ─ */}
+          {!isMobile && (
+            <>
+              {showPublicNav && (
+                <nav style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
+                  <NavLink href="/jobs">Browse Jobs</NavLink>
+                  <NavLink href="/apply">Apply</NavLink>
+                  <NavLink href="/founder-login" button>Sign In</NavLink>
+                  <ThemeToggle />
+                </nav>
+              )}
+              {!showPublicNav && (
+                <nav style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
+                  <NavLink href={access.vettingStatus === 'approved' ? '/dashboard?view=browse' : '/jobs'}>Browse Jobs</NavLink>
+                  {access.canPostJobs && <NavLink href="/post-job">Post a Job</NavLink>}
+                  <NavLink href="/dashboard">Dashboard</NavLink>
+                  {access.canViewApplicationPortal && <NavLink href="/admin" muted>Application Portal</NavLink>}
+                  <button onClick={handleSignOut} style={{ fontSize: 13, fontWeight: 500, color: 'var(--color-text-muted)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>Sign Out</button>
+                  <ThemeToggle />
+                </nav>
+              )}
+            </>
           )}
 
-          {/* ─ APP NAV — authenticated users (non-homepage) ─ */}
-          {!showPublicNav && (
-            <nav style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
-              {/* Browse Jobs — vetted contractors use the dashboard browse view */}
-              <NavLink
-                href={access.vettingStatus === 'approved' ? '/dashboard?view=browse' : '/jobs'}
-              >
-                Browse Jobs
-              </NavLink>
-
-              {/* Post a Job — vetted only */}
-              {access.canPostJobs && (
-                <NavLink href="/post-job">Post a Job</NavLink>
-              )}
-
-              {/* Dashboard — all authenticated users */}
-              <NavLink href="/dashboard">Dashboard</NavLink>
-
-              {/* Application Portal — founder only */}
-              {access.canViewApplicationPortal && (
-                <NavLink href="/admin" muted>
-                  Application Portal
-                </NavLink>
-              )}
-
-              {/* Sign out */}
-              <button
-                onClick={handleSignOut}
-                style={{
-                  fontSize: 13,
-                  fontWeight: 500,
-                  color: 'var(--color-text-muted)',
-                  background: 'none',
-                  border: 'none',
-                  cursor: 'pointer',
-                  padding: 0,
-                  textDecoration: 'none',
-                  transition: 'color 0.15s',
-                }}
-                onMouseEnter={e =>
-                  (e.currentTarget.style.color = 'var(--color-text)')
-                }
-                onMouseLeave={e =>
-                  (e.currentTarget.style.color = 'var(--color-text-muted)')
-                }
-              >
-                Sign Out
-              </button>
-
+          {/* ─ Mobile: theme toggle + hamburger ─ */}
+          {isMobile && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <ThemeToggle />
-            </nav>
+              <button
+                onClick={() => setMobileOpen(o => !o)}
+                aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
+                aria-expanded={mobileOpen}
+                style={{
+                  background: 'none', border: 'none', cursor: 'pointer',
+                  padding: 8, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  color: 'var(--color-text)', borderRadius: 6,
+                  minWidth: 44, minHeight: 44,
+                }}
+              >
+                {mobileOpen ? (
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                  </svg>
+                ) : (
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+                  </svg>
+                )}
+              </button>
+            </div>
           )}
         </div>
       </div>
+
+      {/* ─ Mobile dropdown drawer ─ */}
+      {isMobile && mobileOpen && (
+        <div style={{
+          borderTop: '1px solid var(--color-nav-border)',
+          backgroundColor: 'var(--color-nav)',
+          padding: '8px 16px 16px',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 2,
+        }}>
+          {showPublicNav ? (
+            <>
+              <MobileLink href="/jobs" onClick={() => setMobileOpen(false)}>Browse Jobs</MobileLink>
+              <MobileLink href="/apply" onClick={() => setMobileOpen(false)}>Apply</MobileLink>
+              <MobileLink href="/founder-login" onClick={() => setMobileOpen(false)}>Sign In</MobileLink>
+            </>
+          ) : (
+            <>
+              <MobileLink href={access.vettingStatus === 'approved' ? '/dashboard?view=browse' : '/jobs'} onClick={() => setMobileOpen(false)}>Browse Jobs</MobileLink>
+              {access.canPostJobs && <MobileLink href="/post-job" onClick={() => setMobileOpen(false)}>Post a Job</MobileLink>}
+              <MobileLink href="/dashboard" onClick={() => setMobileOpen(false)}>Dashboard</MobileLink>
+              {access.canViewApplicationPortal && <MobileLink href="/admin" onClick={() => setMobileOpen(false)}>Application Portal</MobileLink>}
+              <button
+                onClick={() => { handleSignOut(); setMobileOpen(false) }}
+                style={{
+                  fontSize: 14, fontWeight: 500,
+                  color: 'var(--color-text-muted)',
+                  background: 'none', border: 'none', cursor: 'pointer',
+                  textAlign: 'left', padding: '12px 0',
+                  minHeight: 44,
+                  borderBottom: '1px solid var(--color-nav-border)',
+                  display: 'block', width: '100%',
+                }}
+              >
+                Sign Out
+              </button>
+            </>
+          )}
+        </div>
+      )}
     </header>
+  )
+}
+
+function MobileLink({ href, onClick, children }: { href: string; onClick: () => void; children: React.ReactNode }) {
+  return (
+    <Link href={href} onClick={onClick} style={{
+      display: 'block', padding: '12px 0', fontSize: 14, fontWeight: 500,
+      color: 'var(--color-text)', textDecoration: 'none', minHeight: 44,
+      borderBottom: '1px solid var(--color-nav-border)',
+    }}>
+      {children}
+    </Link>
   )
 }
 
@@ -284,9 +284,7 @@ function NavLink({ href, button, muted, children }: NavLinkProps) {
     : {
         fontSize: 13,
         fontWeight: 500,
-        color: muted
-          ? 'var(--color-text)'
-          : 'var(--color-text)',
+        color: muted ? 'var(--color-text)' : 'var(--color-text)',
         textDecoration: 'none',
         opacity: muted ? 0.65 : 0.85,
         transition: 'opacity 0.15s',

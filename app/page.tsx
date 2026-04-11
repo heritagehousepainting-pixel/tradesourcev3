@@ -3,10 +3,27 @@
 import { useState, useEffect } from 'react'
 import { ThemeToggle } from '@/app/theme-toggle'
 
+// ─── Shared responsive hook ────────────────────────────────────────────────────────────────
+
+function useWindowWidth() {
+  const [width, setWidth] = useState<number | undefined>(undefined)
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    const handle = () => setWidth(window.innerWidth)
+    handle()
+    window.addEventListener('resize', handle)
+    return () => window.removeEventListener('resize', handle)
+  }, [])
+  return width
+}
+
 // ─── Nav ───────────────────────────────────────────────────────────────────────
 
 function HomepageNav() {
   const [scrolled, setScrolled] = useState(false)
+  const [mobileOpen, setMobileOpen] = useState(false)
+  const width = useWindowWidth()
+  const isMobile = (width ?? 1024) <= 640
 
   useEffect(() => {
     const handler = () => setScrolled(window.scrollY > 10)
@@ -14,59 +31,135 @@ function HomepageNav() {
     return () => window.removeEventListener('scroll', handler)
   }, [])
 
+  // Close mobile menu on resize to desktop
+  useEffect(() => {
+    if (!isMobile) setMobileOpen(false)
+  }, [isMobile])
+
   return (
-    <header style={{
-      position: 'sticky', top: 0, zIndex: 100,
-      background: scrolled ? 'var(--color-bg-primary)' : 'var(--color-bg-primary)',
-      backdropFilter: scrolled ? 'blur(16px)' : 'none',
-      borderBottom: '1px solid var(--color-border)',
-      padding: '0 56px',
-      height: 64,
-      display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-    }}>
-      <a href="/" style={{
-        fontSize: 18, fontWeight: 800, color: 'var(--color-text)',
-        textDecoration: 'none', letterSpacing: '-0.3px',
+    <>
+      <header style={{
+        position: 'sticky', top: 0, zIndex: 100,
+        background: scrolled ? 'var(--color-bg-primary)' : 'var(--color-bg-primary)',
+        backdropFilter: scrolled ? 'blur(16px)' : 'none',
+        borderBottom: '1px solid var(--color-border)',
+        padding: isMobile ? '0 16px' : '0 56px',
+        height: 64,
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
       }}>
-        Trade<span style={{ color: 'var(--color-blue)' }}>Source</span>
-      </a>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 28 }}>
-        <a href="/jobs" style={{
-          color: 'var(--color-text-muted)', textDecoration: 'none',
-          fontSize: 14, fontWeight: 500, transition: 'color 0.2s',
-        }}
-          onMouseEnter={e => (e.currentTarget.style.color = 'var(--color-text)')}
-          onMouseLeave={e => (e.currentTarget.style.color = 'var(--color-text-muted)')}>
-          Browse Jobs
+        <a href="/" style={{
+          fontSize: 18, fontWeight: 800, color: 'var(--color-text)',
+          textDecoration: 'none', letterSpacing: '-0.3px',
+        }}>
+          Trade<span style={{ color: 'var(--color-blue)' }}>Source</span>
         </a>
-        <a href="/apply" style={{
-          color: 'var(--color-text-muted)', textDecoration: 'none',
-          fontSize: 14, fontWeight: 500, transition: 'color 0.2s',
-        }}
-          onMouseEnter={e => (e.currentTarget.style.color = 'var(--color-text)')}
-          onMouseLeave={e => (e.currentTarget.style.color = 'var(--color-text-muted)')}>
-          Apply
-        </a>
-        <a href="/founder-login" style={{
-          color: 'var(--color-text-muted)', textDecoration: 'none',
-          fontSize: 14, fontWeight: 500, transition: 'color 0.2s',
-        }}
-          onMouseEnter={e => (e.currentTarget.style.color = 'var(--color-text)')}
-          onMouseLeave={e => (e.currentTarget.style.color = 'var(--color-text-muted)')}>
-          Sign In
-        </a>
-        <a href="/apply" style={{
-          background: 'var(--color-blue)', color: '#fff',
-          padding: '8px 20px', borderRadius: 8, fontWeight: 600, fontSize: 14,
-          textDecoration: 'none', transition: 'background 0.2s',
-        }}
-          onMouseEnter={e => (e.currentTarget.style.background = 'var(--color-blue-hover)')}
-          onMouseLeave={e => (e.currentTarget.style.background = 'var(--color-blue)')}>
-          Request Access
-        </a>
-        <ThemeToggle />
-      </div>
-    </header>
+
+        {/* Desktop nav links */}
+        {!isMobile && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 28 }}>
+            <a href="/jobs" style={{
+              color: 'var(--color-text-muted)', textDecoration: 'none',
+              fontSize: 14, fontWeight: 500, transition: 'color 0.2s',
+            }}
+              onMouseEnter={e => (e.currentTarget.style.color = 'var(--color-text)')}
+              onMouseLeave={e => (e.currentTarget.style.color = 'var(--color-text-muted)')}>
+              Browse Jobs
+            </a>
+            <a href="/apply" style={{
+              color: 'var(--color-text-muted)', textDecoration: 'none',
+              fontSize: 14, fontWeight: 500, transition: 'color 0.2s',
+            }}
+              onMouseEnter={e => (e.currentTarget.style.color = 'var(--color-text)')}
+              onMouseLeave={e => (e.currentTarget.style.color = 'var(--color-text-muted)')}>
+              Apply
+            </a>
+            <a href="/founder-login" style={{
+              color: 'var(--color-text-muted)', textDecoration: 'none',
+              fontSize: 14, fontWeight: 500, transition: 'color 0.2s',
+            }}
+              onMouseEnter={e => (e.currentTarget.style.color = 'var(--color-text)')}
+              onMouseLeave={e => (e.currentTarget.style.color = 'var(--color-text-muted)')}>
+              Sign In
+            </a>
+            <a href="/apply" style={{
+              background: 'var(--color-blue)', color: '#fff',
+              padding: '8px 20px', borderRadius: 8, fontWeight: 600, fontSize: 14,
+              textDecoration: 'none', transition: 'background 0.2s',
+            }}
+              onMouseEnter={e => (e.currentTarget.style.background = 'var(--color-blue-hover)')}
+              onMouseLeave={e => (e.currentTarget.style.background = 'var(--color-blue)')}>
+              Request Access
+            </a>
+            <ThemeToggle />
+          </div>
+        )}
+
+        {/* Mobile: theme toggle + hamburger */}
+        {isMobile && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <ThemeToggle />
+            <button
+              onClick={() => setMobileOpen(o => !o)}
+              aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
+              aria-expanded={mobileOpen}
+              style={{
+                background: 'none', border: 'none', cursor: 'pointer',
+                padding: 8, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                color: 'var(--color-text)', borderRadius: 6,
+                minWidth: 44, minHeight: 44,
+              }}
+            >
+              {mobileOpen ? (
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+              ) : (
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+                </svg>
+              )}
+            </button>
+          </div>
+        )}
+      </header>
+
+      {/* Mobile dropdown drawer */}
+      {isMobile && mobileOpen && (
+        <div style={{
+          borderTop: '1px solid var(--color-border)',
+          backgroundColor: 'var(--color-bg-primary)',
+          padding: '8px 16px 16px',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 2,
+          position: 'sticky', top: 64, zIndex: 99,
+        }}>
+          {[
+            { href: '/jobs', label: 'Browse Jobs' },
+            { href: '/apply', label: 'Apply' },
+            { href: '/founder-login', label: 'Sign In' },
+          ].map(({ href, label }) => (
+            <a key={href} href={href} style={{
+              display: 'block', padding: '12px 0',
+              fontSize: 14, fontWeight: 500,
+              color: 'var(--color-text-muted)', textDecoration: 'none',
+              minHeight: 44,
+              borderBottom: '1px solid var(--color-border)',
+            }}>
+              {label}
+            </a>
+          ))}
+          <a href="/apply" style={{
+            display: 'block', marginTop: 12, padding: '10px 16px',
+            background: 'var(--color-blue)', color: '#fff',
+            borderRadius: 8, fontWeight: 600, fontSize: 14,
+            textDecoration: 'none', textAlign: 'center',
+          }}>
+            Request Access
+          </a>
+        </div>
+      )}
+    </>
   )
 }
 
