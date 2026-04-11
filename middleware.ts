@@ -163,12 +163,15 @@ export async function middleware(request: NextRequest) {
   // ── /admin guard ──────────────────────────────────────────────────────────
   //
   // Requires founder/admin status (email in NEXT_PUBLIC_FOUNDER_EMAILS).
-  // Redirect to / if signed-out (safe fallback page); redirect to /founder-login
-  // with a message if signed-in but not a founder.
+  // Redirect to /founder-login (the sign-in entry point) with a message,
+  // regardless of whether the user is signed out or signed in without founder access.
+  // Never redirect to / (homepage) — that would show wrong content at the /admin URL.
 
   if (ADMIN_ROUTES.some((r) => pathname === r || pathname.startsWith(r + '/'))) {
     if (!isAuthed) {
-      return NextResponse.redirect(new URL('/', request.url))
+      const url = new URL('/founder-login', request.url)
+      url.searchParams.set('reason', 'admin_required')
+      return NextResponse.redirect(url)
     }
     if (!isFounder) {
       const url = new URL('/founder-login', request.url)

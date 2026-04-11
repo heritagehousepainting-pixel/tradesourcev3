@@ -17,7 +17,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" data-theme="light">
+    <html lang="en" data-theme="dark">
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
@@ -32,7 +32,7 @@ export default function RootLayout({
           </NavProvider>
         </ThemeProvider>
 
-        <footer style={{ backgroundColor: '#0F172A', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
+        <footer style={{ backgroundColor: 'var(--color-footer-bg)', borderTop: '1px solid var(--color-footer-border)' }}>
           <div style={{ maxWidth: 960, margin: '0 auto', padding: '48px 24px 40px' }}>
 
             <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1.5fr', gap: 32, marginBottom: 36 }}>
@@ -62,6 +62,7 @@ export default function RootLayout({
                 <nav style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                   <a href="/privacy-policy" style={{ fontSize: 13, color: 'rgba(248,250,252,0.85)', textDecoration: 'none' }}>Privacy Policy</a>
                   <a href="/terms" style={{ fontSize: 13, color: 'rgba(248,250,252,0.85)', textDecoration: 'none' }}>Terms of Service</a>
+                  <a href="mailto:info@tradesource.app" style={{ fontSize: 13, color: 'rgba(248,250,252,0.85)', textDecoration: 'none' }}>Contact</a>
                 </nav>
               </div>
 

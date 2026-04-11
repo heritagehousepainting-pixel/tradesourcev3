@@ -18,12 +18,12 @@ export function useTheme() {
 }
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setTheme] = useState<Theme>('light')
+  const [theme, setTheme] = useState<Theme>('dark')
 
   useEffect(() => {
-    // Read persisted preference; default to light
+    // Read persisted preference; default to dark (matches homepage design)
     const saved = localStorage.getItem('tradesource-theme') as Theme | null
-    const initial = saved || 'light'
+    const initial = saved || 'dark'
     setTheme(initial)
     document.documentElement.setAttribute('data-theme', initial)
   }, [])
