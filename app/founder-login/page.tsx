@@ -8,18 +8,15 @@ import { signIn } from '@/lib/auth/client'
 /** The page shell — required export. The actual form is in FounderForm below. */
 export default function FounderLoginPage() {
   // Redirect already-authenticated users away from founder-login.
-  // Auth-check is a client-side cookie read — no network call needed.
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
       if (!data.session?.user) return
       const userEmail = data.session.user.email || ''
-      // Check env var for founder email allowlist (matches middleware.ts isFounderEmail)
       const founderEmails = (process.env.NEXT_PUBLIC_FOUNDER_EMAILS || '')
         .split(',')
         .map((e: string) => e.trim().toLowerCase())
         .filter(Boolean)
       const isFounderEmail = founderEmails.includes(userEmail.toLowerCase())
-      // Also accept JWT role=admin if it were set (future-proofing)
       let isJwtAdmin = false
       try {
         const token = data.session.access_token
@@ -36,7 +33,7 @@ export default function FounderLoginPage() {
   }, [])
 
   return (
-    <Suspense fallback={<div style={{ minHeight: '100vh', backgroundColor: '#0F172A' }} />}>
+    <Suspense fallback={<div style={{ minHeight: '100vh', backgroundColor: 'var(--color-bg)', color: 'var(--color-text)' }} />}>
       <FounderForm />
     </Suspense>
   )
@@ -76,8 +73,6 @@ function FounderForm() {
         return
       }
 
-      // Check env var for founder allowlist after successful login.
-      // Matches middleware.ts isFounderEmail logic.
       const founderEmails = (process.env.NEXT_PUBLIC_FOUNDER_EMAILS || '')
         .split(',')
         .map((e: string) => e.trim().toLowerCase())
@@ -96,37 +91,33 @@ function FounderForm() {
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      backgroundColor: '#0F172A',
+      backgroundColor: 'var(--color-bg)',
       padding: 24,
     }}>
       <div style={{ width: '100%', maxWidth: 360 }}>
+
         {/* Brand */}
         <div style={{ textAlign: 'center', marginBottom: 32 }}>
           <div style={{
             width: 44, height: 44, borderRadius: 12,
-            backgroundColor: '#2563EB',
+            backgroundColor: 'var(--color-blue)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             margin: '0 auto 14px',
-            boxShadow: '0 4px 20px rgba(37,99,235,0.5)',
+            boxShadow: '0 4px 20px var(--color-blue)',
           }}>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M13 10V3L4 14h7v7l9-11h-7z" />
             </svg>
           </div>
-          <div style={{ fontSize: 20, fontWeight: 700, color: '#F8FAFC', marginBottom: 4 }}>TradeSource</div>
-          <div style={{ fontSize: 12, color: 'rgba(148,163,184,0.8)', fontWeight: 500 }}>Founder Access</div>
+          <div style={{ fontSize: 20, fontWeight: 700, color: 'var(--color-text)', marginBottom: 4 }}>TradeSource</div>
+          <div style={{ fontSize: 12, color: 'var(--color-text-subtle)', fontWeight: 500 }}>Founder Access</div>
         </div>
 
-        {/* Card */}
-        <div style={{
-          backgroundColor: '#FFFFFF',
-          borderRadius: 16,
-          padding: '28px 24px',
-          border: '1px solid rgba(255,255,255,0.08)',
-        }}>
+        {/* Card — adapts to theme via globals.css .form-card */}
+        <div className="form-card" style={{ padding: '28px 24px' }}>
           <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
             <div>
-              <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: '#475569', marginBottom: 6 }}>
+              <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--color-text-muted)', marginBottom: 6 }}>
                 Email address
               </label>
               <input
@@ -140,46 +131,46 @@ function FounderForm() {
                   width: '100%',
                   padding: '10px 12px',
                   borderRadius: 8,
-                  border: '1.5px solid #E2E8F0',
-                  backgroundColor: '#F8FAFC',
-                  color: '#0F172A',
+                  border: '1.5px solid var(--color-input-border)',
+                  backgroundColor: 'var(--color-input-bg)',
+                  color: 'var(--color-input-text)',
                   fontSize: 14,
                   fontFamily: 'inherit',
                   outline: 'none',
                   boxSizing: 'border-box',
                   transition: 'border-color 0.15s',
                 }}
-                onFocus={e => (e.target.style.borderColor = '#2563EB')}
-                onBlur={e => (e.target.style.borderColor = '#E2E8F0')}
+                onFocus={e => (e.target.style.borderColor = 'var(--color-blue)')}
+                onBlur={e => (e.target.style.borderColor = 'var(--color-input-border)')}
               />
             </div>
 
             <div>
-              <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: '#475569', marginBottom: 6 }}>
+              <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--color-text-muted)', marginBottom: 6 }}>
                 Password
               </label>
               <input
                 type="password"
                 value={password}
                 onChange={e => { setPassword(e.target.value); setError('') }}
-                placeholder="••••••••"
+                placeholder="\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022"
                 required
                 autoComplete="current-password"
                 style={{
                   width: '100%',
                   padding: '10px 12px',
                   borderRadius: 8,
-                  border: '1.5px solid #E2E8F0',
-                  backgroundColor: '#F8FAFC',
-                  color: '#0F172A',
+                  border: '1.5px solid var(--color-input-border)',
+                  backgroundColor: 'var(--color-input-bg)',
+                  color: 'var(--color-input-text)',
                   fontSize: 14,
                   fontFamily: 'inherit',
                   outline: 'none',
                   boxSizing: 'border-box',
                   transition: 'border-color 0.15s',
                 }}
-                onFocus={e => (e.target.style.borderColor = '#2563EB')}
-                onBlur={e => (e.target.style.borderColor = '#E2E8F0')}
+                onFocus={e => (e.target.style.borderColor = 'var(--color-blue)')}
+                onBlur={e => (e.target.style.borderColor = 'var(--color-input-border)')}
               />
             </div>
 
@@ -187,9 +178,9 @@ function FounderForm() {
               <div style={{
                 padding: '8px 12px',
                 borderRadius: 6,
-                backgroundColor: '#EFF6FF',
-                border: '1px solid #BFDBFE',
-                color: '#1D4ED8',
+                backgroundColor: 'var(--color-blue-soft)',
+                border: '1px solid var(--color-blue)',
+                color: 'var(--color-blue)',
                 fontSize: 12,
                 fontWeight: 500,
               }}>
@@ -199,7 +190,7 @@ function FounderForm() {
               </div>
             )}
 
-            {(adminRequired === false && redirectTo === null) && (() => {
+            {(() => {
               const suspended = searchParams.get('reason') === 'account_suspended'
               const revoked = searchParams.get('reason') === 'account_revoked'
               if (!suspended && !revoked) return null
@@ -207,9 +198,9 @@ function FounderForm() {
                 <div style={{
                   padding: '8px 12px',
                   borderRadius: 6,
-                  backgroundColor: suspended ? '#FFF7ED' : '#FEF2F2',
-                  border: `1px solid ${suspended ? '#FED7AA' : '#FECACA'}`,
-                  color: suspended ? '#C2410C' : '#DC2626',
+                  backgroundColor: suspended ? 'var(--color-orange)' : 'var(--color-red-soft)',
+                  border: `1px solid ${suspended ? 'var(--color-orange)' : 'var(--color-red)'}`,
+                  color: suspended ? '#fff' : 'var(--color-red)',
                   fontSize: 12,
                   fontWeight: 500,
                 }}>
@@ -224,9 +215,9 @@ function FounderForm() {
               <div style={{
                 padding: '8px 12px',
                 borderRadius: 6,
-                backgroundColor: '#FEF2F2',
-                border: '1px solid #FECACA',
-                color: '#DC2626',
+                backgroundColor: 'var(--color-red-soft)',
+                border: '1px solid var(--color-red)',
+                color: 'var(--color-red)',
                 fontSize: 12,
                 fontWeight: 500,
               }}>
@@ -241,7 +232,7 @@ function FounderForm() {
                 width: '100%',
                 padding: '11px 16px',
                 borderRadius: 8,
-                backgroundColor: '#2563EB',
+                backgroundColor: 'var(--color-blue)',
                 color: '#fff',
                 border: 'none',
                 fontSize: 14,
@@ -251,15 +242,15 @@ function FounderForm() {
                 transition: 'opacity 0.15s, background-color 0.15s',
                 marginTop: 4,
               }}
-              onMouseEnter={e => { if (!loading && email.trim() && password) (e.target as HTMLButtonElement).style.backgroundColor = '#1D4ED8' }}
-              onMouseLeave={e => { (e.target as HTMLButtonElement).style.backgroundColor = '#2563EB' }}
+              onMouseEnter={e => { if (!loading && email.trim() && password) (e.target as HTMLButtonElement).style.backgroundColor = 'var(--color-blue-hover)' }}
+              onMouseLeave={e => { (e.target as HTMLButtonElement).style.backgroundColor = 'var(--color-blue)' }}
             >
-              {loading ? 'Signing in…' : 'Sign in'}
+              {loading ? 'Signing in\u2026' : 'Sign in'}
             </button>
           </form>
         </div>
 
-        <p style={{ fontSize: 11, color: 'rgba(148,163,184,0.6)', textAlign: 'center', marginTop: 20, lineHeight: 1.6 }}>
+        <p style={{ fontSize: 11, color: 'var(--color-text-subtle)', textAlign: 'center', marginTop: 20, lineHeight: 1.6 }}>
           Internal access only. TradeSource Phase 1.
         </p>
       </div>
