@@ -3,12 +3,12 @@
 import { useState, useEffect } from 'react'
 import { useNavContext } from '@/app/components/NavContext'
 
+import { ThemeToggle } from '@/app/theme-toggle'
+
 // ─── Nav ───────────────────────────────────────────────────────────────────────
 
 function HomepageNav() {
-  const { access } = useNavContext()
   const [scrolled, setScrolled] = useState(false)
-
   useEffect(() => {
     const handler = () => setScrolled(window.scrollY > 10)
     window.addEventListener('scroll', handler, { passive: true })
@@ -18,9 +18,9 @@ function HomepageNav() {
   return (
     <header style={{
       position: 'sticky', top: 0, zIndex: 100,
-      background: scrolled ? 'rgba(13,27,42,0.94)' : 'rgba(13,27,42,0.96)',
+      background: 'var(--color-bg-primary)',
       backdropFilter: 'blur(16px)',
-      borderBottom: `1px solid ${scrolled ? 'rgba(255,255,255,0.07)' : 'rgba(255,255,255,0.05)'}`,
+      borderBottom: '1px solid var(--color-border)',
       padding: '0 56px',
       height: 64,
       display: 'flex', alignItems: 'center', justifyContent: 'space-between',
@@ -54,6 +54,7 @@ function HomepageNav() {
           onMouseLeave={e => (e.currentTarget.style.background = 'var(--color-blue)')}>
           Request Access
         </a>
+        <ThemeToggle />
       </div>
     </header>
   )
