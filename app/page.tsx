@@ -1,8 +1,6 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useNavContext } from '@/app/components/NavContext'
-
 import { ThemeToggle } from '@/app/theme-toggle'
 
 // ─── Nav ───────────────────────────────────────────────────────────────────────
@@ -19,8 +17,8 @@ function HomepageNav() {
     <header style={{
       position: 'sticky', top: 0, zIndex: 100,
       background: 'var(--color-bg-primary)',
-      backdropFilter: 'blur(16px)',
-      borderBottom: '1px solid var(--color-border)',
+      backdropFilter: scrolled ? 'blur(16px)' : 'none',
+      borderBottom: `1px solid ${scrolled ? 'var(--color-border)' : 'transparent'}`,
       padding: '0 56px',
       height: 64,
       display: 'flex', alignItems: 'center', justifyContent: 'space-between',
