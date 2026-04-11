@@ -14,7 +14,11 @@ export async function GET(request: Request) {
 
     let query = supabase
       .from('jobs')
-      .select('*, poster:poster_id(id, name, full_name, company, email, phone, license_number, license_state, verified_license, verified_insurance, verified_w9, verified_external, is_pro, created_at)')
+      .select(`
+        *,
+        poster:poster_id(id, name, full_name, company, email, phone, license_number, license_state, verified_license, verified_insurance, verified_w9, verified_external, is_pro, created_at),
+        job_photos(id, url, filename, file_size, created_at)
+      `)
       .order('created_at', { ascending: false })
 
     if (homeownerEmail) {
@@ -85,6 +89,29 @@ export async function POST(request: Request) {
       homeowner_name: body.homeowner_name || null,
       is_verified_homeowner: isVerifiedHomeowner,
       poster_id: body.poster_id || null,
+      // ── Structured scope fields (from AI Scope Builder) ─────────────
+      included_areas: body.included_areas || null,
+      surfaces: body.surfaces || null,
+      prep_requirements: body.prep_requirements || null,
+      repairs_needed: body.repairs_needed || null,
+      occupancy: body.occupancy || null,
+      furniture: body.furniture || null,
+      access_notes: body.access_notes || null,
+      materials_notes: body.materials_notes || null,
+      finish_expectations: body.finish_expectations || null,
+      exclusions: body.exclusions || null,
+      special_instructions: body.special_instructions || null,
+      door_drawer_count: body.door_drawer_count || null,
+      current_finish: body.current_finish || null,
+      on_site_off_site: body.on_site_off_site || null,
+      condition: body.condition || null,
+      reinstall_responsibility: body.reinstall_responsibility || null,
+      stories: body.stories || null,
+      peeling_priming: body.peeling_priming || null,
+      power_washing: body.power_washing || null,
+      damage_extent: body.damage_extent || null,
+      texture_match: body.texture_match || null,
+      photos: body.photos || null,
     }
 
     const { data: job, error } = await supabase
@@ -94,6 +121,17 @@ export async function POST(request: Request) {
       .single()
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+
+    // ── Insert photo records into job_photos ─────────────────────────────────
+    if (body.photos && Array.isArray(body.photos) && body.photos.length > 0) {
+      const photoRecords = body.photos.map((url: string) => ({
+        job_id: job.id,
+        url,
+        filename: url.split('/').pop() || 'photo',
+        file_size: null,
+      }))
+      await supabase.from('job_photos').insert(photoRecords)
+    }
 
     // --- Notification Engine ---
     try {

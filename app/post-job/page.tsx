@@ -1,9 +1,12 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { useNavContext } from '@/app/components/NavContext'
+import ScopeAssistant from '@/app/components/ScopeAssistant'
 import FloatingAssistant from '@/features/assistant/ui/FloatingAssistant'
+import { supabase } from '@/lib/supabase'
+import { getSession } from '@/lib/auth/client'
 
 const TRADE_TYPES = [
   'Interior Painting',
@@ -28,96 +31,80 @@ const MATERIALS_OPTIONS = [
   { value: 'to_discuss', label: 'Discuss after interest', sub: 'Finalize once a sub-contractor expresses interest' },
 ]
 
-const INTERIOR_CHECKLIST = [
-  'Walls — how many, which rooms',
-  'Ceilings',
-  'Trim / baseboards',
-  'Doors and door frames',
-  'Windows — sills and frames',
-  'Cabinets (kitchen / bathroom)',
-  'Drywall patches / repairs needed',
-  'Sanding / prep work',
-  'Primer required?',
-  'Number of coats',
-  'Paint brand and color chosen?',
-]
+const MAX_PHOTOS = 5
+const MAX_PHOTO_SIZE = 10 * 1024 * 1024 // 10 MB
+const PHOTO_TYPES = 'image/jpeg,image/png,image/webp'
 
-const EXTERIOR_CHECKLIST = [
-  'Siding — vinyl / wood / stucco / brick',
-  'Trim / soffits / fascia',
-  'Shutters',
-  'Doors and door frames',
-  'Scraping / sanding',
-  'Power washing',
-  'Caulking / wood repairs',
-  'Primer required?',
-  'Number of coats',
-  'Paint brand chosen?',
-  'Lift / ladder access notes',
-]
+// ─── Photo upload section ───────────────────────────────────────────────────────
 
-function ChecklistHint({ selectedScope }: { selectedScope: string }) {
-  const items = selectedScope === 'Exterior Painting' ? EXTERIOR_CHECKLIST : INTERIOR_CHECKLIST
-  return (
-    <div style={{ marginTop: 8, padding: '12px 14px', borderRadius: 10, backgroundColor: 'var(--color-surface-raised)', border: '1px solid var(--color-border)' }}>
-      <p style={{ fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 8 }}>Scope details to include:</p>
-      <ul style={{ margin: 0, padding: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 4 }}>
-        {items.map(item => (
-          <li key={item} style={{ fontSize: 12, color: 'var(--color-text-muted)', display: 'flex', alignItems: 'flex-start', gap: 6 }}>
-            <span style={{ color: 'var(--color-blue)', fontWeight: 700, flexShrink: 0, marginTop: 1 }}>–</span>
-            {item}
-          </li>
-        ))}
-      </ul>
-    </div>
-  )
-}
-
-function FileUploadDropzone({
-  label,
-  hint,
-  accept,
-  icon,
-  files,
-  onChange,
-}: {
-  label: string
-  hint: string
-  accept: string
-  icon: 'photo' | 'video'
-  files: File[]
-  onChange: (f: File[]) => void
-}) {
+function PhotoUploader({ photos, onChange }: { photos: File[]; onChange: (f: File[]) => void }) {
+  const inputRef = useRef<HTMLInputElement>(null)
   const [dragging, setDragging] = useState(false)
-  const inputId = label.toLowerCase().replace(/\s+/g, '-')
+  const [error, setError] = useState('')
+
+  const validateAndAdd = (newFiles: FileList | File[]) => {
+    setError('')
+    const remaining = MAX_PHOTOS - photos.length
+    const incoming = Array.from(newFiles).filter(f => {
+      if (!PHOTO_TYPES.split(',').includes(f.type)) {
+        setError(`"${f.name}" is not a supported image type. Use JPEG, PNG, or WebP.`)
+        return false
+      }
+      if (f.size > MAX_PHOTO_SIZE) {
+        setError(`"${f.name}" is too large. Max file size is 10 MB.`)
+        return false
+      }
+      return true
+    }).slice(0, remaining)
+
+    if (incoming.length === 0 && photos.length >= MAX_PHOTOS) {
+      setError(`Maximum ${MAX_PHOTOS} photos per job.`)
+      return
+    }
+    if (photos.length + incoming.length > MAX_PHOTOS) {
+      setError(`Only ${remaining} more photo(s) can be added.`)
+    }
+    onChange([...photos, ...incoming])
+  }
+
+  const removePhoto = (index: number) => {
+    const updated = photos.filter((_, i) => i !== index)
+    onChange(updated)
+  }
 
   return (
     <div>
-      <label
-        htmlFor={inputId}
-        style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 4 }}
-      >
-        {label}
+      <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 4 }}>
+        Job Photos
       </label>
-      <p style={{ fontSize: 12, color: 'var(--color-text-subtle)', marginBottom: 8 }}>{hint}</p>
+      <p style={{ fontSize: 12, color: 'var(--color-text-subtle)', marginBottom: 10 }}>
+        Add photos of the work area to help subcontractors understand the scope. JPEG, PNG, WebP up to 10 MB each. Max {MAX_PHOTOS} photos.
+      </p>
 
-      {files.length > 0 && (
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 8 }}>
-          {files.map((f, i) => (
-            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '5px 10px', borderRadius: 6, backgroundColor: 'var(--color-blue-soft)', border: '1px solid var(--color-border)' }}>
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--color-blue)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                {icon === 'photo'
-                  ? <><rect x="3" y="3" width="18" height="18" rx="2" /><circle cx="8.5" cy="8.5" r="1.5" /><polyline points="21 15 16 10 5 21" /></>
-                  : <><polygon points="23 7 16 12 23 17 23 7" /><rect x="1" y="5" width="15" height="14" rx="2" /></>
-                }
-              </svg>
-              <span style={{ fontSize: 11, color: 'var(--color-blue)', fontWeight: 500, maxWidth: 120, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{f.name}</span>
+      {/* Thumbnail previews */}
+      {photos.length > 0 && (
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 10 }}>
+          {photos.map((file, i) => (
+            <div key={i} style={{ position: 'relative', width: 72, height: 72, borderRadius: 8, overflow: 'hidden', border: '1px solid var(--color-border)', backgroundColor: 'var(--color-surface)' }}>
+              <img
+                src={URL.createObjectURL(file)}
+                alt={`Photo ${i + 1}`}
+                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+              />
               <button
                 type="button"
-                onClick={() => onChange(files.filter((_, j) => j !== i))}
-                style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-blue)', padding: 0, display: 'flex', alignItems: 'center' }}
+                onClick={() => removePhoto(i)}
+                aria-label="Remove photo"
+                style={{
+                  position: 'absolute', top: 3, right: 3,
+                  width: 20, height: 20, borderRadius: '50%',
+                  backgroundColor: 'rgba(0,0,0,0.65)',
+                  border: 'none', cursor: 'pointer',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  padding: 0,
+                }}
               >
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                   <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
                 </svg>
               </button>
@@ -126,67 +113,71 @@ function FileUploadDropzone({
         </div>
       )}
 
-      <div
-        onDragOver={e => { e.preventDefault(); setDragging(true) }}
-        onDragLeave={() => setDragging(false)}
-        onDrop={e => {
-          e.preventDefault()
-          setDragging(false)
-          const dropped = Array.from(e.dataTransfer.files)
-          if (dropped.length) onChange([...files, ...dropped])
-        }}
-        onClick={() => document.getElementById(inputId)?.click()}
-        style={{
-          border: dragging ? '2px dashed #3B82F6' : files.length > 0 ? '2px solid var(--color-green)' : '1.5px dashed #CBD5E1',
-          borderRadius: 10,
-          padding: '16px 18px',
-          backgroundColor: dragging ? 'var(--color-blue-soft)' : files.length > 0 ? 'rgba(16,185,129,0.03)' : 'var(--color-surface-raised)',
-          cursor: 'pointer',
-          transition: 'all 0.15s',
-          display: 'flex',
-          alignItems: 'center',
-          gap: 12,
-        }}
-      >
-        <div style={{
-          width: 40, height: 40, borderRadius: 8,
-          backgroundColor: files.length > 0 ? 'var(--color-green-soft)' : 'var(--color-blue-soft)',
-          border: `1px solid ${files.length > 0 ? 'var(--color-green-soft)' : 'var(--color-blue-soft)'}`,
-          display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
-        }}>
-          {icon === 'photo' ? (
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={files.length > 0 ? 'var(--color-green)' : 'var(--color-blue)'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      {/* Drop zone */}
+      {photos.length < MAX_PHOTOS && (
+        <div
+          onDragOver={e => { e.preventDefault(); setDragging(true) }}
+          onDragLeave={() => setDragging(false)}
+          onDrop={e => { e.preventDefault(); setDragging(false); validateAndAdd(e.dataTransfer.files) }}
+          onClick={() => inputRef.current?.click()}
+          style={{
+            border: dragging
+              ? '2px dashed var(--color-blue)'
+              : photos.length > 0
+                ? '1.5px solid var(--color-green)'
+                : '1.5px dashed var(--color-input-border)',
+            borderRadius: 10,
+            padding: '14px 18px',
+            backgroundColor: dragging
+              ? 'var(--color-blue-soft)'
+              : photos.length > 0
+                ? 'rgba(16,185,129,0.03)'
+                : 'var(--color-surface-raised)',
+            cursor: 'pointer',
+            transition: 'all 0.15s',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 12,
+          }}
+        >
+          <div style={{
+            width: 36, height: 36, borderRadius: 8,
+            backgroundColor: photos.length > 0 ? 'var(--color-green-soft)' : 'var(--color-blue-soft)',
+            border: `1px solid ${photos.length > 0 ? 'var(--color-green-soft)' : 'var(--color-blue-soft)'}`,
+            display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+          }}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={photos.length > 0 ? 'var(--color-green)' : 'var(--color-blue)'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <rect x="3" y="3" width="18" height="18" rx="2" /><circle cx="8.5" cy="8.5" r="1.5" /><polyline points="21 15 16 10 5 21" />
             </svg>
-          ) : (
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={files.length > 0 ? 'var(--color-green)' : 'var(--color-blue)'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <polygon points="23 7 16 12 23 17 23 7" /><rect x="1" y="5" width="15" height="14" rx="2" />
-            </svg>
-          )}
+          </div>
+          <div>
+            <p style={{ fontSize: 13, fontWeight: 500, color: 'var(--color-text-muted)', margin: 0, lineHeight: 1.3 }}>
+              <span style={{ color: 'var(--color-blue)', fontWeight: 600 }}>Click to add photos</span>
+              {' '}or drag and drop
+            </p>
+            <p style={{ fontSize: 11, color: 'var(--color-text-subtle)', margin: '2px 0 0' }}>
+              {photos.length}/{MAX_PHOTOS} — JPEG, PNG, WebP up to 10 MB
+            </p>
+          </div>
+          <input
+            ref={inputRef}
+            type="file"
+            accept={PHOTO_TYPES}
+            multiple
+            onChange={e => { if (e.target.files) validateAndAdd(e.target.files); e.target.value = '' }}
+            style={{ display: 'none' }}
+          />
         </div>
-        <div>
-          <p style={{ fontSize: 13, fontWeight: 500, color: 'var(--color-text-muted)', margin: 0, lineHeight: 1.3 }}>
-            <span style={{ color: 'var(--color-blue)', fontWeight: 600 }}>Click to upload</span>
-            {' '}or drag and drop
-          </p>
-          <p style={{ fontSize: 11, color: 'var(--color-text-subtle)', margin: '2px 0 0' }}>{accept} up to 10 MB each</p>
-        </div>
-        <input
-          id={inputId}
-          type="file"
-          accept={accept}
-          multiple
-          onChange={e => {
-            const selected = Array.from(e.target.files || [])
-            if (selected.length) onChange([...files, ...selected])
-            e.target.value = ''
-          }}
-          style={{ display: 'none' }}
-        />
-      </div>
+      )}
+
+      {error && (
+        <p style={{ marginTop: 6, fontSize: 12, color: 'var(--color-red)', marginBottom: 0 }}>{error}</p>
+      )}
     </div>
   )
 }
+
+// ─── Page ───────────────────────────────────────────────────────────────────────
 
 export default function PostJob() {
   const router = useRouter()
@@ -195,6 +186,9 @@ export default function PostJob() {
   const [error, setError] = useState('')
   const [submitted, setSubmitted] = useState(false)
   const [loggedInContractor, setLoggedInContractor] = useState<any>(null)
+  const [photos, setPhotos] = useState<File[]>([])
+  const [scopeSource, setScopeSource] = useState<'assistant' | 'manual' | null>(null)
+
   const [form, setForm] = useState({
     title: '',
     scope: '',
@@ -222,6 +216,11 @@ export default function PostJob() {
   const update = (field: string, value: string) =>
     setForm(prev => ({ ...prev, [field]: field === 'fixed_price' ? value.replace(/[^0-9]/g, '') : value }))
 
+  const handleScopeGenerated = (scope: string) => {
+    setForm(prev => ({ ...prev, description: scope }))
+    setScopeSource('assistant')
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!form.title || !form.scope || !form.description || !form.area) {
@@ -238,7 +237,24 @@ export default function PostJob() {
     }
     setLoading(true)
     setError('')
+
     try {
+
+      // Upload photos to Supabase Storage first
+      const uploadedPhotoUrls: string[] = []
+      for (const file of photos) {
+        const ext = file.name.split('.').pop() || 'jpg'
+        const path = `job-photos/${Date.now()}_${Math.random().toString(36).slice(2)}.${ext}`
+        const { error: uploadError } = await supabase.storage
+          .from('job-photos')
+          .upload(path, file, { contentType: file.type, upsert: false })
+
+        if (!uploadError) {
+          const { data: urlData } = supabase.storage.from('job-photos').getPublicUrl(path)
+          if (urlData?.publicUrl) uploadedPhotoUrls.push(urlData.publicUrl)
+        }
+      }
+
       const body: any = {
         title: form.title,
         scope: form.scope,
@@ -248,6 +264,7 @@ export default function PostJob() {
         budget_min: parseFloat(form.fixed_price),
         budget_max: parseFloat(form.fixed_price),
         materials: form.materials,
+        photos: uploadedPhotoUrls,
         has_video: false,
       }
       if (loggedInContractor) {
@@ -309,9 +326,6 @@ export default function PostJob() {
     )
   }
 
-  // Auth gate: only vetted contractors and founders can post jobs.
-  // This requires both authentication AND capability (approved contractor or founder).
-  // Loading state: show gate while auth resolves.
   if (!access.checked || !access.canPostJobs) {
     return (
       <div style={{ backgroundColor: 'var(--color-bg)', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -404,12 +418,7 @@ export default function PostJob() {
             </p>
           </div>
 
-          {/* Form card */}
-          <div className="form-card" style={{
-            borderRadius: 16,
-            overflow: 'hidden',
-            boxShadow: '0 8px 40px var(--color-shadow-lg)',
-          }}>
+          <div className="form-card" style={{ borderRadius: 16, overflow: 'hidden', boxShadow: '0 8px 40px var(--color-shadow-lg)' }}>
             <div style={{ height: 4, backgroundColor: 'var(--color-blue)' }} />
 
             <div style={{ padding: '28px 32px' }}>
@@ -449,7 +458,7 @@ export default function PostJob() {
                       id="job-scope"
                       name="scope"
                       value={form.scope}
-                      onChange={e => update('scope', e.target.value)}
+                      onChange={e => { update('scope', e.target.value); setForm(prev => ({ ...prev, description: '', scope: e.target.value })); setScopeSource(null) }}
                       required
                       style={{ width: '100%', padding: '11px 14px', borderRadius: 10, fontSize: 14, border: '1.5px solid var(--color-input-border)', outline: 'none', transition: 'border-color 0.15s', color: 'var(--color-text)', cursor: 'pointer' }}
                       onFocus={e => e.target.style.borderColor = 'var(--color-blue)'}
@@ -569,25 +578,88 @@ export default function PostJob() {
                   </div>
                 </div>
 
-                {/* Photos & video coming soon — do not remove, future feature */}
-
-                {/* Description */}
+                {/* ── AI SCOPE BUILDER — replaces Description textarea ── */}
                 <div>
-                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 4 }}>
-                    Description <span style={{ color: 'var(--color-red)' }}>*</span>
-                  </label>
-                  <textarea
-                    id="job-description"
-                    value={form.description}
-                    onChange={e => update('description', e.target.value)}
-                    placeholder="Describe the full scope — surfaces, prep, access, paint specs, anything contractors need to know before responding."
-                    rows={5}
-                    required
-                    style={{ width: '100%', padding: '11px 14px', borderRadius: 10, fontSize: 14, border: '1.5px solid var(--color-input-border)', outline: 'none', resize: 'vertical', transition: 'border-color 0.15s', color: 'var(--color-text)', lineHeight: 1.65 }}
-                    onFocus={e => e.target.style.borderColor = 'var(--color-blue)'}
-                    onBlur={e => e.target.style.borderColor = 'var(--color-input-border)'}
-                  />
-                  {form.scope && <ChecklistHint selectedScope={form.scope} />}
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+                    <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                      Job Description <span style={{ color: 'var(--color-red)' }}>*</span>
+                    </label>
+                    {form.description && (
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                        <div style={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: 'var(--color-green)' }} />
+                        <span style={{ fontSize: 11, color: 'var(--color-green)', fontWeight: 600 }}>
+                          {scopeSource === 'assistant' ? 'AI-generated' : 'Manual'}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Scope assistant: activates when service type is selected */}
+                  {form.scope ? (
+                    <div style={{ marginBottom: form.description ? 12 : 0 }}>
+                      <ScopeAssistant
+                        tradeType={form.scope}
+                        onGenerated={handleScopeGenerated}
+                      />
+                    </div>
+                  ) : (
+                    <div style={{
+                      padding: '14px 16px',
+                      borderRadius: 10,
+                      backgroundColor: 'var(--color-surface)',
+                      border: '1px solid var(--color-border)',
+                      fontSize: 12,
+                      color: 'var(--color-text-subtle)',
+                      textAlign: 'center',
+                    }}>
+                      Select a service type above to build your scope description.
+                    </div>
+                  )}
+
+                  {/* Scope summary visible once scope is built */}
+                  {form.description && (
+                    <div style={{
+                      padding: '12px 16px',
+                      borderRadius: 10,
+                      backgroundColor: 'var(--color-surface)',
+                      border: '1px solid var(--color-border)',
+                      marginTop: 10,
+                    }}>
+                      <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>Scope summary</div>
+                      <p style={{ fontSize: 13, color: 'var(--color-text)', lineHeight: 1.65, margin: 0, whiteSpace: 'pre-wrap' }}>{form.description}</p>
+                    </div>
+                  )}
+                </div>
+
+                {/* ── PHOTOS — real upload wired to Supabase Storage ── */}
+                <div style={{
+                  padding: '16px 18px',
+                  borderRadius: 12,
+                  backgroundColor: 'var(--color-surface)',
+                  border: '1px solid var(--color-border)',
+                }}>
+                  <PhotoUploader photos={photos} onChange={setPhotos} />
+                </div>
+
+                {/* ── VIDEO — not wired, clearly labeled ── */}
+                <div style={{
+                  padding: '16px 18px',
+                  borderRadius: 12,
+                  backgroundColor: 'var(--color-surface)',
+                  border: '1px solid var(--color-border)',
+                  opacity: 0.65,
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                    <div style={{ width: 36, height: 36, borderRadius: 8, backgroundColor: 'var(--color-surface-raised)', border: '1px solid var(--color-border)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-subtle)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <polygon points="23 7 16 12 23 17 23 7" /><rect x="1" y="5" width="15" height="14" rx="2" />
+                      </svg>
+                    </div>
+                    <div>
+                      <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--color-text-muted)' }}>Job Video</div>
+                      <div style={{ fontSize: 12, color: 'var(--color-text-subtle)' }}>Video uploads — coming soon</div>
+                    </div>
+                  </div>
                 </div>
 
                 {/* Contact */}

@@ -355,6 +355,34 @@ export default function JobDetail() {
               <p style={{ fontSize: 14, color: 'rgba(248,250,252,0.65)', lineHeight: 1.75 }}>{job.description}</p>
             </div>
 
+            {/* Job Photos */}
+            {((job.job_photos && job.job_photos.length > 0) || (job.photos && job.photos.length > 0)) && (
+              <div style={{ backgroundColor: 'var(--color-surface-raised)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 14, padding: '24px' }}>
+                <h2 style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--color-text-subtle)', marginBottom: 14 }}>Photos</h2>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: 10 }}>
+                  {(job.job_photos || []).concat(job.photos || []).map((photo: any, i: number) => {
+                    const url = typeof photo === 'string' ? photo : photo.url
+                    return (
+                      <a
+                        key={i}
+                        href={url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{ display: 'block', borderRadius: 10, overflow: 'hidden', aspectRatio: '4/3', border: '1px solid rgba(255,255,255,0.08)' }}
+                      >
+                        <img
+                          src={url}
+                          alt={`Job photo ${i + 1}`}
+                          style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                          onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
+                        />
+                      </a>
+                    )
+                  })}
+                </div>
+              </div>
+            )}
+
             {/* Poster */}
             {poster && (
               <div style={{ backgroundColor: 'var(--color-surface-raised)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 14, padding: '20px 24px' }}>
