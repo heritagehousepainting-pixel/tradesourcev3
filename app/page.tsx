@@ -416,7 +416,7 @@ export default function Home() {
               'W-9 Verified',
               'Experience Checked',
               'External Review Required',
-              'Phase 1 \u2014 Painting Only',
+              'Phase 1 — Painting Only',
             ].map((item, i) => (
               <div key={item} style={{
                 display: 'flex', alignItems: 'center', gap: 8,
@@ -485,18 +485,18 @@ export default function Home() {
                 display: 'flex', flexDirection: 'column', gap: 18,
               }}>
                 {[
-                  'Facebook Marketplace \u2014 you don\u2019t know who you\u2019re calling',
-                  'Craigslist \u2014 no vetting, no accountability',
-                  'Google search \u2014 pure luck, no verification',
-                  'Paint store cards \u2014 someone who knows someone',
-                  'Word of mouth \u2014 limited reach, inconsistent quality',
+                  "Facebook Marketplace — you don't know who you're calling",
+                  'Craigslist — no vetting, no accountability',
+                  'Google search — pure luck, no verification',
+                  'Paint store cards — someone who knows someone',
+                  'Word of mouth — limited reach, inconsistent quality',
                 ].map(item => (
                   <li key={item} style={{
                     display: 'flex', alignItems: 'flex-start', gap: 14,
                     fontSize: 15, color: 'var(--color-text-muted)', lineHeight: 1.5,
                   }}>
                     <span style={{ fontWeight: 700, fontSize: 16, color: 'var(--color-red)', flexShrink: 0 }}>
-                      \u2014
+                      —
                     </span>
                     {item}
                   </li>
@@ -520,9 +520,9 @@ export default function Home() {
                 display: 'flex', flexDirection: 'column', gap: 18,
               }}>
                 {[
-                  'Every contractor vetted before access \u2014 license, insurance, W-9, experience, review',
-                  'Post your job at your fixed rate \u2014 no one bids below it',
-                  'You choose who accepts \u2014 based on their profile and history',
+                  'Every contractor vetted before access — license, insurance, W-9, experience, review',
+                  'Post your job at your fixed rate — no one bids below it',
+                  'You choose who accepts — based on their profile and history',
                   'Work stays private between the two contractors',
                   'No lead fees. No ads. No algorithm deciding who wins.',
                 ].map(item => (
@@ -578,7 +578,7 @@ export default function Home() {
             { n: '02', title: 'We Review Your Application', body: 'Every application is reviewed personally. We verify every document and check that everything is legitimate before you get access.' },
             { n: '03', title: 'Get Approved and Access the Network', body: 'Once approved, you receive an email and create your password. Full access to the network of vetted painting contractors.' },
             { n: '04', title: 'Post Overflow Work at Your Rate', body: 'When you have work that needs a sub, post it at a fixed price. Describe the scope, set the timeline, post. Contractors in the network see it and respond.' },
-            { n: '05', title: 'Choose Who You Want to Work With', body: 'Review profiles, see experience and past work. You decide who gets the job \u2014 no algorithm, no bidding, no surprises.' },
+            { n: '05', title: 'Choose Who You Want to Work With', body: "Review profiles, see experience and past work. You decide who gets the job — no algorithm, no bidding, no surprises." },
           ].map((step, i) => (
             <div key={step.n} style={{
               display: 'grid', gridTemplateColumns: '72px 1fr',
@@ -734,13 +734,13 @@ export default function Home() {
               },
               {
                 num: '02', tag: 'Subs',
-                title: "Subcontractors who do good work but can\u2019t find enough of it",
-                body: "You\u2019re solid. You show up. You do the job right. But consistent work isn\u2019t guaranteed. TradeSource puts you inside a network that needs exactly what you offer.",
+                title: "Subcontractors who do good work but can't find enough of it",
+                body: "You're solid. You show up. You do the job right. But consistent work isn't guaranteed. TradeSource puts you inside a network that needs exactly what you offer.",
               },
               {
                 num: '03', tag: 'Next-Gen',
                 title: 'Next-generation operators who sell without building a crew',
-                body: "You can close a job. You don\u2019t want to manage a crew. Post the work, find the right sub, fulfill what you sold \u2014 without the overhead.",
+                body: "You can close a job. You don't want to manage a crew. Post the work, find the right sub, fulfill what you sold — without the overhead.",
               },
             ].map(card => (
               <div key={card.num} style={{
@@ -820,7 +820,7 @@ export default function Home() {
               { title: 'Valid PA Contractor License', body: 'We verify your license number against Pennsylvania state records before you get access.' },
               { title: 'Proof of Insurance', body: 'We require a current certificate of insurance. No insurance, no exceptions.' },
               { title: 'W-9 Tax Documentation', body: 'We collect a W-9 to confirm your business identity and tax information before access is granted.' },
-              { title: 'Trade Experience Verification', body: "We verify documented experience in your trade \u2014 not just a license, but actual work history." },
+              { title: 'Trade Experience Verification', body: "We verify documented experience in your trade — not just a license, but actual work history." },
             ].map(item => (
               <div key={item.title} style={{
                 background: 'var(--color-bg-card)',
@@ -878,7 +878,7 @@ export default function Home() {
                   At Least One External Review
                 </div>
                 <div style={{ fontSize: 13, color: 'var(--color-text-muted)', lineHeight: 1.6 }}>
-                  We confirm at least one review from a real customer or trade reference \u2014 Google Business Profile, Houzz, Angi, or equivalent. Not self-reported. Verified.
+                  We confirm at least one review from a real customer or trade reference — Google Business Profile, Houzz, Angi, or equivalent. Not self-reported. Verified.
                 </div>
               </div>
             </div>
