@@ -371,22 +371,7 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Trust row */}
-          <div style={{ display: 'flex', flexWrap: 'wrap', padding: '28px 0' }}>
-            {['License', 'Insurance', 'W-9', 'External Review'].map((chip, i) => (
-              <div key={chip} style={{
-                display: 'flex', alignItems: 'center', gap: 8,
-                fontSize: 12, color: 'var(--color-text-muted)', fontWeight: 500,
-                padding: '0 20px',
-                borderRight: i < 3 ? '1px solid var(--color-border)' : 'none',
-              }}>
-                <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="var(--color-green)" strokeWidth={2}>
-                  <path d="M5 13l4 4L19 7" />
-                </svg>
-                {chip}
-              </div>
-            ))}
-          </div>
+          
         </div>
       </section>
 
