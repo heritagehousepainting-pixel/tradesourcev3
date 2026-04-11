@@ -476,7 +476,7 @@ export default function Home() {
             }}>
               <div style={{
                 fontSize: 11, fontWeight: 700, letterSpacing: 2,
-                textTransform: 'uppercase', color: '#f87171', marginBottom: 24,
+                textTransform: 'uppercase', color: 'var(--color-red)', marginBottom: 24,
               }}>
                 How it works today
               </div>
@@ -495,7 +495,7 @@ export default function Home() {
                     display: 'flex', alignItems: 'flex-start', gap: 14,
                     fontSize: 15, color: 'var(--color-text-muted)', lineHeight: 1.5,
                   }}>
-                    <span style={{ fontWeight: 700, fontSize: 16, color: '#f87171', flexShrink: 0 }}>
+                    <span style={{ fontWeight: 700, fontSize: 16, color: 'var(--color-red)', flexShrink: 0 }}>
                       \u2014
                     </span>
                     {item}
