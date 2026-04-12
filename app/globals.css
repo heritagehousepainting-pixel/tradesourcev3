@@ -728,6 +728,31 @@ select:focus-visible {
   color: #fff !important;
 }
 
+/* ─── Hero text in light mode — white/light so readable over dark hero background ─── */
+[data-theme="light"] [data-homepage-hero] h1,
+[data-theme="light"] [data-homepage-hero] p {
+  color: rgba(248, 250, 252, 0.95) !important;
+}
+[data-theme="light"] [data-homepage-hero] .hero-sub-copy {
+  color: rgba(248, 250, 252, 0.72) !important;
+}
+/* "See Open Jobs" button in light mode: white border + light text */
+[data-theme="light"] [data-homepage-hero] a[href="/jobs"] {
+  color: rgba(248, 250, 252, 0.85) !important;
+  border-color: rgba(248, 250, 252, 0.25) !important;
+}
+/* Stats card in light mode: dark card over dark hero gradient */
+[data-theme="light"] [data-homepage-hero] > div > div > div:last-child {
+  background-color: rgba(5, 12, 28, 0.72) !important;
+  border-color: rgba(5, 12, 28, 0.72) !important;
+}
+[data-theme="light"] [data-homepage-hero] > div > div > div:last-child * {
+  color: rgba(248, 250, 252, 0.95) !important;
+}
+[data-theme="light"] [data-homepage-hero] > div > div > div:last-child div[style*="fontSize: 12"] {
+  color: rgba(248, 250, 252, 0.65) !important;
+}
+
 /* ─── Chip / selectable-button backgrounds: adapt to dark mode ─── */
 /* Unchecked state: white in light, subtle dark in dark */
 [data-theme="light"] {
