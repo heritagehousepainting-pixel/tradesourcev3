@@ -76,15 +76,21 @@ export default function ContractorProfile() {
 
   if (error || !contractor) {
     return (
-      <div className="min-h-screen" style={{ backgroundColor: 'var(--color-bg)' }}>
-        <header style={{ backgroundColor: 'var(--color-surface-raised)', borderBottom: '1px solid rgba(255,255,255,0.08)' }} className="sticky top-0 z-10">
-          <div className="max-w-4xl mx-auto px-6 py-4">
-            <a href="/jobs" className="text-sm font-medium" style={{ color: 'var(--color-text-muted)' }}>← Back</a>
+      <div style={{ backgroundColor: 'var(--color-bg)', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '48px 24px' }}>
+        <div style={{ maxWidth: 400, width: '100%', backgroundColor: 'var(--color-surface-raised)', border: '1px solid var(--color-border)', borderRadius: 16, padding: '40px 32px', textAlign: 'center' }}>
+          <div style={{ width: 52, height: 52, borderRadius: 14, backgroundColor: 'var(--color-blue-soft)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--color-blue)" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+            </svg>
           </div>
-        </header>
-        <div className="max-w-4xl mx-auto p-6 text-center py-20">
-          <p className="text-lg font-semibold" style={{ color: 'var(--color-text)' }}>{error || 'Contractor not found'}</p>
-          <a href="/jobs" className="mt-4 inline-block text-sm font-medium px-6 py-2.5 rounded-xl" style={{ backgroundColor: 'var(--color-surface-raised)', color: '#fff' }}>Browse Jobs</a>
+          <h2 style={{ fontSize: 18, fontWeight: 800, color: 'var(--color-text)', marginBottom: 8 }}>Contractor not found</h2>
+          <p style={{ fontSize: 13, color: 'var(--color-text-muted)', marginBottom: 24, lineHeight: 1.65 }}>
+            TradeSource is a private contractor network. Profiles are only visible to approved members.
+          </p>
+          <div style={{ display: 'flex', gap: 10, justifyContent: 'center' }}>
+            <a href="/apply" style={{ display: 'inline-flex', alignItems: 'center', padding: '10px 18px', borderRadius: 10, backgroundColor: 'var(--color-blue)', color: '#fff', fontSize: 13, fontWeight: 600, textDecoration: 'none' }}>Apply to Join</a>
+            <a href="/jobs" style={{ display: 'inline-flex', alignItems: 'center', padding: '10px 18px', borderRadius: 10, backgroundColor: 'var(--color-surface)', color: 'var(--color-text-muted)', fontSize: 13, fontWeight: 500, textDecoration: 'none', border: '1px solid var(--color-border)' }}>Browse Jobs</a>
+          </div>
         </div>
       </div>
     )

@@ -90,11 +90,18 @@ export default function Jobs() {
       {/* ─── PAGE HEADER ─── */}
       <div style={{ backgroundColor: 'var(--color-bg-alt)', borderBottom: '1px solid var(--color-border)' }}>
         <div style={{ maxWidth: 1100, margin: '0 auto', padding: '60px 32px 48px' }}>
-          <h1 style={{ fontSize: 'clamp(28px, 4vw, 44px)', fontWeight: 800, color: 'var(--color-text)', letterSpacing: '-0.03em', lineHeight: 1.1, marginBottom: 12 }}>
+          <h1 style={{ fontSize: 'clamp(28px, 4vw, 44px)', fontWeight: 800, color: 'var(--color-text)', letterSpacing: '-0.03em', lineHeight: 1.1, marginBottom: 8 }}>
             Open Jobs
           </h1>
           <p style={{ fontSize: 15, color: 'var(--color-text-muted)', lineHeight: 1.6 }}>
-            Fixed-price painting work across the TradeSource network. All contractors are vetted before joining.
+            Fixed-price painting work across the TradeSource private network.
+            {jobs.length === 0 && (
+              <span style={{ display: 'block', marginTop: 4, fontSize: 13 }}>
+                New network — jobs posted regularly as contractors join.{' '}
+                <a href="/apply" style={{ color: 'var(--color-blue)', fontWeight: 600, textDecoration: 'none' }}>Apply to join</a>
+                {' '}to get early access.
+              </span>
+            )}
           </p>
         </div>
       </div>
@@ -183,14 +190,56 @@ export default function Jobs() {
             ))}
           </div>
         ) : filteredJobs.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '80px 0' }}>
-            <div style={{ width: 56, height: 56, borderRadius: 16, backgroundColor: 'var(--color-surface)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-subtle)" strokeWidth="1.5">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-              </svg>
-            </div>
-            <p style={{ fontSize: 15, fontWeight: 600, color: 'var(--color-text)', marginBottom: 6 }}>No jobs match your filters</p>
-            <p style={{ fontSize: 13, color: 'var(--color-text-subtle)' }}>Try clearing your filters or check back soon.</p>
+          <div style={{ textAlign: 'center', padding: '64px 24px' }}>
+            {jobs.length === 0 ? (
+              /* Network is empty — honest early-network state */
+              <>
+                <div style={{ width: 56, height: 56, borderRadius: 16, backgroundColor: 'var(--color-surface)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-subtle)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="12" cy="12" r="10" />
+                    <line x1="12" y1="8" x2="12" y2="12" />
+                    <line x1="12" y1="16" x2="12.01" y2="16" />
+                  </svg>
+                </div>
+                <p style={{ fontSize: 16, fontWeight: 600, color: 'var(--color-text)', marginBottom: 8 }}>
+                  No jobs posted yet
+                </p>
+                <p style={{ fontSize: 13, color: 'var(--color-text-muted)', maxWidth: 360, margin: '0 auto 24px', lineHeight: 1.65 }}>
+                  TradeSource is a private network still in its early phase. As more contractors join, jobs will be posted here regularly. Check back soon — or{' '}
+                  <a href="/apply" style={{ color: 'var(--color-blue)', fontWeight: 600, textDecoration: 'none' }}>apply to join</a>
+                  {' '}to be first when work goes live.
+                </p>
+                <div style={{ display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap' }}>
+                  <a href="/apply" style={{ display: 'inline-flex', alignItems: 'center', padding: '10px 20px', borderRadius: 10, backgroundColor: 'var(--color-blue)', color: '#fff', fontSize: 13, fontWeight: 600, textDecoration: 'none', boxShadow: '0 2px 8px rgba(37,99,235,0.25)' }}>
+                    Apply to Join
+                  </a>
+                  <a href="/" style={{ display: 'inline-flex', alignItems: 'center', padding: '10px 20px', borderRadius: 10, backgroundColor: 'var(--color-surface)', color: 'var(--color-text-muted)', fontSize: 13, fontWeight: 500, textDecoration: 'none', border: '1px solid var(--color-border)' }}>
+                    Back to Home
+                  </a>
+                </div>
+              </>
+            ) : (
+              /* Filters active but nothing matches */
+              <>
+                <div style={{ width: 56, height: 56, borderRadius: 16, backgroundColor: 'var(--color-surface)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-subtle)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                    <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
+                  </svg>
+                </div>
+                <p style={{ fontSize: 16, fontWeight: 600, color: 'var(--color-text)', marginBottom: 8 }}>
+                  No jobs match your filters
+                </p>
+                <p style={{ fontSize: 13, color: 'var(--color-text-muted)', marginBottom: 20, lineHeight: 1.6 }}>
+                  Try clearing your filters or check back soon.
+                </p>
+                <button
+                  onClick={() => { setStateFilter('All States'); setTradeFilter('All Trades') }}
+                  style={{ display: 'inline-flex', alignItems: 'center', padding: '10px 20px', borderRadius: 10, backgroundColor: 'var(--color-blue)', color: '#fff', fontSize: 13, fontWeight: 600, border: 'none', cursor: 'pointer' }}
+                >
+                  Clear Filters
+                </button>
+              </>
+            )}
           </div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
