@@ -17,14 +17,17 @@ CREATE TABLE IF NOT EXISTS profile_edit_requests (
 ALTER TABLE profile_edit_requests ENABLE ROW LEVEL SECURITY;
 
 -- Admins and the requesting contractor can read their own requests
+DROP POLICY IF EXISTS "contractor_reads_own_requests" ON profile_edit_requests;
 CREATE POLICY "contractor_reads_own_requests" ON profile_edit_requests
   FOR SELECT USING (auth.uid() = contractor_id OR auth.jwt() -> 'app_metadata' ->> 'role' = 'admin');
 
 -- Any authenticated user can create a request for themselves
+DROP POLICY IF EXISTS "authenticated_creates_request" ON profile_edit_requests;
 CREATE POLICY "authenticated_creates_request" ON profile_edit_requests
   FOR INSERT WITH CHECK (auth.uid() = contractor_id);
 
 -- Admins can update (approve/reject)
+DROP POLICY IF EXISTS "admin_updates_requests" ON profile_edit_requests;
 CREATE POLICY "admin_updates_requests" ON profile_edit_requests
   FOR UPDATE USING (true);
 

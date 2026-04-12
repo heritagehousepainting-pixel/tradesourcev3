@@ -41,10 +41,12 @@ CREATE TABLE IF NOT EXISTS job_photos (
 ALTER TABLE job_photos ENABLE ROW LEVEL SECURITY;
 
 -- Anyone can insert (poster uploads their own photos at posting time)
+DROP POLICY IF EXISTS "public_insert_job_photos" ON job_photos;
 CREATE POLICY "public_insert_job_photos" ON job_photos
   FOR INSERT WITH CHECK (true);
 
 -- Approved contractors and the job poster can read photos
+DROP POLICY IF EXISTS "approved_contractor_read_job_photos" ON job_photos;
 CREATE POLICY "approved_contractor_read_job_photos" ON job_photos
   FOR SELECT USING (
     EXISTS (

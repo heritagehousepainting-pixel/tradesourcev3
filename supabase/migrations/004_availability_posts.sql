@@ -20,6 +20,7 @@ CREATE INDEX IF NOT EXISTS idx_availability_posts_status ON availability_posts(s
 CREATE INDEX IF NOT EXISTS idx_availability_posts_trade ON availability_posts(trade_type);
 
 ALTER TABLE availability_posts ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Allow all on availability_posts" ON availability_posts;
 CREATE POLICY "Allow all on availability_posts" ON availability_posts
   FOR ALL USING (true) WITH CHECK (true);
 
@@ -31,6 +32,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+DROP TRIGGER IF EXISTS update_availability_posts_updated_at ON availability_posts;
 CREATE TRIGGER update_availability_posts_updated_at
   BEFORE UPDATE ON availability_posts
   FOR EACH ROW EXECUTE FUNCTION update_availability_posts_updated_at();

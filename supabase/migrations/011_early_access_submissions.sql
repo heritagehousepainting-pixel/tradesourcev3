@@ -14,10 +14,12 @@ CREATE TABLE IF NOT EXISTS early_access_submissions (
 ALTER TABLE early_access_submissions ENABLE ROW LEVEL SECURITY;
 
 -- Anyone can submit an early access form (public lead capture)
+DROP POLICY IF EXISTS "public_insert_early_access" ON early_access_submissions;
 CREATE POLICY "public_insert_early_access" ON early_access_submissions
   FOR INSERT WITH CHECK (true);
 
 -- Only admins can read submissions
+DROP POLICY IF EXISTS "admin_read_early_access" ON early_access_submissions;
 CREATE POLICY "admin_read_early_access" ON early_access_submissions
   FOR SELECT USING (
     (auth.jwt() -> 'app_metadata' ->> 'role') = 'admin'
