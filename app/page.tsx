@@ -453,13 +453,21 @@ export default function Home() {
             {/* Inner radial core glow */}
             <circle cx="720" cy="450" r="120" fill="url(#core-grad)" filter="url(#coreglow)"/>
 
-            {/* Central chip body — 150x90px centered, fully opaque dark fill */}
-            {/* Chip interior elements use the glow filter for integration */}
-            <g filter="url(#chipglow)">
-              {/* Solid opaque chip body — blocks ambient glow completely */}
-              <rect x="645" y="405" width="150" height="90" rx="2"
-                    fill="#040D24" stroke="#0091FF" strokeWidth="1.5" strokeOpacity="0.92"/>
+            {/* Chip interior — richer blue panel with depth */}
+            {/* Subtle gradient fill at low opacity so core glow bleeds through gently */}
+            <linearGradient id="chip-fill" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%"   stopColor="rgba(0,25,85,0.70)"/>
+              <stop offset="100%" stopColor="rgba(0,8,35,0.82)"/>
+            </linearGradient>
 
+            {/* Central chip body — 150x90px centered, electric blue border */}
+            <rect x="645" y="405" width="150" height="90" rx="2"
+                  fill="url(#chip-fill)"
+                  stroke="#0091FF" strokeWidth="1.5" strokeOpacity="0.90"
+                  filter="url(#chipglow)"/>
+
+            {/* Pin rows group — kept inside glow filter for integrated feel */}
+            <g filter="url(#chipglow)">
               {/* Pin rows — left (5) */}
               <line x1="630" y1="420" x2="645" y2="420" stroke="#0091FF" strokeWidth="1.5" strokeOpacity="0.80"/>
               <line x1="630" y1="435" x2="645" y2="435" stroke="#0091FF" strokeWidth="1.5" strokeOpacity="0.80"/>
@@ -486,33 +494,25 @@ export default function Home() {
               <line x1="720" y1="495" x2="720" y2="507" stroke="#0091FF" strokeWidth="1.5" strokeOpacity="0.80"/>
               <line x1="744" y1="495" x2="744" y2="507" stroke="#0091FF" strokeWidth="1.5" strokeOpacity="0.80"/>
               <line x1="780" y1="495" x2="780" y2="507" stroke="#0091FF" strokeWidth="1.5" strokeOpacity="0.80"/>
-              {/* Chip center dot */}
-              <circle cx="720" cy="450" r="5.5" fill="#00D5FF" opacity="0.70"/>
-              {/* Cross-hair */}
-              <line x1="702" y1="450" x2="738" y2="450" stroke="#00D5FF" strokeWidth="0.8" opacity="0.60"/>
-              <line x1="720" y1="432" x2="720" y2="468" stroke="#00D5FF" strokeWidth="0.8" opacity="0.60"/>
-              {/* Corner accents */}
-              <line x1="648" y1="409" x2="657" y2="409" stroke="#00C5FF" strokeWidth="1.2" opacity="0.50"/>
-              <line x1="648" y1="409" x2="648" y2="418" stroke="#00C5FF" strokeWidth="1.2" opacity="0.50"/>
-              <line x1="783" y1="409" x2="792" y2="409" stroke="#00C5FF" strokeWidth="1.2" opacity="0.50"/>
-              <line x1="792" y1="409" x2="792" y2="418" stroke="#00C5FF" strokeWidth="1.2" opacity="0.50"/>
-              <line x1="648" y1="491" x2="657" y2="491" stroke="#00C5FF" strokeWidth="1.2" opacity="0.50"/>
-              <line x1="648" y1="482" x2="648" y2="491" stroke="#00C5FF" strokeWidth="1.2" opacity="0.50"/>
-              <line x1="783" y1="491" x2="792" y2="491" stroke="#00C5FF" strokeWidth="1.2" opacity="0.50"/>
-              <line x1="792" y1="482" x2="792" y2="491" stroke="#00C5FF" strokeWidth="1.2" opacity="0.50"/>
+              {/* Corner dots — subtle, minimal accents */}
+              <circle cx="651" cy="412" r="1.5" fill="#00C5FF" opacity="0.50"/>
+              <circle cx="789" cy="412" r="1.5" fill="#00C5FF" opacity="0.50"/>
+              <circle cx="651" cy="488" r="1.5" fill="#00C5FF" opacity="0.50"/>
+              <circle cx="789" cy="488" r="1.5" fill="#00C5FF" opacity="0.50"/>
             </g>
 
-            {/* Chip wordmark — OUTSIDE the glow group: crisp, pure white, fully opaque */}
+            {/* Chip wordmark — clean, centered, larger — the primary element inside the chip */}
             <text
               x="720"
-              y="452"
+              y="450"
               textAnchor="middle"
               dominantBaseline="middle"
-              fontSize="15"
+              fontSize="18"
               fontWeight="800"
               fontFamily="'Inter', sans-serif"
-              letterSpacing="0.5"
+              letterSpacing="0.25"
               fill="#FFFFFF"
+              style={{ textShadow: '0 0 12px rgba(0,145,255,0.35)' }}
             >
               TradeSource
             </text>
