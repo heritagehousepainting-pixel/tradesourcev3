@@ -364,7 +364,18 @@ export default function Home() {
           }}>
             {/* Left */}
             <div style={{ paddingTop: 16 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24 }}>
+              {/* Contractor identity badge — visible on ALL screens for instant context */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
+                <div style={{ width: 20, height: 1, backgroundColor: 'var(--color-blue)' }} />
+                <span style={{
+                  fontSize: 10, fontWeight: 700, letterSpacing: 2.5,
+                  textTransform: 'uppercase', color: 'var(--color-blue)',
+                  opacity: 0.8,
+                }}>
+                  Built for contractors
+                </span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
                 <div style={{ width: 32, height: 1, backgroundColor: 'var(--color-blue)' }} />
                 <span style={{
                   fontSize: 11, fontWeight: 700, letterSpacing: 3,

@@ -790,6 +790,18 @@ body.no-shell {
     border-bottom: none !important;
   }
 
+  /* Stats panel: hide "Network at a glance" label on mobile — redundant with section */
+  [style*="min-width:240px"] > div:first-child,
+  [style*="minWidth:240"] > div:first-child {
+    display: none !important;
+  }
+
+  /* Stats panel: stat numbers — slightly larger on mobile for readability */
+  [style*="min-width:240px"] [style*="font-size:28px"],
+  [style*="minWidth:240"] [style*="font-size:28px"] {
+    font-size: 24px !important;
+  }
+
   /* Stats panel label: compact */
   [style*="letter-spacing:2px"][style*="text-transform:uppercase"][style*="margin-bottom:24"],
   [style*="letterSpacing:2px"][style*="textTransform:uppercase"][style*="marginBottom:24"] {
@@ -1057,6 +1069,17 @@ body.no-shell {
 
   [style*="padding:104px 56px"] {
     padding: 68px 32px !important;
+  }
+
+  /* Process ghost numbers: smaller on tablet — 56px is too large */
+  [style*="font-size:56px"] {
+    font-size: 40px !important;
+    letter-spacing: -2px !important;
+  }
+
+  /* Who ghost numbers: hide on tablet too — same overflow issue */
+  [style*="font-size:120px"] {
+    display: none !important;
   }
 
   [style*="grid-template-columns:repeat(3, 1fr)"] {

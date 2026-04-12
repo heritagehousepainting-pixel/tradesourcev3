@@ -33,7 +33,39 @@ export default function FounderLoginPage() {
   }, [])
 
   return (
-    <Suspense fallback={<div style={{ minHeight: '100vh', backgroundColor: 'var(--color-bg)', color: 'var(--color-text)' }} />}>
+    <Suspense fallback={
+      <div style={{
+        minHeight: '100vh',
+        backgroundColor: 'var(--color-bg)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 10,
+        flexDirection: 'column',
+        padding: 24,
+      }}>
+        {/* Brand mark */}
+        <div style={{
+          width: 44, height: 44, borderRadius: 12,
+          backgroundColor: 'var(--color-blue)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          marginBottom: 8,
+          opacity: 0.9,
+        }}>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M13 10V3L4 14h7v7l9-11h-7z" />
+          </svg>
+        </div>
+        {/* Spinner */}
+        <div style={{
+          width: 16, height: 16, borderRadius: '50%',
+          border: '2px solid var(--color-border)',
+          borderTopColor: 'var(--color-blue)',
+          animation: 'spin 0.8s linear infinite',
+        }} />
+        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+      </div>
+    }>
       <FounderForm />
     </Suspense>
   )

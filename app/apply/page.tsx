@@ -31,18 +31,20 @@ function FileUploadField({
   onChange: (f: File | null) => void
 }) {
   const [dragging, setDragging] = useState(false)
-  const inputId = label.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')
+  // id ends with -upload so it pairs with the <input id> below
+  const inputId = label.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '') + '-upload'
 
   return (
     <div>
+      {/* Visible accessible label above the hint */}
       <label
         htmlFor={inputId}
-        style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}
+        style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 4 }}
       >
         {label}
-        {required && <span style={{ color: 'var(--color-blue)', marginLeft: 4, fontSize: 10, fontWeight: 600 }}>(required)</span>}
+        {required && <span style={{ color: 'var(--color-red)', marginLeft: 4, fontSize: 10, fontWeight: 600 }}>*</span>}
       </label>
-      <p style={{ fontSize: 12, color: 'var(--color-text-subtle)', marginBottom: 10 }}>{hint}</p>
+      <p style={{ fontSize: 12, color: 'var(--color-text-subtle)', marginBottom: 10, lineHeight: 1.5 }}>{hint}</p>
 
       <div
         onDragOver={e => { e.preventDefault(); setDragging(true) }}
@@ -337,7 +339,7 @@ export default function Apply() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
             {[
               { icon: 'shield', title: 'License + insurance required', sub: 'Every contractor is verified before joining' },
-              { icon: 'clock', title: 'Real humans review every application', sub: "You'll get an email when your application is reviewed" },
+              { icon: 'clock', title: 'Real humans review every application', sub: 'Most applications reviewed within 1\u20132 business days' },
               { icon: 'dollar', title: 'Fixed-price work only', sub: 'No bids, no estimates, no surprises' },
             ].map(({ icon, title, sub }) => (
               <div key={title} style={{ display: 'flex', alignItems: 'flex-start', gap: 14 }}>
@@ -533,23 +535,24 @@ export default function Apply() {
                 {/* Section divider */}
                 <div style={{ height: 1, backgroundColor: 'var(--color-surface)', margin: '4px 0' }} />
 
-                {/* Service Areas */}
-                <div>
-                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 4 }}>
+                {/* Service Areas — wrapped in fieldset for accessibility */}
+                <fieldset style={{ border: 'none', padding: 0, margin: 0 }}>
+                  <legend style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 4 }}>
                     Service Areas <span style={{ color: 'var(--color-red)' }}>*</span>
-                  </label>
+                  </legend>
                   <p style={{ fontSize: 12, color: 'var(--color-text-subtle)', marginBottom: 10 }}>
                     Select the counties you serve in Pennsylvania.
                   </p>
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, paddingBottom: 2 }}>
                     {PA_COUNTIES.map(county => (
                       <button
                         key={county}
                         type="button"
                         onClick={() => toggleArray('service_areas', county)}
                         style={{
-                          padding: '7px 14px', borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer',
+                          padding: '10px 14px', borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer',
                           transition: 'all 0.15s',
+                          minHeight: 44, minWidth: 44,
                           border: form.service_areas.includes(county) ? '1.5px solid var(--color-chip-checked-border)' : '2px solid var(--color-chip-unchecked-border)',
                           backgroundColor: form.service_areas.includes(county) ? 'var(--color-chip-checked-bg)' : 'var(--color-chip-unchecked)',
                           color: form.service_areas.includes(county) ? 'var(--color-chip-checked-text)' : 'var(--color-chip-unchecked-text)',
@@ -563,25 +566,26 @@ export default function Apply() {
                       </button>
                     ))}
                   </div>
-                </div>
+                </fieldset>
 
-                {/* Services Offered */}
-                <div>
-                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 4 }}>
+                {/* Services Offered — wrapped in fieldset for accessibility */}
+                <fieldset style={{ border: 'none', padding: 0, margin: 0 }}>
+                  <legend style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 4 }}>
                     Services Offered <span style={{ color: 'var(--color-red)' }}>*</span>
-                  </label>
+                  </legend>
                   <p style={{ fontSize: 12, color: 'var(--color-text-subtle)', marginBottom: 10 }}>
                     Select all services you provide.
                   </p>
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, paddingBottom: 2 }}>
                     {TRADE_TYPES.map(trade => (
                       <button
                         key={trade}
                         type="button"
                         onClick={() => toggleArray('trade_types', trade)}
                         style={{
-                          padding: '7px 14px', borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer',
+                          padding: '10px 14px', borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer',
                           transition: 'all 0.15s',
+                          minHeight: 44, minWidth: 44,
                           border: form.trade_types.includes(trade) ? '1.5px solid var(--color-chip-checked-border)' : '2px solid var(--color-chip-unchecked-border)',
                           backgroundColor: form.trade_types.includes(trade) ? 'var(--color-chip-checked-bg)' : 'var(--color-chip-unchecked)',
                           color: form.trade_types.includes(trade) ? 'var(--color-chip-checked-text)' : 'var(--color-chip-unchecked-text)',
@@ -595,7 +599,7 @@ export default function Apply() {
                       </button>
                     ))}
                   </div>
-                </div>
+                </fieldset>
 
                 {/* Section divider */}
                 <div style={{ height: 1, backgroundColor: 'var(--color-surface)', margin: '4px 0' }} />
