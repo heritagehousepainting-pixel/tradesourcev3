@@ -480,8 +480,22 @@ export default function Home() {
               <line x1="720" y1="495" x2="720" y2="507" stroke="#00B8FF" strokeWidth="1.5" strokeOpacity="0.75"/>
               <line x1="744" y1="495" x2="744" y2="507" stroke="#00B8FF" strokeWidth="1.5" strokeOpacity="0.75"/>
               <line x1="780" y1="495" x2="780" y2="507" stroke="#00B8FF" strokeWidth="1.5" strokeOpacity="0.75"/>
+              {/* Chip label — TradeSource in the core */}
+              <text
+                x="720"
+                y="452"
+                textAnchor="middle"
+                dominantBaseline="middle"
+                fontSize="10.5"
+                fontWeight="700"
+                fontFamily="'Inter', sans-serif"
+                letterSpacing="1.5"
+                fill="rgba(200,240,255,0.88)"
+              >
+                TradeSource
+              </text>
               {/* Chip center dot */}
-              <circle cx="720" cy="450" r="6" fill="#00E5FF" opacity="0.95"/>
+              <circle cx="720" cy="450" r="5" fill="#00E5FF" opacity="0.60"/>
               {/* Cross-hair */}
               <line x1="702" y1="450" x2="738" y2="450" stroke="#00E5FF" strokeWidth="0.7" opacity="0.55"/>
               <line x1="720" y1="432" x2="720" y2="468" stroke="#00E5FF" strokeWidth="0.7" opacity="0.55"/>
