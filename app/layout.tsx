@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { headers } from 'next/headers'
 import './globals.css'
 import { ThemeProvider } from './theme-context'
 import { NavProvider, LayoutHeader } from './components/NavContext'
@@ -16,8 +17,15 @@ export default function RootLayout({
 }: {
   children: React.ReactNode
 }) {
+  // Detect if rendering the homepage to suppress the layout's footer.
+  // Homepage has its own <footer> in page.tsx; all other pages use the
+  // layout's footer.  We use <html data-page> so CSS can also target it.
+  const hp = headers()
+  const pagePath = hp.get('x-matched-path') || hp.get('x-invoke-pathname') || '/'
+  const isHomepage = pagePath === '/'
+
   return (
-    <html lang="en" data-theme="dark">
+    <html lang="en" data-theme="dark" data-page={isHomepage ? 'home' : 'app'}>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
@@ -32,6 +40,7 @@ export default function RootLayout({
           </NavProvider>
         </ThemeProvider>
 
+        {!isHomepage && (
         <footer style={{ backgroundColor: 'var(--color-footer-bg)', borderTop: '1px solid var(--color-footer-border)' }}>
           <div style={{ maxWidth: 960, margin: '0 auto', padding: '48px 24px 40px' }}>
 
@@ -99,6 +108,8 @@ export default function RootLayout({
 
           </div>
         </footer>
+        )}
+
       </body>
     </html>
   )

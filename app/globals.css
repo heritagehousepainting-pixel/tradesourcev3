@@ -1163,3 +1163,8 @@ body.no-shell {
   position: relative;
   z-index: 1;
 }
+
+/* Homepage has its own footer — suppress the layout's direct-child footer */
+html[data-page="home"] body > footer {
+  display: none;
+}
