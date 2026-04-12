@@ -349,10 +349,13 @@ export default function Home() {
       <HomepageNav />
 
       {/* ─── HERO ─── */}
-      <section style={{
-        background: 'var(--color-bg-primary)',
-        borderBottom: '1px solid var(--color-border)',
-      }}>
+      <section
+        data-homepage-hero
+        style={{
+          background: 'var(--color-bg-primary)',
+          borderBottom: '1px solid var(--color-border)',
+        }}
+      >
         <div style={{ maxWidth: 1160, margin: '0 auto', padding: '80px 56px 0' }}>
 
           {/* Top row: left + stats panel */}

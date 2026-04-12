@@ -1106,19 +1106,131 @@ body.no-shell {
 
 
 
-/* ─── Nav header consistency ─────────────────────────────────────────────── */
+/* ─── Homepage hero: layered atmospheric texture ──────────────────────────────
+ *
+ * Three layers for premium blue-alien scale depth:
+ *   1. Scale-like repeating dot grid (very subtle geometric depth)
+ *   2. Deep blue radial glows at corners (atmospheric depth)
+ *   3. Radial mask fades texture from center so hero text stays crisp
+ *
+ * Dark mode: richer, more visible, blue-on-blue depth
+ * Light mode: much softer, stays premium, not washed out
+ * pointer-events: none so it never blocks interaction
+ *
+ * Applied to [data-homepage-hero] on the homepage hero <section>
+ * ──────────────────────────────────────────────────────────────────────────── */
 
-/* Pages with their own custom sticky header: suppress LayoutHeader's border-bottom
-   so the two bars don't visually double on desktop. The page header handles its
-   own border. Mobile collapse behavior unaffected. */
-[data-page-has-header] header:first-of-type,
-header[data-layout-header] {
-  /* LayoutHeader already has border-bottom; on pages where a custom page header
-     appears immediately below, visually hide LayoutHeader's border to avoid
-     a double-line effect. The padding and background remain. */
+/* Dark mode — richer blue-on-blue depth */
+[data-homepage-hero] {
+  position: relative;
 }
 
-/* Pages that have their own full-page header (not just a nav bar) */
-[data-page-self-header] header:first-of-type {
-  border-bottom: none !important;
+[data-homepage-hero]::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+
+  /* Layer 1: Blue scale-grid — fine geometric dot pattern */
+  /* Repeating diamond-grid at 40×40px, ultra-subtle */
+  background-image:
+    radial-gradient(
+      circle at 20% 80%,
+      rgba(59, 130, 246, 0.18) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      circle at 85% 15%,
+      rgba(37, 99, 235, 0.14) 0%,
+      transparent 45%
+    ),
+    radial-gradient(
+      circle at 60% 60%,
+      rgba(99, 102, 241, 0.08) 0%,
+      transparent 55%
+    ),
+    radial-gradient(
+      circle at 5% 20%,
+      rgba(59, 130, 246, 0.10) 0%,
+      transparent 40%
+    ),
+    /* Fine scale-grid: repeating pattern with diagonal lines */
+    repeating-linear-gradient(
+      -45deg,
+      transparent,
+      transparent 28px,
+      rgba(59, 130, 246, 0.025) 28px,
+      rgba(59, 130, 246, 0.025) 29px
+    ),
+    repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 28px,
+      rgba(59, 130, 246, 0.025) 28px,
+      rgba(59, 130, 246, 0.025) 29px
+    );
+
+  /* Layer 2: Extra corner depth glows */
+  background-color: transparent;
+  background-blend-mode: normal, normal, normal, normal, overlay, overlay;
+
+  /* Radial mask: full opacity in corners, fades to 0 at center
+     so the texture doesn't compete with hero text */
+  -webkit-mask-image: radial-gradient(
+    ellipse 80% 80% at 50% 50%,
+    transparent 30%,
+    rgba(0, 0, 0, 0.6) 100%
+  );
+  mask-image: radial-gradient(
+    ellipse 80% 80% at 50% 50%,
+    transparent 30%,
+    rgba(0, 0, 0, 0.6) 100%
+  );
+}
+
+/* Light mode — much softer, blue-toned depth, stays premium */
+[data-theme="light"] [data-homepage-hero]::before {
+  background-image:
+    radial-gradient(
+      circle at 20% 80%,
+      rgba(37, 99, 235, 0.08) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      circle at 85% 15%,
+      rgba(37, 99, 235, 0.06) 0%,
+      transparent 45%
+    ),
+    radial-gradient(
+      circle at 60% 60%,
+      rgba(99, 102, 241, 0.04) 0%,
+      transparent 55%
+    ),
+    radial-gradient(
+      circle at 5% 20%,
+      rgba(37, 99, 235, 0.05) 0%,
+      transparent 40%
+    ),
+    repeating-linear-gradient(
+      -45deg,
+      transparent,
+      transparent 28px,
+      rgba(37, 99, 235, 0.018) 28px,
+      rgba(37, 99, 235, 0.018) 29px
+    ),
+    repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 28px,
+      rgba(37, 99, 235, 0.018) 28px,
+      rgba(37, 99, 235, 0.018) 29px
+    );
+  background-blend-mode: normal, normal, normal, normal, normal, normal;
+}
+
+/* Ensure hero content sits above the texture */
+[data-homepage-hero] > * {
+  position: relative;
+  z-index: 1;
 }
