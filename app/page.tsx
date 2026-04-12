@@ -358,6 +358,7 @@ export default function Home() {
       >
         {/* ── Constellation / neural-graph energy texture ── */}
                 {/* ── Constellation / neural-graph energy texture ── */}
+                {/* ── Constellation / neural-graph energy texture ── */}
         <svg
           className="hero-constellation"
           viewBox="0 0 1440 820"
@@ -386,6 +387,12 @@ export default function Home() {
               <feGaussianBlur in="SourceGraphic" stdDeviation="28" result="b"/>
               <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
             </filter>
+            {/* Deep immersive haze — heavier blur for corner depth */}
+            <filter id="haze_deep" x="-400%" y="-400%" width="900%" height="900%">
+              <feGaussianBlur in="SourceGraphic" stdDeviation="40" result="b"/>
+              <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+            {/* Bright sharp node filter */}
             <filter id="nbright" x="-150%" y="-150%" width="400%" height="400%">
               <feGaussianBlur in="SourceGraphic" stdDeviation="3.5" result="b"/>
               <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
@@ -403,11 +410,6 @@ export default function Home() {
             <radialGradient id="ng_bright">
               <stop offset="0%"   stopColor="var(--bl, #60A5FA)"/>
               <stop offset="60%"  stopColor="var(--nc, #3B82F6)"/>
-              <stop offset="100%" stopColor="transparent"/>
-            </radialGradient>
-            {/* Atmospheric haze gradient */}
-            <radialGradient id="ng_haze">
-              <stop offset="0%"   stopColor="var(--ng, rgba(59,130,246,0.30))"/>
               <stop offset="100%" stopColor="transparent"/>
             </radialGradient>
 
@@ -436,46 +438,58 @@ export default function Home() {
               <stop offset="100%" stopColor="var(--lg, rgba(59,130,246,0.30))" stopOpacity="0"/>
             </linearGradient>
 
-            {/* ── Vignette mask: transparent center (clean text), opaque edges (atmospheric) ── */}
+            {/* ── Vignette mask: clear center, atmospheric edges ── */}
             <radialGradient id="heroMask">
               <stop offset="0%"   stopColor="black" stopOpacity="0"/>
-              <stop offset="45%"  stopColor="black" stopOpacity="0.20"/>
-              <stop offset="70%"  stopColor="black" stopOpacity="0.65"/>
-              <stop offset="100%" stopColor="black" stopOpacity="0.88"/>
+              <stop offset="40%"  stopColor="black" stopOpacity="0.10"/>
+              <stop offset="58%"  stopColor="black" stopOpacity="0.35"/>
+              <stop offset="75%"  stopColor="black" stopOpacity="0.72"/>
+              <stop offset="100%" stopColor="black" stopOpacity="0.93"/>
             </radialGradient>
             <mask id="hm">
               <rect width="1440" height="820" fill="url(#heroMask)"/>
             </mask>
 
-            {/* ── Atmospheric ambient haze gradients ── */}
-            <radialGradient id="haz_bl" gradientUnits="userSpaceOnUse" cx="10%"  cy="85%" r="55%">
-              <stop offset="0%"   stopColor="var(--ng, rgba(59,130,246,0.40))"/>
+            {/* ── Corner atmospheric gradient definitions ── */}
+            {/* Deep corner glow — bottom-left */}
+            <radialGradient id="cg_bl" cx="5%"  cy="90%" r="55%" gradientUnits="userSpaceOnUse">
+              <stop offset="0%"   stopColor="var(--ng, rgba(59,130,246,0.48))"/>
               <stop offset="100%" stopColor="transparent"/>
             </radialGradient>
-            <radialGradient id="haz_tr" gradientUnits="userSpaceOnUse" cx="90%"  cy="10%" r="50%">
-              <stop offset="0%"   stopColor="var(--ng, rgba(59,130,246,0.35))"/>
+            {/* Deep corner glow — top-right */}
+            <radialGradient id="cg_tr" cx="95%" cy="10%" r="52%" gradientUnits="userSpaceOnUse">
+              <stop offset="0%"   stopColor="var(--ng, rgba(59,130,246,0.42))"/>
               <stop offset="100%" stopColor="transparent"/>
             </radialGradient>
-            <radialGradient id="haz_tl" gradientUnits="userSpaceOnUse" cx="5%"   cy="5%"  r="40%">
-              <stop offset="0%"   stopColor="var(--nc, rgba(59,99,235,0.25))"/>
+            {/* Deep corner glow — top-left */}
+            <radialGradient id="cg_tl" cx="3%"  cy="3%"  r="42%" gradientUnits="userSpaceOnUse">
+              <stop offset="0%"   stopColor="var(--nc, rgba(59,99,235,0.30))"/>
               <stop offset="100%" stopColor="transparent"/>
             </radialGradient>
-            <radialGradient id="haz_br" gradientUnits="userSpaceOnUse" cx="95%"  cy="90%" r="45%">
-              <stop offset="0%"   stopColor="var(--ng, rgba(59,130,246,0.30))"/>
+            {/* Deep corner glow — bottom-right */}
+            <radialGradient id="cg_br" cx="97%" cy="92%" r="48%" gradientUnits="userSpaceOnUse">
+              <stop offset="0%"   stopColor="var(--ng, rgba(59,130,246,0.36))"/>
               <stop offset="100%" stopColor="transparent"/>
             </radialGradient>
-            <radialGradient id="haz_c"  gradientUnits="userSpaceOnUse" cx="50%"  cy="50%" r="35%">
-              <stop offset="0%"   stopColor="var(--nc, rgba(59,99,235,0.15))"/>
+            {/* Subtle mid-left glow */}
+            <radialGradient id="cg_l"  cx="2%"  cy="50%" r="30%" gradientUnits="userSpaceOnUse">
+              <stop offset="0%"   stopColor="var(--nc, rgba(59,99,235,0.20))"/>
+              <stop offset="100%" stopColor="transparent"/>
+            </radialGradient>
+            {/* Subtle center ambient */}
+            <radialGradient id="cg_c"  cx="50%" cy="50%" r="38%" gradientUnits="userSpaceOnUse">
+              <stop offset="0%"   stopColor="var(--nc, rgba(59,99,235,0.12))"/>
               <stop offset="100%" stopColor="transparent"/>
             </radialGradient>
           </defs>
 
-          {/* ── Layer 0: Atmospheric ambient haze ── */}
-          <rect width="1440" height="820" fill="url(#haz_bl)" filter="url(#haze)" opacity="0.80"/>
-          <rect width="1440" height="820" fill="url(#haz_tr)" filter="url(#haze)" opacity="0.70"/>
-          <rect width="1440" height="820" fill="url(#haz_tl)" filter="url(#haze)" opacity="0.60"/>
-          <rect width="1440" height="820" fill="url(#haz_br)" filter="url(#haze)" opacity="0.65"/>
-          <rect width="1440" height="820" fill="url(#haz_c)"  filter="url(#haze)" opacity="0.35"/>
+          {/* ── Layer 0: Corner atmospheric glows (deep immersive depth) ── */}
+          <rect width="1440" height="820" fill="url(#cg_bl)" filter="url(#haze_deep)" opacity="0.92"/>
+          <rect width="1440" height="820" fill="url(#cg_tr)" filter="url(#haze_deep)" opacity="0.88"/>
+          <rect width="1440" height="820" fill="url(#cg_tl)" filter="url(#haze_deep)" opacity="0.78"/>
+          <rect width="1440" height="820" fill="url(#cg_br)" filter="url(#haze_deep)" opacity="0.82"/>
+          <rect width="1440" height="820" fill="url(#cg_l)"  filter="url(#haze_deep)" opacity="0.60"/>
+          <rect width="1440" height="820" fill="url(#cg_c)"  filter="url(#haze)"      opacity="0.55"/>
 
           {/* ── Layer 1: Background deep-space nodes ── */}
           <circle cx="120"  cy="680" r="28" fill="url(#ng_bg)" filter="url(#ng3)" opacity="0.55"/>
@@ -502,16 +516,16 @@ export default function Home() {
           <line x1="900"  y1="680" x2="600"  y2="750" stroke="url(#lg2)" strokeWidth="0.6" filter="url(#ng1)" opacity="0.20"/>
 
           {/* ── Layer 3: Wide glow halos around key connection lines ── */}
-          <line x1="420"  y1="340" x2="820"  y2="480" stroke="url(#llg1)" strokeWidth="6"  filter="url(#ng2)" opacity="0.22"/>
-          <line x1="420"  y1="340" x2="600"  y2="180" stroke="url(#llg1)" strokeWidth="5"  filter="url(#ng2)" opacity="0.18"/>
-          <line x1="820"  y1="480" x2="700"  y2="580" stroke="url(#llg1)" strokeWidth="5"  filter="url(#ng2)" opacity="0.18"/>
-          <line x1="820"  y1="480" x2="1100" y2="480" stroke="url(#llg1)" strokeWidth="5"  filter="url(#ng2)" opacity="0.18"/>
-          <line x1="420"  y1="340" x2="280"  y2="620" stroke="url(#llg2)" strokeWidth="5"  filter="url(#ng2)" opacity="0.16"/>
-          <line x1="420"  y1="340" x2="160"  y2="280" stroke="url(#llg2)" strokeWidth="4"  filter="url(#ng2)" opacity="0.14"/>
-          <line x1="600"  y1="180" x2="1020" y2="200" stroke="url(#llg1)" strokeWidth="5"  filter="url(#ng2)" opacity="0.18"/>
-          <line x1="820"  y1="480" x2="960"  y2="620" stroke="url(#llg2)" strokeWidth="4"  filter="url(#ng2)" opacity="0.14"/>
-          <line x1="280"  y1="620" x2="480"  y2="700" stroke="url(#llg1)" strokeWidth="4"  filter="url(#ng2)" opacity="0.14"/>
-          <line x1="1100" y1="480" x2="1340" y2="380" stroke="url(#llg2)" strokeWidth="4"  filter="url(#ng2)" opacity="0.14"/>
+          <line x1="420"  y1="340" x2="820"  y2="480" stroke="url(#llg1)" strokeWidth="8"  filter="url(#ng2)" opacity="0.28"/>
+          <line x1="420"  y1="340" x2="600"  y2="180" stroke="url(#llg1)" strokeWidth="7"  filter="url(#ng2)" opacity="0.24"/>
+          <line x1="820"  y1="480" x2="700"  y2="580" stroke="url(#llg1)" strokeWidth="7"  filter="url(#ng2)" opacity="0.24"/>
+          <line x1="820"  y1="480" x2="1100" y2="480" stroke="url(#llg1)" strokeWidth="7"  filter="url(#ng2)" opacity="0.24"/>
+          <line x1="420"  y1="340" x2="280"  y2="620" stroke="url(#llg2)" strokeWidth="6"  filter="url(#ng2)" opacity="0.20"/>
+          <line x1="420"  y1="340" x2="160"  y2="280" stroke="url(#llg2)" strokeWidth="6"  filter="url(#ng2)" opacity="0.18"/>
+          <line x1="600"  y1="180" x2="1020" y2="200" stroke="url(#llg1)" strokeWidth="7"  filter="url(#ng2)" opacity="0.24"/>
+          <line x1="820"  y1="480" x2="960"  y2="620" stroke="url(#llg2)" strokeWidth="6"  filter="url(#ng2)" opacity="0.18"/>
+          <line x1="280"  y1="620" x2="480"  y2="700" stroke="url(#llg1)" strokeWidth="5"  filter="url(#ng2)" opacity="0.18"/>
+          <line x1="1100" y1="480" x2="1340" y2="380" stroke="url(#llg2)" strokeWidth="5"  filter="url(#ng2)" opacity="0.18"/>
 
           {/* ── Layer 4: Mid-layer constellation nodes ── */}
           <circle cx="420"  cy="340" r="18" fill="url(#ng_md)" filter="url(#ng2)" opacity="0.70"/>
@@ -604,7 +618,7 @@ export default function Home() {
           <circle cx="580"  cy="650" r="1"   fill="#93C5FD" opacity="0.18"/>
           <circle cx="1100" cy="680" r="1.5" fill="#93C5FD" opacity="0.25"/>
 
-          {/* ── Vignette mask: transparent center, atmospheric edges ── */}
+          {/* ── Vignette mask: clear center, atmospheric edges ── */}
           <rect width="1440" height="820" fill="url(#heroMask)" mask="url(#hm)" opacity="1"/>
         </svg>
         <div style={{ maxWidth: 1160, margin: '0 auto', padding: '80px 56px 0' }}>
