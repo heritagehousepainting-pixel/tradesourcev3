@@ -335,7 +335,7 @@ body {
   }
 
   /* Apply & Post-job: left panel (42%) → full width on mobile */
-  [style*="width: '42%'"][style*="padding: '48px 56px'"] {
+  [style*="width:42%"][style*="padding:48px 56px"] {
     width: 100% !important;
     padding: 32px 20px !important;
   }
