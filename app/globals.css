@@ -1177,9 +1177,4 @@ body.no-shell {
 }
 
 /* Reference image base — the TradeSource reference image is the primary visual */
-/* Image sits at full cover, z-index 0 */
-/* Dark overlay gradient — deeper, richer dark navy than before */
-/* References the TradeSource reference image color family: deep midnight blue base */
-[data-homepage-hero] > [aria-hidden="true"] > div:nth-child(2) {
-  background: linear-gradient(160deg, rgba(2,8,22,0.68) 0%, rgba(2,8,22,0.42) 45%, rgba(2,8,22,0.82) 100%) !important;
-}
+/* Hero overlay: now handled by inline style (left-weighted gradient) */
