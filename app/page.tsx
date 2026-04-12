@@ -376,59 +376,77 @@ export default function Home() {
             }}
           >
             <defs>
-              {/* Soft glow — for circuit lines and nodes */}
+              {/* Ambient glow — for circuit lines */}
               <filter id="cglow" x="-60%" y="-60%" width="220%" height="220%">
                 <feGaussianBlur in="SourceGraphic" stdDeviation="2" result="b"/>
                 <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
               </filter>
-              {/* Core center glow — stronger radial */}
-              <filter id="coreglow" x="-150%" y="-150%" width="400%" height="400%">
-                <feGaussianBlur in="SourceGraphic" stdDeviation="12" result="b"/>
-                <feMerge><feMergeNode in="b"/><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+              {/* Core center glow — layered, strong */}
+              <filter id="coreglow" x="-200%" y="-200%" width="500%" height="500%">
+                <feGaussianBlur in="SourceGraphic" stdDeviation="16" result="b1"/>
+                <feGaussianBlur in="SourceGraphic" stdDeviation="8" result="b2"/>
+                <feMerge>
+                  <feMergeNode in="b1"/>
+                  <feMergeNode in="b1"/>
+                  <feMergeNode in="b2"/>
+                  <feMergeNode in="SourceGraphic"/>
+                </feMerge>
               </filter>
-              {/* Chip body glow */}
-              <filter id="chipglow" x="-80%" y="-80%" width="260%" height="260%">
-                <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="b"/>
+              {/* Chip body glow — medium, precise */}
+              <filter id="chipglow" x="-100%" y="-100%" width="300%" height="300%">
+                <feGaussianBlur in="SourceGraphic" stdDeviation="5" result="b"/>
                 <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
               </filter>
               {/* Vignette: edges dark, center open for text */}
               <radialGradient id="cvignette" cx="50%" cy="50%" r="50%">
                 <stop offset="0%"   stopColor="transparent"/>
-                <stop offset="55%"  stopColor="transparent"/>
-                <stop offset="100%" stopColor="rgba(0,0,0,0.60)"/>
+                <stop offset="50%"  stopColor="transparent"/>
+                <stop offset="100%" stopColor="rgba(0,0,0,0.65)"/>
               </radialGradient>
               {/* Core center radial: bright core fading outward */}
               <radialGradient id="core-grad" cx="50%" cy="50%" r="50%">
-                <stop offset="0%"   stopColor="rgba(59,130,246,0.45)" />
-                <stop offset="40%"  stopColor="rgba(37,99,235,0.18)" />
-                <stop offset="100%" stopColor="transparent" />
+                <stop offset="0%"   stopColor="rgba(59,130,246,0.65)"/>
+                <stop offset="30%"  stopColor="rgba(37,99,235,0.35)"/>
+                <stop offset="70%"  stopColor="rgba(30,64,160,0.10)"/>
+                <stop offset="100%" stopColor="transparent"/>
+              </radialGradient>
+              {/* Ambient core glow: wide soft blue wash */}
+              <radialGradient id="ambient-grad" cx="50%" cy="50%" r="50%">
+                <stop offset="0%"   stopColor="rgba(37,99,235,0.30)"/>
+                <stop offset="50%"  stopColor="rgba(30,64,160,0.12)"/>
+                <stop offset="100%" stopColor="transparent"/>
               </radialGradient>
               {/* Chip body fill */}
               <linearGradient id="chip-fill" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0%"   stopColor="rgba(30,60,120,0.55)"/>
-                <stop offset="100%" stopColor="rgba(15,35,80,0.70)"/>
+                <stop offset="0%"   stopColor="rgba(40,80,150,0.60)"/>
+                <stop offset="100%" stopColor="rgba(20,45,100,0.75)"/>
               </linearGradient>
               {/* Bottom fade */}
               <linearGradient id="c-bottom-fade" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="0%"   stopColor="transparent"/>
-                <stop offset="100%" stopColor="rgba(0,0,0,0.35)"/>
+                <stop offset="100%" stopColor="rgba(0,0,0,0.40)"/>
               </linearGradient>
             </defs>
 
-            {/* ═══ LAYER 0: Faint structural grid (PCB substrate) ═══ */}
-            <g className="hero-circuit-grid" opacity="0.12">
-              {/* Major horizontals */}
+            {/* LAYER 0: Atmospheric depth — deep corners and edges */}
+            <g className="hero-circuit-depth" opacity="0.15">
+              <path d="M 0 0 L 480 0 L 360 180 L 0 180 Z" fill="rgba(0,0,0,0.4)"/>
+              <path d="M 1440 0 L 960 0 L 1080 180 L 1440 180 Z" fill="rgba(0,0,0,0.4)"/>
+              <path d="M 0 900 L 480 900 L 360 720 L 0 720 Z" fill="rgba(0,0,0,0.4)"/>
+              <path d="M 1440 900 L 960 900 L 1080 720 L 1440 720 Z" fill="rgba(0,0,0,0.4)"/>
+            </g>
+
+            {/* LAYER 0b: Faint structural grid (PCB substrate) */}
+            <g className="hero-circuit-grid" opacity="0.10">
               <line x1="0" y1="180" x2="1440" y2="180" strokeWidth="0.5"/>
               <line x1="0" y1="360" x2="1440" y2="360" strokeWidth="0.4"/>
               <line x1="0" y1="540" x2="1440" y2="540" strokeWidth="0.5"/>
               <line x1="0" y1="720" x2="1440" y2="720" strokeWidth="0.4"/>
-              {/* Major verticals */}
               <line x1="240"  y1="0" x2="240"  y2="900" strokeWidth="0.4"/>
               <line x1="480"  y1="0" x2="480"  y2="900" strokeWidth="0.3"/>
               <line x1="720"  y1="0" x2="720"  y2="900" strokeWidth="0.3"/>
               <line x1="960"  y1="0" x2="960"  y2="900" strokeWidth="0.3"/>
               <line x1="1200" y1="0" x2="1200" y2="900" strokeWidth="0.4"/>
-              {/* Grid intersection dots */}
               <circle cx="480"  cy="360" r="1" opacity="0.3"/>
               <circle cx="960"  cy="360" r="1" opacity="0.3"/>
               <circle cx="480"  cy="540" r="1" opacity="0.3"/>
@@ -437,212 +455,195 @@ export default function Home() {
               <circle cx="720"  cy="720" r="1" opacity="0.3"/>
             </g>
 
-            {/* ═══ LAYER 1: Central chip core ═══ */}
-            {/* Outer glow ring */}
-            <circle cx="720" cy="450" r="80" fill="none" strokeWidth="1" opacity="0.20"/>
-            <circle cx="720" cy="450" r="55" fill="none" strokeWidth="1.5" opacity="0.30"/>
+            {/* LAYER 1: Central chip core — larger, more commanding */}
+            {/* Wide ambient glow (widest, most diffuse) */}
+            <circle cx="720" cy="450" r="160" fill="url(#ambient-grad)" filter="url(#coreglow)" opacity="0.5"/>
+            {/* Middle glow ring */}
+            <circle cx="720" cy="450" r="110" fill="none" strokeWidth="1" opacity="0.18"/>
+            {/* Inner glow ring */}
+            <circle cx="720" cy="450" r="80"  fill="none" strokeWidth="1.2" opacity="0.25"/>
             {/* Core radial glow */}
-            <circle cx="720" cy="450" r="80" fill="url(#core-grad)" filter="url(#coreglow)"/>
-            {/* Chip body: rounded rect via path */}
+            <circle cx="720" cy="450" r="100" fill="url(#core-grad)" filter="url(#coreglow)"/>
+            {/* Chip body: 140x84px, centered on 720,450 */}
             <g filter="url(#chipglow)">
-              <path d="M 672 420 L 768 420 L 768 480 L 672 480 Z"
-                    fill="url(#chip-fill)" strokeWidth="1.5" opacity="0.85"/>
-              {/* Pin rows — left side */}
-              <line x1="660" y1="428" x2="672" y2="428" strokeWidth="1.5"/>
-              <line x1="660" y1="438" x2="672" y2="438" strokeWidth="1.5"/>
-              <line x1="660" y1="450" x2="672" y2="450" strokeWidth="1.5"/>
-              <line x1="660" y1="462" x2="672" y2="462" strokeWidth="1.5"/>
-              <line x1="660" y1="472" x2="672" y2="472" strokeWidth="1.5"/>
-              {/* Pin rows — right side */}
-              <line x1="768" y1="428" x2="780" y2="428" strokeWidth="1.5"/>
-              <line x1="768" y1="438" x2="780" y2="438" strokeWidth="1.5"/>
-              <line x1="768" y1="450" x2="780" y2="450" strokeWidth="1.5"/>
-              <line x1="768" y1="462" x2="780" y2="462" strokeWidth="1.5"/>
-              <line x1="768" y1="472" x2="780" y2="472" strokeWidth="1.5"/>
-              {/* Pin rows — top side */}
-              <line x1="680" y1="408" x2="680" y2="420" strokeWidth="1.5"/>
-              <line x1="694" y1="408" x2="694" y2="420" strokeWidth="1.5"/>
-              <line x1="708" y1="408" x2="708" y2="420" strokeWidth="1.5"/>
-              <line x1="732" y1="408" x2="732" y2="420" strokeWidth="1.5"/>
-              <line x1="746" y1="408" x2="746" y2="420" strokeWidth="1.5"/>
-              <line x1="760" y1="408" x2="760" y2="420" strokeWidth="1.5"/>
-              {/* Pin rows — bottom side */}
-              <line x1="680" y1="480" x2="680" y2="492" strokeWidth="1.5"/>
-              <line x1="694" y1="480" x2="694" y2="492" strokeWidth="1.5"/>
-              <line x1="708" y1="480" x2="708" y2="492" strokeWidth="1.5"/>
-              <line x1="732" y1="480" x2="732" y2="492" strokeWidth="1.5"/>
-              <line x1="746" y1="480" x2="746" y2="492" strokeWidth="1.5"/>
-              <line x1="760" y1="480" x2="760" y2="492" strokeWidth="1.5"/>
-              {/* Chip center dot */}
-              <circle cx="720" cy="450" r="4" opacity="0.90"/>
+              <path d="M 650 408 L 790 408 L 790 492 L 650 492 Z"
+                    fill="url(#chip-fill)" strokeWidth="1.5" opacity="0.90"/>
+              {/* Pin rows — left side (5 pins) */}
+              <line x1="636" y1="420" x2="650" y2="420" strokeWidth="1.5"/>
+              <line x1="636" y1="432" x2="650" y2="432" strokeWidth="1.5"/>
+              <line x1="636" y1="450" x2="650" y2="450" strokeWidth="1.5"/>
+              <line x1="636" y1="468" x2="650" y2="468" strokeWidth="1.5"/>
+              <line x1="636" y1="480" x2="650" y2="480" strokeWidth="1.5"/>
+              {/* Pin rows — right side (5 pins) */}
+              <line x1="790" y1="420" x2="804" y2="420" strokeWidth="1.5"/>
+              <line x1="790" y1="432" x2="804" y2="432" strokeWidth="1.5"/>
+              <line x1="790" y1="450" x2="804" y2="450" strokeWidth="1.5"/>
+              <line x1="790" y1="468" x2="804" y2="468" strokeWidth="1.5"/>
+              <line x1="790" y1="480" x2="804" y2="480" strokeWidth="1.5"/>
+              {/* Pin rows — top (6 pins) */}
+              <line x1="662" y1="396" x2="662" y2="408" strokeWidth="1.5"/>
+              <line x1="678" y1="396" x2="678" y2="408" strokeWidth="1.5"/>
+              <line x1="694" y1="396" x2="694" y2="408" strokeWidth="1.5"/>
+              <line x1="720" y1="396" x2="720" y2="408" strokeWidth="1.5"/>
+              <line x1="746" y1="396" x2="746" y2="408" strokeWidth="1.5"/>
+              <line x1="778" y1="396" x2="778" y2="408" strokeWidth="1.5"/>
+              {/* Pin rows — bottom (6 pins) */}
+              <line x1="662" y1="492" x2="662" y2="504" strokeWidth="1.5"/>
+              <line x1="678" y1="492" x2="678" y2="504" strokeWidth="1.5"/>
+              <line x1="694" y1="492" x2="694" y2="504" strokeWidth="1.5"/>
+              <line x1="720" y1="492" x2="720" y2="504" strokeWidth="1.5"/>
+              <line x1="746" y1="492" x2="746" y2="504" strokeWidth="1.5"/>
+              <line x1="778" y1="492" x2="778" y2="504" strokeWidth="1.5"/>
+              {/* Chip center dot — larger */}
+              <circle cx="720" cy="450" r="5.5" opacity="0.95"/>
               {/* Chip inner cross-hair */}
-              <line x1="708" y1="450" x2="732" y2="450" strokeWidth="0.5" opacity="0.4"/>
-              <line x1="720" y1="438" x2="720" y2="462" strokeWidth="0.5" opacity="0.4"/>
+              <line x1="705" y1="450" x2="735" y2="450" strokeWidth="0.6" opacity="0.5"/>
+              <line x1="720" y1="435" x2="720" y2="465" strokeWidth="0.6" opacity="0.5"/>
+              {/* Chip corner accent marks */}
+              <line x1="654" y1="412" x2="662" y2="412" strokeWidth="1" opacity="0.4"/>
+              <line x1="654" y1="412" x2="654" y2="420" strokeWidth="1" opacity="0.4"/>
+              <line x1="778" y1="412" x2="786" y2="412" strokeWidth="1" opacity="0.4"/>
+              <line x1="786" y1="412" x2="786" y2="420" strokeWidth="1" opacity="0.4"/>
+              <line x1="654" y1="488" x2="662" y2="488" strokeWidth="1" opacity="0.4"/>
+              <line x1="654" y1="480" x2="654" y2="488" strokeWidth="1" opacity="0.4"/>
+              <line x1="778" y1="488" x2="786" y2="488" strokeWidth="1" opacity="0.4"/>
+              <line x1="786" y1="480" x2="786" y2="488" strokeWidth="1" opacity="0.4"/>
             </g>
 
-            {/* ═══ LAYER 2: Circuit traces — routed from edges to core ═══ */}
-            <g className="hero-circuit-traces" filter="url(#cglow)" opacity="0.60">
-              {/* ── Top traces (run down) ── */}
-              <path d="M 360 0 L 360 140 L 380 140 L 380 180 L 420 180 L 420 240 L 480 240 L 480 300 L 560 300 L 560 360 L 620 360 L 620 400"
-                    fill="none" strokeWidth="1.2" opacity="0.7"/>
-              <path d="M 720 0 L 720 60 L 680 60 L 680 120 L 640 120 L 640 180 L 620 180 L 620 280 L 640 280 L 640 320 L 680 320 L 680 380 L 700 380 L 700 420"
-                    fill="none" strokeWidth="1.2" opacity="0.65"/>
-              <path d="M 1080 0 L 1080 100 L 1060 100 L 1060 160 L 1020 160 L 1020 220 L 980 220 L 980 280 L 920 280 L 920 340 L 860 340 L 860 400 L 820 400 L 820 420"
-                    fill="none" strokeWidth="1.2" opacity="0.7"/>
-
-              {/* ── Bottom traces (run up) ── */}
-              <path d="M 360 900 L 360 760 L 380 760 L 380 720 L 420 720 L 420 660 L 480 660 L 480 600 L 560 600 L 560 540 L 620 540 L 620 500"
-                    fill="none" strokeWidth="1.2" opacity="0.7"/>
-              <path d="M 720 900 L 720 840 L 680 840 L 680 780 L 640 780 L 640 720 L 620 720 L 620 620 L 640 620 L 640 580 L 680 580 L 680 520 L 700 520 L 700 480"
-                    fill="none" strokeWidth="1.2" opacity="0.65"/>
-              <path d="M 1080 900 L 1080 800 L 1060 800 L 1060 740 L 1020 740 L 1020 680 L 980 680 L 980 620 L 920 620 L 920 560 L 860 560 L 860 500 L 820 500 L 820 480"
-                    fill="none" strokeWidth="1.2" opacity="0.7"/>
-
-              {/* ── Left traces (run right) ── */}
-              <path d="M 0 200 L 80 200 L 80 220 L 140 220 L 140 280 L 200 280 L 200 340 L 260 340 L 260 380 L 320 380 L 320 420 L 380 420 L 380 450"
-                    fill="none" strokeWidth="1.2" opacity="0.7"/>
-              <path d="M 0 450 L 100 450 L 100 470 L 160 470 L 160 510 L 220 510 L 220 550 L 300 550 L 300 590 L 380 590 L 380 630 L 450 630 L 450 660 L 520 660 L 520 680 L 580 680 L 580 640 L 620 640 L 620 600 L 660 600 L 660 560 L 680 560 L 680 520 L 700 520 L 700 480"
-                    fill="none" strokeWidth="1.2" opacity="0.65"/>
-              <path d="M 0 700 L 60 700 L 60 680 L 120 680 L 120 620 L 180 620 L 180 580 L 260 580 L 260 540 L 320 540 L 320 500 L 380 500 L 380 470"
-                    fill="none" strokeWidth="1.2" opacity="0.7"/>
-
-              {/* ── Right traces (run left) ── */}
-              <path d="M 1440 200 L 1360 200 L 1360 220 L 1300 220 L 1300 280 L 1240 280 L 1240 340 L 1180 340 L 1180 380 L 1120 380 L 1120 420 L 1060 420 L 1060 450"
-                    fill="none" strokeWidth="1.2" opacity="0.7"/>
-              <path d="M 1440 450 L 1340 450 L 1340 430 L 1280 430 L 1280 390 L 1220 390 L 1220 350 L 1140 350 L 1140 310 L 1060 310 L 1060 280 L 1000 280 L 1000 310 L 940 310 L 940 350 L 880 350 L 880 390 L 820 390 L 820 420 L 760 420 L 760 450"
-                    fill="none" strokeWidth="1.2" opacity="0.65"/>
-              <path d="M 1440 700 L 1380 700 L 1380 680 L 1320 680 L 1320 620 L 1260 620 L 1260 580 L 1180 580 L 1180 540 L 1120 540 L 1120 500 L 1060 500 L 1060 470"
-                    fill="none" strokeWidth="1.2" opacity="0.7"/>
-
-              {/* ── Diagonal corner traces ── */}
-              <path d="M 0 0 L 40 0 L 40 40 L 100 40 L 100 100 L 180 100 L 180 160 L 260 160 L 260 200 L 320 200 L 320 240 L 380 240 L 380 280 L 420 280 L 420 320 L 480 320 L 480 360 L 540 360 L 540 400 L 600 400 L 600 420"
-                    fill="none" strokeWidth="0.8" opacity="0.45"/>
-              <path d="M 1440 0 L 1400 0 L 1400 40 L 1340 40 L 1340 100 L 1260 100 L 1260 160 L 1180 160 L 1180 200 L 1120 200 L 1120 240 L 1060 240 L 1060 280 L 1000 280 L 1000 320 L 940 320 L 940 360 L 880 360 L 880 400 L 820 400 L 820 420"
-                    fill="none" strokeWidth="0.8" opacity="0.45"/>
-              <path d="M 0 900 L 40 900 L 40 860 L 100 860 L 100 800 L 180 800 L 180 740 L 260 740 L 260 700 L 320 700 L 320 660 L 380 660 L 380 620 L 420 620 L 420 580 L 480 580 L 480 540 L 540 540 L 540 500 L 600 500 L 600 480"
-                    fill="none" strokeWidth="0.8" opacity="0.45"/>
-              <path d="M 1440 900 L 1400 900 L 1400 860 L 1340 860 L 1340 800 L 1260 800 L 1260 740 L 1180 740 L 1180 700 L 1120 700 L 1120 660 L 1060 660 L 1060 620 L 1000 620 L 1000 580 L 940 580 L 940 540 L 880 540 L 880 500 L 820 500 L 820 480"
-                    fill="none" strokeWidth="0.8" opacity="0.45"/>
-
-              {/* ── Midfield thin signal lines ── */}
-              <line x1="100" y1="450" x2="300" y2="450" opacity="0.3" strokeWidth="0.8"/>
-              <line x1="1140" y1="450" x2="1340" y2="450" opacity="0.3" strokeWidth="0.8"/>
-              <line x1="720" y1="100" x2="720" y2="300" opacity="0.3" strokeWidth="0.8"/>
-              <line x1="720" y1="600" x2="720" y2="800" opacity="0.3" strokeWidth="0.8"/>
-              <line x1="200" y1="340" x2="400" y2="340" opacity="0.25" strokeWidth="0.6"/>
-              <line x1="1240" y1="340" x2="1040" y2="340" opacity="0.25" strokeWidth="0.6"/>
+            {/* LAYER 2: Primary signal routes — thicker, brighter, toward core */}
+            <g className="hero-circuit-primary" opacity="0.50">
+              <line x1="200" y1="450" x2="540" y2="450" strokeWidth="1.8" opacity="0.80"/>
+              <line x1="540" y1="450" x2="636" y2="450" strokeWidth="1.5" opacity="0.75"/>
+              <line x1="1240" y1="450" x2="900" y2="450" strokeWidth="1.8" opacity="0.80"/>
+              <line x1="900" y1="450" x2="804" y2="450" strokeWidth="1.5" opacity="0.75"/>
+              <line x1="720" y1="80"  x2="720" y2="396" strokeWidth="1.8" opacity="0.80"/>
+              <line x1="720" y1="80"  x2="720" y2="60"  strokeWidth="1.5" opacity="0.60"/>
+              <line x1="720" y1="820" x2="720" y2="504" strokeWidth="1.8" opacity="0.80"/>
+              <line x1="720" y1="820" x2="720" y2="840" strokeWidth="1.5" opacity="0.60"/>
             </g>
 
-            {/* ═══ LAYER 3: Junction nodes on trace paths ═══ */}
-            <g className="hero-circuit-nodes" filter="url(#cglow)" opacity="0.80">
-              {/* Top junction points */}
-              <circle cx="360"  cy="140" r="2.5" opacity="0.8"/>
-              <circle cx="380"  cy="180" r="2"   opacity="0.7"/>
-              <circle cx="420"  cy="240" r="2"   opacity="0.7"/>
-              <circle cx="480"  cy="300" r="2"   opacity="0.7"/>
-              <circle cx="560"  cy="360" r="2.5" opacity="0.8"/>
-              <circle cx="620"  cy="400" r="3"   opacity="0.9"/>
-              <circle cx="720"  cy="60"  r="2"   opacity="0.7"/>
-              <circle cx="680"  cy="120" r="2"   opacity="0.7"/>
-              <circle cx="640"  cy="180" r="2"   opacity="0.7"/>
-              <circle cx="700"  cy="380" r="2"   opacity="0.7"/>
-              <circle cx="1080" cy="100" r="2.5" opacity="0.8"/>
-              <circle cx="1060" cy="160" r="2"   opacity="0.7"/>
-              <circle cx="1020" cy="220" r="2"   opacity="0.7"/>
-              <circle cx="980"  cy="280" r="2"   opacity="0.7"/>
-              <circle cx="920"  cy="340" r="2"   opacity="0.7"/>
-              <circle cx="860"  cy="400" r="2.5" opacity="0.8"/>
-              <circle cx="820"  cy="420" r="3"   opacity="0.9"/>
-
-              {/* Bottom junction points */}
-              <circle cx="360"  cy="760" r="2.5" opacity="0.8"/>
-              <circle cx="380"  cy="720" r="2"   opacity="0.7"/>
-              <circle cx="420"  cy="660" r="2"   opacity="0.7"/>
-              <circle cx="480"  cy="600" r="2"   opacity="0.7"/>
-              <circle cx="560"  cy="540" r="2.5" opacity="0.8"/>
-              <circle cx="620"  cy="500" r="3"   opacity="0.9"/>
-              <circle cx="720"  cy="840" r="2"   opacity="0.7"/>
-              <circle cx="680"  cy="780" r="2"   opacity="0.7"/>
-              <circle cx="640"  cy="720" r="2"   opacity="0.7"/>
-              <circle cx="700"  cy="520" r="2"   opacity="0.7"/>
-              <circle cx="1080" cy="800" r="2.5" opacity="0.8"/>
-              <circle cx="1060" cy="740" r="2"   opacity="0.7"/>
-              <circle cx="1020" cy="680" r="2"   opacity="0.7"/>
-              <circle cx="980"  cy="620" r="2"   opacity="0.7"/>
-              <circle cx="920"  cy="560" r="2"   opacity="0.7"/>
-              <circle cx="860"  cy="500" r="2.5" opacity="0.8"/>
-              <circle cx="820"  cy="480" r="3"   opacity="0.9"/>
-
-              {/* Left side junction points */}
-              <circle cx="80"   cy="220" r="2"   opacity="0.7"/>
-              <circle cx="140"  cy="280" r="2"   opacity="0.7"/>
-              <circle cx="200"  cy="340" r="2"   opacity="0.7"/>
-              <circle cx="260"  cy="380" r="2"   opacity="0.7"/>
-              <circle cx="320"  cy="420" r="2.5" opacity="0.8"/>
-              <circle cx="380"  cy="450" r="3"   opacity="0.9"/>
-              <circle cx="100"  cy="470" r="2"   opacity="0.7"/>
-              <circle cx="160"  cy="510" r="2"   opacity="0.7"/>
-              <circle cx="220"  cy="550" r="2"   opacity="0.7"/>
-              <circle cx="300"  cy="590" r="2"   opacity="0.7"/>
-              <circle cx="380"  cy="630" r="2.5" opacity="0.8"/>
-              <circle cx="580"  cy="640" r="2"   opacity="0.7"/>
-              <circle cx="660"  cy="560" r="2"   opacity="0.7"/>
-              <circle cx="700"  cy="480" r="3"   opacity="0.9"/>
-              <circle cx="60"   cy="680" r="2"   opacity="0.7"/>
-              <circle cx="120"  cy="620" r="2"   opacity="0.7"/>
-              <circle cx="180"  cy="580" r="2"   opacity="0.7"/>
-              <circle cx="260"  cy="540" r="2"   opacity="0.7"/>
-              <circle cx="320"  cy="500" r="2.5" opacity="0.8"/>
-              <circle cx="380"  cy="470" r="3"   opacity="0.9"/>
-
-              {/* Right side junction points */}
-              <circle cx="1360" cy="220" r="2"   opacity="0.7"/>
-              <circle cx="1300" cy="280" r="2"   opacity="0.7"/>
-              <circle cx="1240" cy="340" r="2"   opacity="0.7"/>
-              <circle cx="1180" cy="380" r="2"   opacity="0.7"/>
-              <circle cx="1120" cy="420" r="2.5" opacity="0.8"/>
-              <circle cx="1060" cy="450" r="3"   opacity="0.9"/>
-              <circle cx="1340" cy="430" r="2"   opacity="0.7"/>
-              <circle cx="1280" cy="390" r="2"   opacity="0.7"/>
-              <circle cx="1220" cy="350" r="2"   opacity="0.7"/>
-              <circle cx="1140" cy="310" r="2"   opacity="0.7"/>
-              <circle cx="1060" cy="280" r="2.5" opacity="0.8"/>
-              <circle cx="1000" cy="310" r="2"   opacity="0.7"/>
-              <circle cx="940"  cy="350" r="2"   opacity="0.7"/>
-              <circle cx="880"  cy="390" r="2"   opacity="0.7"/>
-              <circle cx="820"  cy="420" r="2.5" opacity="0.8"/>
-              <circle cx="760"  cy="450" r="3"   opacity="0.9"/>
-              <circle cx="1380" cy="680" r="2"   opacity="0.7"/>
-              <circle cx="1320" cy="620" r="2"   opacity="0.7"/>
-              <circle cx="1260" cy="580" r="2"   opacity="0.7"/>
-              <circle cx="1180" cy="540" r="2"   opacity="0.7"/>
-              <circle cx="1120" cy="500" r="2.5" opacity="0.8"/>
-              <circle cx="1060" cy="470" r="3"   opacity="0.9"/>
+            {/* LAYER 3: Secondary routed traces */}
+            <g className="hero-circuit-traces" filter="url(#cglow)" opacity="0.55">
+              {/* Top traces */}
+              <path d="M 360 0 L 360 140 L 380 140 L 380 180 L 420 180 L 420 240 L 480 240 L 480 300 L 560 300 L 560 360 L 620 360 L 620 408"
+                    fill="none" strokeWidth="1.0" opacity="0.60"/>
+              <path d="M 720 0 L 720 60 L 680 60 L 680 120 L 640 120 L 640 180 L 620 180 L 620 280 L 640 280 L 640 320 L 680 320 L 680 380 L 700 380 L 700 408"
+                    fill="none" strokeWidth="1.0" opacity="0.55"/>
+              <path d="M 1080 0 L 1080 100 L 1060 100 L 1060 160 L 1020 160 L 1020 220 L 980 220 L 980 280 L 920 280 L 920 340 L 860 340 L 860 408"
+                    fill="none" strokeWidth="1.0" opacity="0.60"/>
+              {/* Bottom traces */}
+              <path d="M 360 900 L 360 760 L 380 760 L 380 720 L 420 720 L 420 660 L 480 660 L 480 600 L 560 600 L 560 540 L 620 540 L 620 492"
+                    fill="none" strokeWidth="1.0" opacity="0.60"/>
+              <path d="M 720 900 L 720 840 L 680 840 L 680 780 L 640 780 L 640 720 L 620 720 L 620 620 L 640 620 L 640 580 L 680 580 L 680 520 L 700 520 L 700 492"
+                    fill="none" strokeWidth="1.0" opacity="0.55"/>
+              <path d="M 1080 900 L 1080 800 L 1060 800 L 1060 740 L 1020 740 L 1020 680 L 980 680 L 980 620 L 920 620 L 920 560 L 860 560 L 860 492"
+                    fill="none" strokeWidth="1.0" opacity="0.60"/>
+              {/* Left traces */}
+              <path d="M 0 200 L 80 200 L 80 220 L 140 220 L 140 280 L 200 280 L 200 340 L 260 340 L 260 380 L 320 380 L 320 420 L 540 420 L 540 450"
+                    fill="none" strokeWidth="1.0" opacity="0.60"/>
+              <path d="M 0 700 L 60 700 L 60 680 L 120 680 L 120 620 L 180 620 L 180 580 L 260 580 L 260 540 L 320 540 L 320 492"
+                    fill="none" strokeWidth="1.0" opacity="0.60"/>
+              {/* Right traces */}
+              <path d="M 1440 200 L 1360 200 L 1360 220 L 1300 220 L 1300 280 L 1240 280 L 1240 340 L 1180 340 L 1180 380 L 1120 380 L 1120 420 L 900 420 L 900 450"
+                    fill="none" strokeWidth="1.0" opacity="0.60"/>
+              <path d="M 1440 700 L 1380 700 L 1380 680 L 1320 680 L 1320 620 L 1260 620 L 1260 580 L 1180 580 L 1180 540 L 1120 540 L 1120 492"
+                    fill="none" strokeWidth="1.0" opacity="0.60"/>
+              {/* Corner diagonal traces */}
+              <path d="M 0 0 L 60 0 L 60 60 L 140 60 L 140 140 L 240 140 L 240 200 L 320 200 L 320 260 L 400 260 L 400 340 L 480 340 L 480 408"
+                    fill="none" strokeWidth="0.8" opacity="0.40"/>
+              <path d="M 1440 0 L 1380 0 L 1380 60 L 1300 60 L 1300 140 L 1200 140 L 1200 200 L 1120 200 L 1120 260 L 1040 260 L 1040 340 L 960 340 L 960 408"
+                    fill="none" strokeWidth="0.8" opacity="0.40"/>
+              <path d="M 0 900 L 60 900 L 60 840 L 140 840 L 140 760 L 240 760 L 240 700 L 320 700 L 320 640 L 400 640 L 400 560 L 480 560 L 480 492"
+                    fill="none" strokeWidth="0.8" opacity="0.40"/>
+              <path d="M 1440 900 L 1380 900 L 1380 840 L 1300 840 L 1300 760 L 1200 760 L 1200 700 L 1120 700 L 1120 640 L 1040 640 L 1040 560 L 960 560 L 960 492"
+                    fill="none" strokeWidth="0.8" opacity="0.40"/>
+              {/* Horizontal signal lines */}
+              <line x1="80"  y1="450" x2="540" y2="450" opacity="0.25" strokeWidth="0.7"/>
+              <line x1="900" y1="450" x2="1360" y2="450" opacity="0.25" strokeWidth="0.7"/>
             </g>
 
-            {/* ═══ LAYER 4: Outer ring connectors (system architecture lines) ═══ */}
-            <g className="hero-circuit-outer" opacity="0.35">
-              {/* Outer perimeter circuit loop — top */}
+            {/* LAYER 4: Junction nodes */}
+            <g className="hero-circuit-nodes" filter="url(#cglow)" opacity="0.85">
+              <circle cx="360"  cy="140" r="2.5" opacity="0.75"/>
+              <circle cx="380"  cy="180" r="2"   opacity="0.65"/>
+              <circle cx="420"  cy="240" r="2"   opacity="0.65"/>
+              <circle cx="480"  cy="300" r="2"   opacity="0.65"/>
+              <circle cx="560"  cy="360" r="2.5" opacity="0.75"/>
+              <circle cx="620"  cy="408" r="3"   opacity="0.90"/>
+              <circle cx="680"  cy="120" r="2"   opacity="0.65"/>
+              <circle cx="640"  cy="180" r="2"   opacity="0.65"/>
+              <circle cx="700"  cy="380" r="2"   opacity="0.65"/>
+              <circle cx="1080" cy="100" r="2.5" opacity="0.75"/>
+              <circle cx="1060" cy="160" r="2"   opacity="0.65"/>
+              <circle cx="1020" cy="220" r="2"   opacity="0.65"/>
+              <circle cx="980"  cy="280" r="2"   opacity="0.65"/>
+              <circle cx="920"  cy="340" r="2"   opacity="0.65"/>
+              <circle cx="860"  cy="408" r="2.5" opacity="0.75"/>
+              <circle cx="360"  cy="760" r="2.5" opacity="0.75"/>
+              <circle cx="380"  cy="720" r="2"   opacity="0.65"/>
+              <circle cx="420"  cy="660" r="2"   opacity="0.65"/>
+              <circle cx="480"  cy="600" r="2"   opacity="0.65"/>
+              <circle cx="560"  cy="540" r="2.5" opacity="0.75"/>
+              <circle cx="620"  cy="492" r="3"   opacity="0.90"/>
+              <circle cx="680"  cy="780" r="2"   opacity="0.65"/>
+              <circle cx="640"  cy="720" r="2"   opacity="0.65"/>
+              <circle cx="700"  cy="520" r="2"   opacity="0.65"/>
+              <circle cx="1080" cy="800" r="2.5" opacity="0.75"/>
+              <circle cx="1060" cy="740" r="2"   opacity="0.65"/>
+              <circle cx="1020" cy="680" r="2"   opacity="0.65"/>
+              <circle cx="980"  cy="620" r="2"   opacity="0.65"/>
+              <circle cx="920"  cy="560" r="2"   opacity="0.65"/>
+              <circle cx="860"  cy="492" r="2.5" opacity="0.75"/>
+              <circle cx="80"   cy="200" r="2"   opacity="0.65"/>
+              <circle cx="140"  cy="280" r="2"   opacity="0.65"/>
+              <circle cx="200"  cy="340" r="2"   opacity="0.65"/>
+              <circle cx="260"  cy="380" r="2"   opacity="0.65"/>
+              <circle cx="320"  cy="420" r="2.5" opacity="0.75"/>
+              <circle cx="60"   cy="680" r="2"   opacity="0.65"/>
+              <circle cx="120"  cy="620" r="2"   opacity="0.65"/>
+              <circle cx="180"  cy="580" r="2"   opacity="0.65"/>
+              <circle cx="260"  cy="540" r="2"   opacity="0.65"/>
+              <circle cx="320"  cy="492" r="2.5" opacity="0.75"/>
+              <circle cx="1360" cy="200" r="2"   opacity="0.65"/>
+              <circle cx="1300" cy="280" r="2"   opacity="0.65"/>
+              <circle cx="1240" cy="340" r="2"   opacity="0.65"/>
+              <circle cx="1180" cy="380" r="2"   opacity="0.65"/>
+              <circle cx="1120" cy="420" r="2.5" opacity="0.75"/>
+              <circle cx="1380" cy="680" r="2"   opacity="0.65"/>
+              <circle cx="1320" cy="620" r="2"   opacity="0.65"/>
+              <circle cx="1260" cy="580" r="2"   opacity="0.65"/>
+              <circle cx="1180" cy="540" r="2"   opacity="0.65"/>
+              <circle cx="1120" cy="492" r="2.5" opacity="0.75"/>
+              {/* Primary axis nodes — stronger */}
+              <circle cx="200"  cy="450" r="3.5" opacity="0.85"/>
+              <circle cx="540"  cy="450" r="3"   opacity="0.85"/>
+              <circle cx="900"  cy="450" r="3"   opacity="0.85"/>
+              <circle cx="1240" cy="450" r="3.5" opacity="0.85"/>
+              <circle cx="720"  cy="80"  r="3.5" opacity="0.85"/>
+              <circle cx="720"  cy="820" r="3.5" opacity="0.85"/>
+            </g>
+
+            {/* LAYER 5: Outer perimeter circuit loops */}
+            <g className="hero-circuit-outer" opacity="0.30">
               <path d="M 80 0 L 80 40 L 200 40 L 200 80 L 340 80 L 340 120 L 500 120 L 500 80 L 700 80 L 700 120 L 900 120 L 900 80 L 1100 80 L 1100 120 L 1260 120 L 1260 80 L 1360 80 L 1360 0"
                     fill="none" strokeWidth="0.8"/>
-              {/* Outer perimeter circuit loop — bottom */}
               <path d="M 80 900 L 80 860 L 200 860 L 200 820 L 340 820 L 340 780 L 500 780 L 500 820 L 700 820 L 700 780 L 900 780 L 900 820 L 1100 820 L 1100 780 L 1260 780 L 1260 820 L 1360 820 L 1360 900"
                     fill="none" strokeWidth="0.8"/>
-              {/* Outer perimeter circuit loop — left */}
               <path d="M 0 80 L 40 80 L 40 200 L 80 200 L 80 340 L 120 340 L 120 500 L 80 500 L 80 700 L 120 700 L 120 860 L 40 860 L 40 900"
                     fill="none" strokeWidth="0.8"/>
-              {/* Outer perimeter circuit loop — right */}
               <path d="M 1440 80 L 1400 80 L 1400 200 L 1360 200 L 1360 340 L 1320 340 L 1320 500 L 1360 500 L 1360 700 L 1320 700 L 1320 860 L 1400 860 L 1400 900"
                     fill="none" strokeWidth="0.8"/>
             </g>
 
-            {/* ── Vignette: dark edges, open center for text ── */}
             <rect width="1440" height="900" fill="url(#cvignette)"/>
-            {/* Bottom fade: hero into ticker */}
-            <rect x="0" y="680" width="1440" height="220" fill="url(#c-bottom-fade)"/>
+            <rect x="0" y="640" width="1440" height="260" fill="url(#c-bottom-fade)"/>
           </svg>
 
-          {/* Top-layer radial glow: centered on chip, fades out */}
+          {/* Top-layer radial glow — stronger, more dimensional */}
+          <div style={{
+            position: 'absolute', inset: 0,
+            background: 'radial-gradient(ellipse 65% 60% at 50% 50%, rgba(20,50,140,0.22) 0%, rgba(10,30,80,0.08) 40%, transparent 70%)',
+          }}/>
           <div style={{
             position: 'absolute', inset: 0,
             background: 'radial-gradient(ellipse 60% 55% at 50% 50%, rgba(30,60,140,0.18) 0%, transparent 65%)',
