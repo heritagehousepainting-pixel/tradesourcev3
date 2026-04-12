@@ -1103,51 +1103,270 @@ body.no-shell {
 @media (min-width: 1025px) {
   /* No overrides needed */
 }
-
-
-
-
-
-/* ─── Homepage hero: SVG alien-scale texture ────────────────────────────────
+/* ─── Homepage hero: luminous energy-field / neural-galaxy texture ──────────
  *
- * Repeating curved scale pattern rendered via inline SVG.
- * Uses CSS custom properties --scale-fill and --scale-highlight
- * to switch between dark mode (deep blue) and light mode (pale blue).
+ * Pure CSS layered radial-gradient approach — NO SVG, NO tiling.
  *
- * SVG pattern: 80×60px tile, 3 scales per tile, offset rows.
- * Dark mode: rgba(37,99,235,0.22) fill, rgba(59,130,246,0.14) highlight
- * Light mode: rgba(37,99,235,0.08) fill, rgba(59,130,246,0.06) highlight
+ * Dark mode: deep navy base + scattered blue energy glows (nodes)
+ *   + faint diagonal mesh lines (connections) + radial edge fade
+ * Light mode: same structure, much softer pale-blue glows
+ *
+ * The texture feels like a dark blue neural network / energy field —
+ * not a pattern, not a gradient, but atmospheric depth.
+ *
+ * Applied to [data-homepage-hero] <section>.
  * ──────────────────────────────────────────────────────────────────────────── */
 
-/* Hero section: positioning context */
 [data-homepage-hero] {
   position: relative;
-  overflow: hidden;
 }
 
-/* SVG texture: full-bleed behind content, pointer-events blocked */
-[data-homepage-hero] .hero-scale-texture {
+/* Luminous energy-field texture — layered radial glows + mesh lines */
+[data-homepage-hero]::before {
+  content: '';
   position: absolute;
   inset: 0;
-  width: 100%;
-  height: 100%;
   pointer-events: none;
   z-index: 0;
+
+  /*
+   * Layer 1: Primary large energy glows
+   *   Deep blue radial glows scattered across the hero surface.
+   *   These create the "energy field" / neural-network node feel.
+   */
+  background-image:
+
+    /* Large atmospheric glow — bottom-left */
+    radial-gradient(
+      ellipse 70% 60% at 8% 90%,
+      rgba(37, 99, 235, 0.28) 0%,
+      rgba(37, 99, 235, 0.12) 30%,
+      transparent 70%
+    ),
+
+    /* Large atmospheric glow — top-right */
+    radial-gradient(
+      ellipse 60% 50% at 92% 10%,
+      rgba(59, 130, 246, 0.22) 0%,
+      rgba(59, 130, 246, 0.08) 35%,
+      transparent 70%
+    ),
+
+    /* Mid glow — center-right */
+    radial-gradient(
+      ellipse 50% 40% at 72% 42%,
+      rgba(99, 102, 241, 0.18) 0%,
+      transparent 65%
+    ),
+
+    /* Mid glow — upper-left */
+    radial-gradient(
+      ellipse 45% 35% at 18% 28%,
+      rgba(59, 130, 246, 0.15) 0%,
+      transparent 60%
+    ),
+
+    /* Small bright energy nodes */
+    radial-gradient(
+      circle at 35% 65%,
+      rgba(59, 130, 246, 0.22) 0%,
+      rgba(59, 130, 246, 0.08) 25%,
+      transparent 55%
+    ),
+
+    radial-gradient(
+      circle at 58% 18%,
+      rgba(99, 102, 241, 0.18) 0%,
+      transparent 50%
+    ),
+
+    radial-gradient(
+      circle at 82% 72%,
+      rgba(59, 130, 246, 0.16) 0%,
+      transparent 50%
+    ),
+
+    radial-gradient(
+      circle at 15% 55%,
+      rgba(37, 99, 235, 0.14) 0%,
+      transparent 45%
+    ),
+
+    /* Tight bright energy sparks */
+    radial-gradient(
+      circle at 28% 38%,
+      rgba(99, 130, 246, 0.30) 0%,
+      rgba(59, 130, 246, 0.10) 20%,
+      transparent 50%
+    ),
+
+    radial-gradient(
+      circle at 68% 82%,
+      rgba(59, 130, 246, 0.25) 0%,
+      transparent 40%
+    ),
+
+    radial-gradient(
+      circle at 88% 35%,
+      rgba(99, 102, 241, 0.28) 0%,
+      transparent 40%
+    ),
+
+    radial-gradient(
+      circle at 45% 75%,
+      rgba(37, 99, 235, 0.20) 0%,
+      transparent 45%
+    ),
+
+    /* Faint diagonal mesh lines — connection structures */
+    repeating-linear-gradient(
+      45deg,
+      transparent 0px,
+      transparent 80px,
+      rgba(59, 130, 246, 0.025) 80px,
+      rgba(59, 130, 246, 0.025) 81px
+    ),
+
+    repeating-linear-gradient(
+      -45deg,
+      transparent 0px,
+      transparent 80px,
+      rgba(59, 130, 246, 0.020) 80px,
+      rgba(59, 130, 246, 0.020) 81px
+    );
+
+  background-color: transparent;
+
+  /*
+   * Radial fade mask: texture strongest at edges, fades toward center
+   * so hero headline and CTAs stay crystal clear.
+   * The edge glows are visible; center is clean.
+   */
+  -webkit-mask-image: radial-gradient(
+    ellipse 85% 90% at 50% 50%,
+    rgba(0, 0, 0, 0.15) 0%,
+    rgba(0, 0, 0, 0.55) 55%,
+    rgba(0, 0, 0, 0.85) 100%
+  );
+  mask-image: radial-gradient(
+    ellipse 85% 90% at 50% 50%,
+    rgba(0, 0, 0, 0.15) 0%,
+    rgba(0, 0, 0, 0.55) 55%,
+    rgba(0, 0, 0, 0.85) 100%
+  );
 }
 
-/* Dark mode (default): deep blue scales, visible texture */
-[data-homepage-hero] .hero-scale-texture {
-  --scale-fill: rgba(37, 99, 235, 0.22);
-  --scale-highlight: rgba(59, 130, 246, 0.14);
+/* Light mode: same energy-field structure, much softer pale-blue glows */
+[data-theme="light"] [data-homepage-hero]::before {
+  background-image:
+
+    radial-gradient(
+      ellipse 70% 60% at 8% 90%,
+      rgba(37, 99, 235, 0.10) 0%,
+      rgba(37, 99, 235, 0.05) 30%,
+      transparent 70%
+    ),
+
+    radial-gradient(
+      ellipse 60% 50% at 92% 10%,
+      rgba(59, 130, 246, 0.08) 0%,
+      rgba(59, 130, 246, 0.03) 35%,
+      transparent 70%
+    ),
+
+    radial-gradient(
+      ellipse 50% 40% at 72% 42%,
+      rgba(99, 102, 241, 0.07) 0%,
+      transparent 65%
+    ),
+
+    radial-gradient(
+      ellipse 45% 35% at 18% 28%,
+      rgba(59, 130, 246, 0.06) 0%,
+      transparent 60%
+    ),
+
+    radial-gradient(
+      circle at 35% 65%,
+      rgba(59, 130, 246, 0.09) 0%,
+      rgba(59, 130, 246, 0.03) 25%,
+      transparent 55%
+    ),
+
+    radial-gradient(
+      circle at 58% 18%,
+      rgba(99, 102, 241, 0.07) 0%,
+      transparent 50%
+    ),
+
+    radial-gradient(
+      circle at 82% 72%,
+      rgba(59, 130, 246, 0.06) 0%,
+      transparent 50%
+    ),
+
+    radial-gradient(
+      circle at 15% 55%,
+      rgba(37, 99, 235, 0.05) 0%,
+      transparent 45%
+    ),
+
+    radial-gradient(
+      circle at 28% 38%,
+      rgba(99, 130, 246, 0.12) 0%,
+      rgba(59, 130, 246, 0.04) 20%,
+      transparent 50%
+    ),
+
+    radial-gradient(
+      circle at 68% 82%,
+      rgba(59, 130, 246, 0.10) 0%,
+      transparent 40%
+    ),
+
+    radial-gradient(
+      circle at 88% 35%,
+      rgba(99, 102, 241, 0.11) 0%,
+      transparent 40%
+    ),
+
+    radial-gradient(
+      circle at 45% 75%,
+      rgba(37, 99, 235, 0.08) 0%,
+      transparent 45%
+    ),
+
+    repeating-linear-gradient(
+      45deg,
+      transparent 0px,
+      transparent 80px,
+      rgba(59, 130, 246, 0.010) 80px,
+      rgba(59, 130, 246, 0.010) 81px
+    ),
+
+    repeating-linear-gradient(
+      -45deg,
+      transparent 0px,
+      transparent 80px,
+      rgba(59, 130, 246, 0.008) 80px,
+      rgba(59, 130, 246, 0.008) 81px
+    );
+
+  -webkit-mask-image: radial-gradient(
+    ellipse 85% 90% at 50% 50%,
+    rgba(0, 0, 0, 0.05) 0%,
+    rgba(0, 0, 0, 0.30) 55%,
+    rgba(0, 0, 0, 0.60) 100%
+  );
+  mask-image: radial-gradient(
+    ellipse 85% 90% at 50% 50%,
+    rgba(0, 0, 0, 0.05) 0%,
+    rgba(0, 0, 0, 0.30) 55%,
+    rgba(0, 0, 0, 0.60) 100%
+  );
 }
 
-/* Light mode: pale blue scales, much softer but present */
-[data-theme="light"] [data-homepage-hero] .hero-scale-texture {
-  --scale-fill: rgba(37, 99, 235, 0.08);
-  --scale-highlight: rgba(59, 130, 246, 0.06);
-}
-
-/* Hero content sits above the texture layer */
+/* Hero content sits above the energy field texture */
 [data-homepage-hero] > * {
   position: relative;
   z-index: 1;

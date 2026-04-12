@@ -356,57 +356,6 @@ export default function Home() {
           borderBottom: '1px solid var(--color-border)',
         }}
       >
-        {/* ── SVG alien-scale texture (behind content) ── */}
-        <svg
-          className="hero-scale-texture"
-          xmlns="http://www.w3.org/2000/svg"
-          aria-hidden="true"
-          focusable="false"
-          preserveAspectRatio="xMidYMid slice"
-          style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }}
-        >
-          <defs>
-            {/*
-              Repeating alien-scale pattern.
-              - Pattern tile: 80 × 60 px (userSpaceOnUse)
-              - 3 scales per tile: two in row 1 (offset), one bridging in row 2
-              - Curved teardrop path: wide rounded base, tapered top
-              - Highlight path: small light-catch on upper-left of each scale
-              - All fills via CSS custom properties for theme switching
-            */}
-            <pattern id="scalePat" x="0" y="0" width="80" height="60"
-              patternUnits="userSpaceOnUse">
-              {/* Row A: two scales side by side */}
-              <path
-                d="M 4,2 C 4,-5 14,-12 24,-12 C 31,-12 38,-7 44,0 C 40,9 33,18 24,22 C 16,26 8,22 4,16 Z"
-                fill="var(--scale-fill)"
-              />
-              <path
-                d="M 9,0 C 9,-4 14,-8 20,-8 C 17,-4 13,0 9,4 C 7,2 7,0 9,0 Z"
-                fill="var(--scale-highlight)"
-              />
-              <path
-                d="M 44,2 C 44,-5 54,-12 64,-12 C 71,-12 78,-7 84,0 C 80,9 73,18 64,22 C 56,26 48,22 44,16 Z"
-                fill="var(--scale-fill)"
-              />
-              <path
-                d="M 49,0 C 49,-4 54,-8 60,-8 C 57,-4 53,0 49,4 C 47,2 47,0 49,0 Z"
-                fill="var(--scale-highlight)"
-              />
-              {/* Row B: one scale bridging the two above */}
-              <path
-                d="M 24,32 C 24,25 34,18 44,18 C 51,18 58,23 64,30 C 60,39 53,48 44,52 C 36,56 28,52 24,46 Z"
-                fill="var(--scale-fill)"
-              />
-              <path
-                d="M 29,30 C 29,26 34,22 40,22 C 37,26 33,30 29,34 C 27,32 27,30 29,30 Z"
-                fill="var(--scale-highlight)"
-              />
-            </pattern>
-          </defs>
-          {/* Fill the full hero with the repeating scale pattern */}
-          <rect width="100%" height="100%" fill="url(#scalePat)" />
-        </svg>
         <div style={{ maxWidth: 1160, margin: '0 auto', padding: '80px 56px 0' }}>
 
           {/* Top row: left + stats panel */}
