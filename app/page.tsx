@@ -357,6 +357,7 @@ export default function Home() {
         }}
       >
         {/* ── Constellation / neural-graph energy texture ── */}
+                {/* ── Constellation / neural-graph energy texture ── */}
         <svg
           className="hero-constellation"
           viewBox="0 0 1440 820"
@@ -367,7 +368,7 @@ export default function Home() {
           style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }}
         >
           <defs>
-            {/* Glow filters — blur-based soft light halos */}
+            {/* ── Glow filters ── */}
             <filter id="ng1" x="-80%" y="-80%" width="260%" height="260%">
               <feGaussianBlur in="SourceGraphic" stdDeviation="5" result="b"/>
               <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
@@ -380,46 +381,107 @@ export default function Home() {
               <feGaussianBlur in="SourceGraphic" stdDeviation="16" result="b"/>
               <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
             </filter>
-            {/* Bright sharp node filter */}
+            {/* Wide atmospheric haze filter */}
+            <filter id="haze" x="-300%" y="-300%" width="700%" height="700%">
+              <feGaussianBlur in="SourceGraphic" stdDeviation="28" result="b"/>
+              <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
             <filter id="nbright" x="-150%" y="-150%" width="400%" height="400%">
               <feGaussianBlur in="SourceGraphic" stdDeviation="3.5" result="b"/>
               <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
             </filter>
 
-            {/* Node radial gradients */}
-            <radialGradient id="ng_bg"><radialGradient spreadMethod="reflect" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="var(--bg, rgba(147,197,253,0.35))" stop-opacity="1"/><stop offset="100%" stop-color="transparent" stop-opacity="0"/></radialGradient></radialGradient>
-            <radialGradient id="ng_md"><radialGradient spreadMethod="reflect" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="var(--ng, rgba(59,130,246,0.55))" stop-opacity="1"/><stop offset="100%" stop-color="transparent" stop-opacity="0"/></radialGradient></radialGradient>
-            <radialGradient id="ng_sm"><radialGradient spreadMethod="reflect" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="var(--ng, rgba(59,130,246,0.45))" stop-opacity="1"/><stop offset="100%" stop-color="transparent" stop-opacity="0"/></radialGradient></radialGradient>
-            <radialGradient id="ng_bright"><radialGradient spreadMethod="reflect" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="var(--bl, #60A5FA)" stop-opacity="1"/><stop offset="60%" stop-color="var(--nc, #3B82F6)" stop-opacity="0.9"/><stop offset="100%" stop-color="transparent" stop-opacity="0"/></radialGradient></radialGradient>
-
-            {/* Line gradient */}
-            <linearGradient id="lg1" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stop-color="var(--ln, rgba(37,99,235,0.50))" stop-opacity="0"/>
-              <stop offset="20%" stop-color="var(--ln, rgba(37,99,235,0.50))" stop-opacity="1"/>
-              <stop offset="80%" stop-color="var(--ln, rgba(37,99,235,0.50))" stop-opacity="1"/>
-              <stop offset="100%" stop-color="var(--ln, rgba(37,99,235,0.50))" stop-opacity="0"/>
-            </linearGradient>
-            <linearGradient id="lg2" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stop-color="var(--ln, rgba(59,130,246,0.40))" stop-opacity="0"/>
-              <stop offset="50%" stop-color="var(--ln, rgba(59,130,246,0.40))" stop-opacity="0.8"/>
-              <stop offset="100%" stop-color="var(--ln, rgba(59,130,246,0.40))" stop-opacity="0"/>
-            </linearGradient>
-
-            {/* Radial mask: cleaner center, more active edges */}
-            <radialGradient id="heroMask">
-              <stop offset="0%"   stop-color="black" stop-opacity="0.70"/>
-              <stop offset="35%"  stop-color="black" stop-opacity="0.40"/>
-              <stop offset="60%"  stop-color="black" stop-opacity="0.10"/>
-              <stop offset="100%" stop-color="black" stop-opacity="0.00"/>
+            {/* ── Node radial gradients ── */}
+            <radialGradient id="ng_bg">
+              <stop offset="0%"   stopColor="var(--bg, rgba(147,197,253,0.35))"/>
+              <stop offset="100%" stopColor="transparent"/>
             </radialGradient>
-            <mask id="hm"><rect width="1440" height="820" fill="url(#heroMask)"/></mask>
+            <radialGradient id="ng_md">
+              <stop offset="0%"   stopColor="var(--ng, rgba(59,130,246,0.55))"/>
+              <stop offset="100%" stopColor="transparent"/>
+            </radialGradient>
+            <radialGradient id="ng_bright">
+              <stop offset="0%"   stopColor="var(--bl, #60A5FA)"/>
+              <stop offset="60%"  stopColor="var(--nc, #3B82F6)"/>
+              <stop offset="100%" stopColor="transparent"/>
+            </radialGradient>
+            {/* Atmospheric haze gradient */}
+            <radialGradient id="ng_haze">
+              <stop offset="0%"   stopColor="var(--ng, rgba(59,130,246,0.30))"/>
+              <stop offset="100%" stopColor="transparent"/>
+            </radialGradient>
+
+            {/* ── Line gradients ── */}
+            <linearGradient id="lg1" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%"   stopColor="var(--ln, rgba(37,99,235,0.50))" stopOpacity="0"/>
+              <stop offset="20%"  stopColor="var(--ln, rgba(37,99,235,0.50))" stopOpacity="1"/>
+              <stop offset="80%"  stopColor="var(--ln, rgba(37,99,235,0.50))" stopOpacity="1"/>
+              <stop offset="100%" stopColor="var(--ln, rgba(37,99,235,0.50))" stopOpacity="0"/>
+            </linearGradient>
+            <linearGradient id="lg2" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%"   stopColor="var(--ln, rgba(59,130,246,0.40))" stopOpacity="0"/>
+              <stop offset="50%"  stopColor="var(--ln, rgba(59,130,246,0.40))" stopOpacity="0.8"/>
+              <stop offset="100%" stopColor="var(--ln, rgba(59,130,246,0.40))" stopOpacity="0"/>
+            </linearGradient>
+            {/* Wide glow halo around lines */}
+            <linearGradient id="llg1" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%"   stopColor="var(--lg, rgba(59,130,246,0.35))" stopOpacity="0"/>
+              <stop offset="25%"  stopColor="var(--lg, rgba(59,130,246,0.35))" stopOpacity="0.6"/>
+              <stop offset="75%"  stopColor="var(--lg, rgba(59,130,246,0.35))" stopOpacity="0.6"/>
+              <stop offset="100%" stopColor="var(--lg, rgba(59,130,246,0.35))" stopOpacity="0"/>
+            </linearGradient>
+            <linearGradient id="llg2" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%"   stopColor="var(--lg, rgba(59,130,246,0.30))" stopOpacity="0"/>
+              <stop offset="50%"  stopColor="var(--lg, rgba(59,130,246,0.30))" stopOpacity="0.5"/>
+              <stop offset="100%" stopColor="var(--lg, rgba(59,130,246,0.30))" stopOpacity="0"/>
+            </linearGradient>
+
+            {/* ── Vignette mask: transparent center (clean text), opaque edges (atmospheric) ── */}
+            <radialGradient id="heroMask">
+              <stop offset="0%"   stopColor="black" stopOpacity="0"/>
+              <stop offset="45%"  stopColor="black" stopOpacity="0.20"/>
+              <stop offset="70%"  stopColor="black" stopOpacity="0.65"/>
+              <stop offset="100%" stopColor="black" stopOpacity="0.88"/>
+            </radialGradient>
+            <mask id="hm">
+              <rect width="1440" height="820" fill="url(#heroMask)"/>
+            </mask>
+
+            {/* ── Atmospheric ambient haze gradients ── */}
+            <radialGradient id="haz_bl" gradientUnits="userSpaceOnUse" cx="10%"  cy="85%" r="55%">
+              <stop offset="0%"   stopColor="var(--ng, rgba(59,130,246,0.40))"/>
+              <stop offset="100%" stopColor="transparent"/>
+            </radialGradient>
+            <radialGradient id="haz_tr" gradientUnits="userSpaceOnUse" cx="90%"  cy="10%" r="50%">
+              <stop offset="0%"   stopColor="var(--ng, rgba(59,130,246,0.35))"/>
+              <stop offset="100%" stopColor="transparent"/>
+            </radialGradient>
+            <radialGradient id="haz_tl" gradientUnits="userSpaceOnUse" cx="5%"   cy="5%"  r="40%">
+              <stop offset="0%"   stopColor="var(--nc, rgba(59,99,235,0.25))"/>
+              <stop offset="100%" stopColor="transparent"/>
+            </radialGradient>
+            <radialGradient id="haz_br" gradientUnits="userSpaceOnUse" cx="95%"  cy="90%" r="45%">
+              <stop offset="0%"   stopColor="var(--ng, rgba(59,130,246,0.30))"/>
+              <stop offset="100%" stopColor="transparent"/>
+            </radialGradient>
+            <radialGradient id="haz_c"  gradientUnits="userSpaceOnUse" cx="50%"  cy="50%" r="35%">
+              <stop offset="0%"   stopColor="var(--nc, rgba(59,99,235,0.15))"/>
+              <stop offset="100%" stopColor="transparent"/>
+            </radialGradient>
           </defs>
 
-          {/* ── Background: faint deep-space glow nodes ── */}
+          {/* ── Layer 0: Atmospheric ambient haze ── */}
+          <rect width="1440" height="820" fill="url(#haz_bl)" filter="url(#haze)" opacity="0.80"/>
+          <rect width="1440" height="820" fill="url(#haz_tr)" filter="url(#haze)" opacity="0.70"/>
+          <rect width="1440" height="820" fill="url(#haz_tl)" filter="url(#haze)" opacity="0.60"/>
+          <rect width="1440" height="820" fill="url(#haz_br)" filter="url(#haze)" opacity="0.65"/>
+          <rect width="1440" height="820" fill="url(#haz_c)"  filter="url(#haze)" opacity="0.35"/>
+
+          {/* ── Layer 1: Background deep-space nodes ── */}
           <circle cx="120"  cy="680" r="28" fill="url(#ng_bg)" filter="url(#ng3)" opacity="0.55"/>
           <circle cx="1180" cy="80"  r="24" fill="url(#ng_bg)" filter="url(#ng3)" opacity="0.50"/>
           <circle cx="720"  cy="120" r="20" fill="url(#ng_bg)" filter="url(#ng3)" opacity="0.45"/>
-          <circle cx="300"  cy="200" r="18" fill="url(#ng_bg)" filter="url(#ng2)" opacity="0.40"/>
+          <circle cx="300"  cy="200" r="18" fill="url(#ng_bg)" filter="url(#ng3)" opacity="0.40"/>
           <circle cx="1100" cy="300" r="16" fill="url(#ng_bg)" filter="url(#ng2)" opacity="0.38"/>
           <circle cx="200"  cy="500" r="15" fill="url(#ng_bg)" filter="url(#ng2)" opacity="0.35"/>
           <circle cx="1300" cy="550" r="17" fill="url(#ng_bg)" filter="url(#ng2)" opacity="0.38"/>
@@ -427,7 +489,7 @@ export default function Home() {
           <circle cx="600"  cy="750" r="14" fill="url(#ng_bg)" filter="url(#ng2)" opacity="0.32"/>
           <circle cx="80"   cy="350" r="12" fill="url(#ng_bg)" filter="url(#ng2)" opacity="0.30"/>
 
-          {/* ── Background: faint connection lines ── */}
+          {/* ── Layer 2: Background connection lines (faint) ── */}
           <line x1="120"  y1="680" x2="300"  y2="200" stroke="url(#lg2)" strokeWidth="0.8" filter="url(#ng1)" opacity="0.28"/>
           <line x1="300"  y1="200" x2="720"  y2="120" stroke="url(#lg2)" strokeWidth="0.7" filter="url(#ng1)" opacity="0.24"/>
           <line x1="720"  y1="120" x2="1180" y2="80"  stroke="url(#lg2)" strokeWidth="0.7" filter="url(#ng1)" opacity="0.24"/>
@@ -439,21 +501,35 @@ export default function Home() {
           <line x1="300"  y1="200" x2="1100" y2="300" stroke="url(#lg2)" strokeWidth="0.6" filter="url(#ng1)" opacity="0.20"/>
           <line x1="900"  y1="680" x2="600"  y2="750" stroke="url(#lg2)" strokeWidth="0.6" filter="url(#ng1)" opacity="0.20"/>
 
-          {/* ── Mid-layer: medium nodes (more visible constellation points) ── */}
-          <circle cx="420"  cy="340" r="18" fill="url(#ng_md)"  filter="url(#ng2)" opacity="0.70"/>
-          <circle cx="820"  cy="480" r="16" fill="url(#ng_md)"  filter="url(#ng2)" opacity="0.65"/>
-          <circle cx="600"  cy="180" r="14" fill="url(#ng_md)"  filter="url(#ng1)" opacity="0.62"/>
-          <circle cx="1020" cy="200" r="15" fill="url(#ng_md)"  filter="url(#ng2)" opacity="0.62"/>
-          <circle cx="280"  cy="620" r="13" fill="url(#ng_md)"  filter="url(#ng1)" opacity="0.58"/>
-          <circle cx="700"  cy="580" r="14" fill="url(#ng_md)"  filter="url(#ng1)" opacity="0.60"/>
-          <circle cx="1100" cy="480" r="13" fill="url(#ng_md)"  filter="url(#ng1)" opacity="0.58"/>
-          <circle cx="160"  cy="280" r="12" fill="url(#ng_md)"  filter="url(#ng1)" opacity="0.55"/>
-          <circle cx="480"  cy="700" r="11" fill="url(#ng_md)"  filter="url(#ng1)" opacity="0.52"/>
-          <circle cx="960"  cy="620" r="11" fill="url(#ng_md)"  filter="url(#ng1)" opacity="0.52"/>
-          <circle cx="1340" cy="380" r="12" fill="url(#ng_md)"  filter="url(#ng1)" opacity="0.55"/>
-          <circle cx="1180" cy="180" r="10" fill="url(#ng_md)"  filter="url(#ng1)" opacity="0.50"/>
+          {/* ── Layer 3: Wide glow halos around key connection lines ── */}
+          <line x1="420"  y1="340" x2="820"  y2="480" stroke="url(#llg1)" strokeWidth="6"  filter="url(#ng2)" opacity="0.22"/>
+          <line x1="420"  y1="340" x2="600"  y2="180" stroke="url(#llg1)" strokeWidth="5"  filter="url(#ng2)" opacity="0.18"/>
+          <line x1="820"  y1="480" x2="700"  y2="580" stroke="url(#llg1)" strokeWidth="5"  filter="url(#ng2)" opacity="0.18"/>
+          <line x1="820"  y1="480" x2="1100" y2="480" stroke="url(#llg1)" strokeWidth="5"  filter="url(#ng2)" opacity="0.18"/>
+          <line x1="420"  y1="340" x2="280"  y2="620" stroke="url(#llg2)" strokeWidth="5"  filter="url(#ng2)" opacity="0.16"/>
+          <line x1="420"  y1="340" x2="160"  y2="280" stroke="url(#llg2)" strokeWidth="4"  filter="url(#ng2)" opacity="0.14"/>
+          <line x1="600"  y1="180" x2="1020" y2="200" stroke="url(#llg1)" strokeWidth="5"  filter="url(#ng2)" opacity="0.18"/>
+          <line x1="820"  y1="480" x2="960"  y2="620" stroke="url(#llg2)" strokeWidth="4"  filter="url(#ng2)" opacity="0.14"/>
+          <line x1="280"  y1="620" x2="480"  y2="700" stroke="url(#llg1)" strokeWidth="4"  filter="url(#ng2)" opacity="0.14"/>
+          <line x1="1100" y1="480" x2="1340" y2="380" stroke="url(#llg2)" strokeWidth="4"  filter="url(#ng2)" opacity="0.14"/>
 
-          {/* ── Mid-layer: connection lines between medium nodes ── */}
+          {/* ── Layer 4: Mid-layer constellation nodes ── */}
+          <circle cx="420"  cy="340" r="18" fill="url(#ng_md)" filter="url(#ng2)" opacity="0.70"/>
+          <circle cx="820"  cy="480" r="16" fill="url(#ng_md)" filter="url(#ng2)" opacity="0.65"/>
+          <circle cx="600"  cy="180" r="14" fill="url(#ng_md)" filter="url(#ng1)" opacity="0.62"/>
+          <circle cx="1020" cy="200" r="15" fill="url(#ng_md)" filter="url(#ng2)" opacity="0.62"/>
+          <circle cx="280"  cy="620" r="13" fill="url(#ng_md)" filter="url(#ng1)" opacity="0.58"/>
+          <circle cx="700"  cy="580" r="14" fill="url(#ng_md)" filter="url(#ng1)" opacity="0.60"/>
+          <circle cx="1100" cy="480" r="13" fill="url(#ng_md)" filter="url(#ng1)" opacity="0.58"/>
+          <circle cx="160"  cy="280" r="12" fill="url(#ng_md)" filter="url(#ng1)" opacity="0.55"/>
+          <circle cx="480"  cy="700" r="11" fill="url(#ng_md)" filter="url(#ng1)" opacity="0.52"/>
+          <circle cx="960"  cy="620" r="11" fill="url(#ng_md)" filter="url(#ng1)" opacity="0.52"/>
+          <circle cx="1340" cy="380" r="12" fill="url(#ng_md)" filter="url(#ng1)" opacity="0.55"/>
+          <circle cx="1180" cy="180" r="10" fill="url(#ng_md)" filter="url(#ng1)" opacity="0.50"/>
+          <circle cx="680"  cy="420" r="9"  fill="url(#ng_md)" filter="url(#ng1)" opacity="0.48"/>
+          <circle cx="380"  cy="520" r="8"  fill="url(#ng_md)" filter="url(#ng1)" opacity="0.45"/>
+
+          {/* ── Layer 5: Mid-layer connection lines ── */}
           <line x1="420"  y1="340" x2="600"  y2="180" stroke="url(#lg1)" strokeWidth="1.0" filter="url(#ng1)" opacity="0.50"/>
           <line x1="420"  y1="340" x2="280"  y2="620" stroke="url(#lg1)" strokeWidth="0.9" filter="url(#ng1)" opacity="0.46"/>
           <line x1="420"  y1="340" x2="160"  y2="280" stroke="url(#lg1)" strokeWidth="0.8" filter="url(#ng1)" opacity="0.42"/>
@@ -467,8 +543,14 @@ export default function Home() {
           <line x1="420"  y1="340" x2="820"  y2="480" stroke="url(#lg1)" strokeWidth="1.1" filter="url(#ng1)" opacity="0.52"/>
           <line x1="600"  y1="180" x2="420"  y2="340" stroke="url(#lg1)" strokeWidth="0.9" filter="url(#ng1)" opacity="0.46"/>
           <line x1="1180" y1="180" x2="1020" y2="200" stroke="url(#lg1)" strokeWidth="0.8" filter="url(#ng1)" opacity="0.42"/>
+          <line x1="420"  y1="340" x2="680"  y2="420" stroke="url(#lg1)" strokeWidth="0.7" filter="url(#ng1)" opacity="0.38"/>
+          <line x1="820"  y1="480" x2="680"  y2="420" stroke="url(#lg1)" strokeWidth="0.7" filter="url(#ng1)" opacity="0.38"/>
+          <line x1="680"  y1="420" x2="380"  y2="520" stroke="url(#lg1)" strokeWidth="0.6" filter="url(#ng1)" opacity="0.34"/>
+          <line x1="680"  y1="420" x2="1100" y2="480" stroke="url(#lg1)" strokeWidth="0.6" filter="url(#ng1)" opacity="0.34"/>
+          <line x1="380"  y1="520" x2="280"  y2="620" stroke="url(#lg1)" strokeWidth="0.6" filter="url(#ng1)" opacity="0.32"/>
+          <line x1="700"  y1="580" x2="480"  y2="700" stroke="url(#lg1)" strokeWidth="0.6" filter="url(#ng1)" opacity="0.32"/>
 
-          {/* ── Foreground: bright electric nodes (clearly visible signal points) ── */}
+          {/* ── Layer 6: Foreground bright nodes ── */}
           <circle cx="420"  cy="340" r="5"  fill="url(#ng_bright)" filter="url(#nbright)" opacity="0.92"/>
           <circle cx="820"  cy="480" r="5"  fill="url(#ng_bright)" filter="url(#nbright)" opacity="0.92"/>
           <circle cx="600"  cy="180" r="4"  fill="url(#ng_bright)" filter="url(#nbright)" opacity="0.88"/>
@@ -488,16 +570,41 @@ export default function Home() {
           <circle cx="1300" cy="550" r="4"  fill="url(#ng_bright)" filter="url(#nbright)" opacity="0.85"/>
           <circle cx="1100" cy="300" r="3"  fill="url(#ng_bright)" filter="url(#nbright)" opacity="0.80"/>
           <circle cx="600"  cy="750" r="3"  fill="url(#ng_bright)" filter="url(#nbright)" opacity="0.78"/>
+          <circle cx="680"  cy="420" r="3"  fill="url(#ng_bright)" filter="url(#nbright)" opacity="0.78"/>
+          <circle cx="380"  cy="520" r="3"  fill="url(#ng_bright)" filter="url(#nbright)" opacity="0.75"/>
 
-          {/* ── Extra bright accent sparks at key intersections ── */}
+          {/* ── Layer 7: White-hot accent sparks ── */}
           <circle cx="420"  cy="340" r="2"  fill="#BFDBFE" opacity="0.95"/>
           <circle cx="820"  cy="480" r="2"  fill="#BFDBFE" opacity="0.95"/>
           <circle cx="120"  cy="680" r="2"  fill="#BFDBFE" opacity="0.90"/>
           <circle cx="1180" cy="80"  r="2"  fill="#BFDBFE" opacity="0.90"/>
           <circle cx="600"  cy="180" r="1.5" fill="#DBEAFE" opacity="0.92"/>
           <circle cx="1020" cy="200" r="1.5" fill="#DBEAFE" opacity="0.92"/>
+          <circle cx="280"  cy="620" r="1.5" fill="#DBEAFE" opacity="0.88"/>
+          <circle cx="1100" cy="480" r="1.5" fill="#DBEAFE" opacity="0.88"/>
 
-          {/* Mask: radial fade — cleaner center, more active edges */}
+          {/* ── Layer 8: Fine atmospheric particles ── */}
+          <circle cx="200"  cy="100" r="1.5" fill="#93C5FD" opacity="0.35"/>
+          <circle cx="500"  cy="300" r="1"   fill="#93C5FD" opacity="0.30"/>
+          <circle cx="800"  cy="250" r="1.5" fill="#93C5FD" opacity="0.32"/>
+          <circle cx="1150" cy="420" r="1"   fill="#93C5FD" opacity="0.28"/>
+          <circle cx="350"  cy="450" r="1"   fill="#93C5FD" opacity="0.28"/>
+          <circle cx="950"  cy="350" r="1.5" fill="#93C5FD" opacity="0.30"/>
+          <circle cx="750"  cy="600" r="1"   fill="#93C5FD" opacity="0.25"/>
+          <circle cx="150"  cy="600" r="1.5" fill="#93C5FD" opacity="0.28"/>
+          <circle cx="1200" cy="620" r="1"   fill="#93C5FD" opacity="0.25"/>
+          <circle cx="550"  cy="480" r="1"   fill="#93C5FD" opacity="0.22"/>
+          <circle cx="300"  cy="150" r="1"   fill="#93C5FD" opacity="0.22"/>
+          <circle cx="1000" cy="550" r="1.5" fill="#93C5FD" opacity="0.28"/>
+          <circle cx="450"  cy="600" r="1"   fill="#93C5FD" opacity="0.20"/>
+          <circle cx="1050" cy="120" r="1"   fill="#93C5FD" opacity="0.20"/>
+          <circle cx="650"  cy="100" r="1"   fill="#93C5FD" opacity="0.18"/>
+          <circle cx="850"  cy="150" r="1"   fill="#93C5FD" opacity="0.18"/>
+          <circle cx="250"  cy="380" r="1"   fill="#93C5FD" opacity="0.20"/>
+          <circle cx="580"  cy="650" r="1"   fill="#93C5FD" opacity="0.18"/>
+          <circle cx="1100" cy="680" r="1.5" fill="#93C5FD" opacity="0.25"/>
+
+          {/* ── Vignette mask: transparent center, atmospheric edges ── */}
           <rect width="1440" height="820" fill="url(#heroMask)" mask="url(#hm)" opacity="1"/>
         </svg>
         <div style={{ maxWidth: 1160, margin: '0 auto', padding: '80px 56px 0' }}>
