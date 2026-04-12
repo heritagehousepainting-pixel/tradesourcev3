@@ -1111,58 +1111,28 @@ body.no-shell {
   /* No overrides needed */
 }
 
-/* ─── Homepage hero: constellation / neural-graph energy texture ──────────────
+/* ─── Homepage hero: AI constellation background ───────────────────────────────────
+ * 4-layer SVG constellation:
+ *   - Layer 0: faint structural grid (crosshairs, scan lines)
+ *   - Layer 1: connecting lines (corner clusters + midfield threads)
+ *   - Layer 2: regular nodes (glowing circles)
+ *   - Layer 3: bright accent nodes (key junctions)
+ *   - Layer 4: pulse rings (premium AI atmosphere)
+ *   - vignette + bottom fade overlays
  *
- * Inline SVG with:
- *   - Real glowing node circles (radialGradient glow + filter: blur)
- *   - Real connecting lines between nodes (SVG lines with glow)
- *   - Clustered bright points + faint structural lines
- *   - Layered depth (foreground bright + mid + background faint)
- *   - Radial mask: center cleaner, edges more active
- *
- * Dark mode: electric blue nodes (#3B82F6) + indigo lines, clearly visible
- * Light mode: pale blue-gray nodes, soft but present
- *
- * Applied to [data-homepage-hero] <section>.
- * ──────────────────────────────────────────────────────────────────────────── */
+ * Dark mode: electric blue (#3B82F6) constellation, clearly visible
+ * Light mode: pale steel-blue, very soft, clearly related but refined
+ * ─────────────────────────────────────────────────────────────────────────── */
 
 [data-homepage-hero] {
   position: relative;
   overflow: hidden;
 }
 
-/* SVG fills the hero, sits behind content */
-[data-homepage-hero] .hero-constellation {
+[data-homepage-hero] > [aria-hidden="true"] {
   position: absolute;
   inset: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
   z-index: 0;
-}
-
-/* Dark mode (default): electric blue constellation */
-[data-homepage-hero] .hero-constellation {
-  --nc: #3B82F6;   /* node center */
-  --ng: #60A5FA;   /* node glow */
-  --nl: #93C5FD;   /* node highlight */
-  --ln: #2563EB;   /* line node */
-  --lg: rgba(59,130,246,0.55); /* line glow */
-  --ll: rgba(96,165,250,0.45); /* line stroke */
-  --bl: rgba(37,99,235,0.70);  /* bright node center */
-  --bg: rgba(147,197,253,0.35); /* bright node glow */
-}
-
-/* Light mode: pale blue-gray constellation, much softer */
-[data-theme="light"] [data-homepage-hero] .hero-constellation {
-  --nc: rgba(37,99,235,0.30);
-  --ng: rgba(59,130,246,0.20);
-  --nl: rgba(96,165,250,0.18);
-  --ln: rgba(37,99,235,0.20);
-  --lg: rgba(59,130,246,0.18);
-  --ll: rgba(59,130,246,0.15);
-  --bl: rgba(37,99,235,0.40);
-  --bg: rgba(147,197,253,0.20);
 }
 
 /* Hero content sits above the constellation */
@@ -1171,7 +1141,84 @@ body.no-shell {
   z-index: 1;
 }
 
-/* Homepage has its own footer — suppress the layout's direct-child footer */
-html[data-page="home"] body > footer {
-  display: none;
+/* SVG lines: dark mode — electric blue */
+[data-homepage-hero] .hero-constellation-svg line {
+  stroke: #3B82F6;
+  stroke-opacity: 0.55;
+}
+[data-theme="light"] [data-homepage-hero] .hero-constellation-svg line {
+  stroke: #93C5FD;
+  stroke-opacity: 0.35;
+}
+
+/* SVG lines: bright accent lines (Layer 1) — slightly stronger */
+[data-homepage-hero] .hero-constellation-svg .hero-layer-lines line {
+  stroke: #3B82F6;
+  stroke-opacity: 0.55;
+}
+[data-theme="light"] [data-homepage-hero] .hero-constellation-svg .hero-layer-lines line {
+  stroke: #93C5FD;
+  stroke-opacity: 0.30;
+}
+
+/* SVG nodes: dark mode — electric blue */
+[data-homepage-hero] .hero-constellation-svg .hero-layer-nodes circle {
+  fill: #60A5FA;
+}
+[data-theme="light"] [data-homepage-hero] .hero-constellation-svg .hero-layer-nodes circle {
+  fill: #60A5FA;
+  fill-opacity: 0.45;
+}
+
+/* SVG bright nodes: dark mode — bright electric */
+[data-homepage-hero] .hero-constellation-svg .hero-layer-bright circle {
+  fill: #93C5FD;
+}
+[data-theme="light"] [data-homepage-hero] .hero-constellation-svg .hero-layer-bright circle {
+  fill: #2563EB;
+  fill-opacity: 0.6;
+}
+
+/* SVG pulse rings: dark mode */
+[data-homepage-hero] .hero-constellation-svg .hero-layer-pulse circle {
+  stroke: #3B82F6;
+}
+[data-theme="light"] [data-homepage-hero] .hero-constellation-svg .hero-layer-pulse circle {
+  stroke: #93C5FD;
+}
+
+/* SVG grid lines: dark mode — faint */
+[data-homepage-hero] .hero-constellation-svg .hero-layer-bg line {
+  stroke: #3B82F6;
+}
+[data-theme="light"] [data-homepage-hero] .hero-constellation-svg .hero-layer-bg line {
+  stroke: #93C5FD;
+}
+
+/* SVG pulse ring fill: transparent in both modes */
+[data-homepage-hero] .hero-constellation-svg .hero-layer-pulse circle {
+  fill: none;
+}
+[data-theme="light"] [data-homepage-hero] .hero-constellation-svg .hero-layer-pulse circle {
+  fill: none;
+}
+
+/* Dark mode hero: very deep navy background + blue-tinted overlay */
+[data-theme="dark"] [data-homepage-hero] {
+  background-color: #030B17;
+}
+
+/* Light mode hero: light slate with blue tint */
+[data-theme="light"] [data-homepage-hero] {
+  background-color: #F1F5F9;
+}
+
+/* Light mode: softer gradient overlay so text stays readable */
+[data-theme="light"] [data-homepage-hero] > [aria-hidden="true"] > div:last-child {
+  background: radial-gradient(ellipse 80% 60% at 50% 40%, rgba(59,130,246,0.06) 0%, transparent 70%) !important;
+}
+
+/* Dark mode: stronger radial glow */
+[data-theme="dark"] [data-homepage-hero] > [aria-hidden="true"] > div:last-child {
+  background: radial-gradient(ellipse 70% 60% at 50% 40%, rgba(30,60,120,0.20) 0%, transparent 70%) !important;
 }
