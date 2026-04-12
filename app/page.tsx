@@ -456,17 +456,17 @@ export default function Home() {
             {/* Central chip body — dark blue rectangle, matches reference position exactly */}
             {/* Reference maps chip to SVG center (900, 540), size 176x92 */}
             <rect x="812" y="494" width="176" height="92" rx="3"
-                  fill="#040D24"
+                  fill="#030A16"
                   stroke="#0091FF" strokeWidth="1.5" strokeOpacity="0.85"
                   filter="url(#chipglow)"/>
 
             {/* Chip interior group — kept inside glow filter for integrated feel */}
             <g filter="url(#chipglow)">
               {/* Corner dots — subtle, at corners of chip */}
-              <circle cx="818" cy="500" r="2" fill="#00D5FF" opacity="0.55"/>
-              <circle cx="982" cy="500" r="2" fill="#00D5FF" opacity="0.55"/>
-              <circle cx="818" cy="580" r="2" fill="#00D5FF" opacity="0.55"/>
-              <circle cx="982" cy="580" r="2" fill="#00D5FF" opacity="0.55"/>
+              <circle cx="818" cy="500" r="1.5" fill="#00D5FF" opacity="0.50"/>
+              <circle cx="982" cy="500" r="1.5" fill="#00D5FF" opacity="0.50"/>
+              <circle cx="818" cy="580" r="1.5" fill="#00D5FF" opacity="0.50"/>
+              <circle cx="982" cy="580" r="1.5" fill="#00D5FF" opacity="0.50"/>
               {/* Center dot */}
               <circle cx="900" cy="540" r="3.5" fill="#00D5FF" opacity="0.80"/>
             </g>
