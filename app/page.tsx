@@ -453,69 +453,68 @@ export default function Home() {
             {/* Inner radial core glow */}
             <circle cx="720" cy="450" r="120" fill="url(#core-grad)" filter="url(#coreglow)"/>
 
-            {/* Central chip body — dark blue rectangle with electric blue border + glow */}
-            {/* Simple, clean — matches reference exactly */}
-            <rect x="635" y="400" width="170" height="100" rx="3"
+            {/* Central chip body — dark blue rectangle, matches reference position exactly */}
+            {/* Reference maps chip to SVG center (900, 540), size 176x92 */}
+            <rect x="812" y="494" width="176" height="92" rx="3"
                   fill="#040D24"
-                  stroke="#0091FF" strokeWidth="1.5" strokeOpacity="0.92"
+                  stroke="#0091FF" strokeWidth="1.5" strokeOpacity="0.85"
                   filter="url(#chipglow)"/>
 
             {/* Chip interior group — kept inside glow filter for integrated feel */}
             <g filter="url(#chipglow)">
-              {/* Corner dots — subtle, clean */}
-              <circle cx="641" cy="406" r="2" fill="#00D5FF" opacity="0.55"/>
-              <circle cx="799" cy="406" r="2" fill="#00D5FF" opacity="0.55"/>
-              <circle cx="641" cy="494" r="2" fill="#00D5FF" opacity="0.55"/>
-              <circle cx="799" cy="494" r="2" fill="#00D5FF" opacity="0.55"/>
+              {/* Corner dots — subtle, at corners of chip */}
+              <circle cx="818" cy="500" r="2" fill="#00D5FF" opacity="0.55"/>
+              <circle cx="982" cy="500" r="2" fill="#00D5FF" opacity="0.55"/>
+              <circle cx="818" cy="580" r="2" fill="#00D5FF" opacity="0.55"/>
+              <circle cx="982" cy="580" r="2" fill="#00D5FF" opacity="0.55"/>
               {/* Center dot */}
-              <circle cx="720" cy="450" r="3.5" fill="#00D5FF" opacity="0.80"/>
+              <circle cx="900" cy="540" r="3.5" fill="#00D5FF" opacity="0.80"/>
             </g>
 
-            {/* TradeSource wordmark — dominant element inside the chip */}
+            {/* TradeSource wordmark — dominant element inside the chip, reference-matched */}
             <text
-              x="720"
-              y="452"
+              x="900"
+              y="542"
               textAnchor="middle"
               dominantBaseline="middle"
-              fontSize="18"
+              fontSize="22"
               fontWeight="800"
               fontFamily="'Inter', sans-serif"
               letterSpacing="0.25"
               fill="#FFFFFF"
-              style={{ textShadow: '0 0 14px rgba(0,145,255,0.40)' }}
             >
               TradeSource
             </text>
 
             {/* Primary signal routes — 4-axis from core outward */}
             <g filter="url(#cglow)" opacity="0.50">
-              <line x1="180" y1="450" x2="635" y2="450" stroke="#0091FF" strokeWidth="1.8" opacity="0.85"/>
-              <line x1="1260" y1="450" x2="805" y2="450" stroke="#0091FF" strokeWidth="1.8" opacity="0.85"/>
-              <line x1="720" y1="60"  x2="720" y2="400" stroke="#0091FF" strokeWidth="1.8" opacity="0.85"/>
-              <line x1="720" y1="840" x2="720" y2="500" stroke="#0091FF" strokeWidth="1.8" opacity="0.85"/>
+              <line x1="180" y1="450" x2="812" y2="450" stroke="#0091FF" strokeWidth="1.8" opacity="0.85"/>
+              <line x1="1260" y1="450" x2="988" y2="450" stroke="#0091FF" strokeWidth="1.8" opacity="0.85"/>
+              <line x1="720" y1="60"  x2="720" y2="494" stroke="#0091FF" strokeWidth="1.8" opacity="0.85"/>
+              <line x1="720" y1="840" x2="720" y2="586" stroke="#0091FF" strokeWidth="1.8" opacity="0.85"/>
             </g>
 
             {/* Secondary routed traces */}
             <g filter="url(#cglow)" opacity="0.48">
               {/* Top */}
-              <path d="M 360 0 L 360 140 L 385 140 L 385 180 L 430 180 L 430 240 L 490 240 L 490 305 L 575 305 L 575 360 L 635 360 L 635 400" fill="none" stroke="#0091FF" strokeWidth="1.0" opacity="0.62"/>
-              <path d="M 720 0 L 720 60 L 678 60 L 678 120 L 635 120 L 635 180 L 625 180 L 625 280 L 635 280 L 635 320 L 678 320 L 678 370 L 705 370 L 705 400" fill="none" stroke="#0091FF" strokeWidth="1.0" opacity="0.52"/>
-              <path d="M 1080 0 L 1080 100 L 1055 100 L 1055 160 L 1010 160 L 1010 220 L 950 220 L 950 280 L 885 280 L 885 340 L 805 340 L 805 400" fill="none" stroke="#0091FF" strokeWidth="1.0" opacity="0.62"/>
+              <path d="M 360 0 L 360 140 L 385 140 L 385 180 L 430 180 L 430 240 L 490 240 L 490 305 L 575 305 L 575 360 L 812 360 L 812 494" fill="none" stroke="#0091FF" strokeWidth="1.0" opacity="0.62"/>
+              <path d="M 720 0 L 720 60 L 678 60 L 678 120 L 812 120 L 812 180 L 625 180 L 625 280 L 812 280 L 812 320 L 678 320 L 678 370 L 705 370 L 705 494" fill="none" stroke="#0091FF" strokeWidth="1.0" opacity="0.52"/>
+              <path d="M 1080 0 L 1080 100 L 1055 100 L 1055 160 L 1010 160 L 1010 220 L 950 220 L 950 280 L 885 280 L 885 340 L 988 340 L 988 494" fill="none" stroke="#0091FF" strokeWidth="1.0" opacity="0.62"/>
               {/* Bottom */}
-              <path d="M 360 900 L 360 760 L 385 760 L 385 720 L 430 720 L 430 660 L 490 660 L 490 595 L 575 595 L 575 540 L 635 540 L 635 500" fill="none" stroke="#0091FF" strokeWidth="1.0" opacity="0.62"/>
-              <path d="M 720 900 L 720 840 L 678 840 L 678 780 L 635 780 L 635 720 L 625 720 L 625 620 L 635 620 L 635 580 L 678 580 L 678 530 L 705 530 L 705 500" fill="none" stroke="#0091FF" strokeWidth="1.0" opacity="0.52"/>
-              <path d="M 1080 900 L 1080 800 L 1055 800 L 1055 740 L 1010 740 L 1010 680 L 950 680 L 950 620 L 885 620 L 885 560 L 805 560 L 805 500" fill="none" stroke="#0091FF" strokeWidth="1.0" opacity="0.62"/>
+              <path d="M 360 900 L 360 760 L 385 760 L 385 720 L 430 720 L 430 660 L 490 660 L 490 595 L 575 595 L 575 540 L 812 540 L 812 586" fill="none" stroke="#0091FF" strokeWidth="1.0" opacity="0.62"/>
+              <path d="M 720 900 L 720 840 L 678 840 L 678 780 L 812 780 L 812 720 L 625 720 L 625 620 L 812 620 L 812 580 L 678 580 L 678 530 L 705 530 L 705 586" fill="none" stroke="#0091FF" strokeWidth="1.0" opacity="0.52"/>
+              <path d="M 1080 900 L 1080 800 L 1055 800 L 1055 740 L 1010 740 L 1010 680 L 950 680 L 950 620 L 885 620 L 885 560 L 988 560 L 988 586" fill="none" stroke="#0091FF" strokeWidth="1.0" opacity="0.62"/>
               {/* Left */}
               <path d="M 0 180 L 75 180 L 75 200 L 140 200 L 140 270 L 205 270 L 205 330 L 270 330 L 270 385 L 390 385 L 390 450" fill="none" stroke="#0091FF" strokeWidth="1.0" opacity="0.62"/>
-              <path d="M 0 720 L 55 720 L 55 700 L 115 700 L 115 630 L 175 630 L 175 575 L 270 575 L 270 530 L 390 530 L 390 500" fill="none" stroke="#0091FF" strokeWidth="1.0" opacity="0.62"/>
+              <path d="M 0 720 L 55 720 L 55 700 L 115 700 L 115 630 L 175 630 L 175 575 L 270 575 L 270 530 L 390 530 L 390 586" fill="none" stroke="#0091FF" strokeWidth="1.0" opacity="0.62"/>
               {/* Right */}
               <path d="M 1440 180 L 1365 180 L 1365 200 L 1300 200 L 1300 270 L 1235 270 L 1235 330 L 1170 330 L 1170 385 L 1050 385 L 1050 450" fill="none" stroke="#0091FF" strokeWidth="1.0" opacity="0.62"/>
-              <path d="M 1440 720 L 1385 720 L 1385 700 L 1325 700 L 1325 630 L 1265 630 L 1265 575 L 1170 575 L 1170 530 L 1050 530 L 1050 500" fill="none" stroke="#0091FF" strokeWidth="1.0" opacity="0.62"/>
+              <path d="M 1440 720 L 1385 720 L 1385 700 L 1325 700 L 1325 630 L 1265 630 L 1265 575 L 1170 575 L 1170 530 L 1050 530 L 1050 586" fill="none" stroke="#0091FF" strokeWidth="1.0" opacity="0.62"/>
               {/* Corner diagonals */}
-              <path d="M 0 0 L 55 0 L 55 55 L 130 55 L 130 130 L 225 130 L 225 195 L 330 195 L 330 260 L 420 260 L 420 330 L 510 330 L 510 400" fill="none" stroke="#0091FF" strokeWidth="0.7" opacity="0.42"/>
-              <path d="M 1440 0 L 1385 0 L 1385 55 L 1310 55 L 1310 130 L 1215 130 L 1215 195 L 1110 195 L 1110 260 L 1020 260 L 1020 330 L 930 330 L 930 400" fill="none" stroke="#0091FF" strokeWidth="0.7" opacity="0.42"/>
-              <path d="M 0 900 L 55 900 L 55 845 L 130 845 L 130 770 L 225 770 L 225 705 L 330 705 L 330 640 L 420 640 L 420 570 L 510 570 L 510 500" fill="none" stroke="#0091FF" strokeWidth="0.7" opacity="0.42"/>
-              <path d="M 1440 900 L 1385 900 L 1385 845 L 1310 845 L 1310 770 L 1215 770 L 1215 705 L 1110 705 L 1110 640 L 1020 640 L 1020 570 L 930 570 L 930 500" fill="none" stroke="#0091FF" strokeWidth="0.7" opacity="0.42"/>
+              <path d="M 0 0 L 55 0 L 55 55 L 130 55 L 130 130 L 225 130 L 225 195 L 330 195 L 330 260 L 420 260 L 420 330 L 510 330 L 510 494" fill="none" stroke="#0091FF" strokeWidth="0.7" opacity="0.42"/>
+              <path d="M 1440 0 L 1385 0 L 1385 55 L 1310 55 L 1310 130 L 1215 130 L 1215 195 L 1110 195 L 1110 260 L 1020 260 L 1020 330 L 930 330 L 930 494" fill="none" stroke="#0091FF" strokeWidth="0.7" opacity="0.42"/>
+              <path d="M 0 900 L 55 900 L 55 845 L 130 845 L 130 770 L 225 770 L 225 705 L 330 705 L 330 640 L 420 640 L 420 570 L 510 570 L 510 586" fill="none" stroke="#0091FF" strokeWidth="0.7" opacity="0.42"/>
+              <path d="M 1440 900 L 1385 900 L 1385 845 L 1310 845 L 1310 770 L 1215 770 L 1215 705 L 1110 705 L 1110 640 L 1020 640 L 1020 570 L 930 570 L 930 586" fill="none" stroke="#0091FF" strokeWidth="0.7" opacity="0.42"/>
             </g>
 
             {/* Junction nodes */}
@@ -525,7 +524,7 @@ export default function Home() {
               <circle cx="430"  cy="240" r="2"   fill="#0091FF" opacity="0.65"/>
               <circle cx="490"  cy="305" r="2"   fill="#0091FF" opacity="0.65"/>
               <circle cx="575"  cy="360" r="2.5" fill="#0091FF" opacity="0.75"/>
-              <circle cx="635"  cy="400" r="3"   fill="#00E5FF" opacity="0.88"/>
+              <circle cx="812"  cy="494" r="3"   fill="#00E5FF" opacity="0.88"/>
               <circle cx="720"  cy="60"  r="2"   fill="#0091FF" opacity="0.65"/>
               <circle cx="678"  cy="120" r="2"   fill="#0091FF" opacity="0.65"/>
               <circle cx="705"  cy="370" r="2"   fill="#0091FF" opacity="0.65"/>
@@ -534,13 +533,13 @@ export default function Home() {
               <circle cx="1010" cy="220" r="2"   fill="#0091FF" opacity="0.65"/>
               <circle cx="950"  cy="280" r="2"   fill="#0091FF" opacity="0.65"/>
               <circle cx="885"  cy="340" r="2"   fill="#0091FF" opacity="0.65"/>
-              <circle cx="805"  cy="400" r="2.5" fill="#0091FF" opacity="0.75"/>
+              <circle cx="988"  cy="494" r="2.5" fill="#0091FF" opacity="0.75"/>
               <circle cx="360"  cy="760" r="2.5" fill="#0091FF" opacity="0.75"/>
               <circle cx="385"  cy="720" r="2"   fill="#0091FF" opacity="0.65"/>
               <circle cx="430"  cy="660" r="2"   fill="#0091FF" opacity="0.65"/>
               <circle cx="490"  cy="595" r="2"   fill="#0091FF" opacity="0.65"/>
               <circle cx="575"  cy="540" r="2.5" fill="#0091FF" opacity="0.75"/>
-              <circle cx="635"  cy="500" r="3"   fill="#00E5FF" opacity="0.88"/>
+              <circle cx="812"  cy="586" r="3"   fill="#00E5FF" opacity="0.88"/>
               <circle cx="720"  cy="840" r="2"   fill="#0091FF" opacity="0.65"/>
               <circle cx="678"  cy="780" r="2"   fill="#0091FF" opacity="0.65"/>
               <circle cx="705"  cy="530" r="2"   fill="#0091FF" opacity="0.65"/>
@@ -549,7 +548,7 @@ export default function Home() {
               <circle cx="1010" cy="680" r="2"   fill="#0091FF" opacity="0.65"/>
               <circle cx="950"  cy="620" r="2"   fill="#0091FF" opacity="0.65"/>
               <circle cx="885"  cy="560" r="2"   fill="#0091FF" opacity="0.65"/>
-              <circle cx="805"  cy="500" r="2.5" fill="#0091FF" opacity="0.75"/>
+              <circle cx="988"  cy="586" r="2.5" fill="#0091FF" opacity="0.75"/>
               <circle cx="75"   cy="200" r="2"   fill="#0091FF" opacity="0.65"/>
               <circle cx="140"  cy="270" r="2"   fill="#0091FF" opacity="0.65"/>
               <circle cx="205"  cy="330" r="2"   fill="#0091FF" opacity="0.65"/>
@@ -559,7 +558,7 @@ export default function Home() {
               <circle cx="115"  cy="630" r="2"   fill="#0091FF" opacity="0.65"/>
               <circle cx="175"  cy="575" r="2"   fill="#0091FF" opacity="0.65"/>
               <circle cx="270"  cy="530" r="2"   fill="#0091FF" opacity="0.65"/>
-              <circle cx="390"  cy="500" r="2.5" fill="#0091FF" opacity="0.75"/>
+              <circle cx="390"  cy="586" r="2.5" fill="#0091FF" opacity="0.75"/>
               <circle cx="1365" cy="200" r="2"   fill="#0091FF" opacity="0.65"/>
               <circle cx="1300" cy="270" r="2"   fill="#0091FF" opacity="0.65"/>
               <circle cx="1235" cy="330" r="2"   fill="#0091FF" opacity="0.65"/>
@@ -569,7 +568,7 @@ export default function Home() {
               <circle cx="1325" cy="630" r="2"   fill="#0091FF" opacity="0.65"/>
               <circle cx="1265" cy="575" r="2"   fill="#0091FF" opacity="0.65"/>
               <circle cx="1170" cy="530" r="2"   fill="#0091FF" opacity="0.65"/>
-              <circle cx="1050" cy="500" r="2.5" fill="#0091FF" opacity="0.75"/>
+              <circle cx="1050" cy="586" r="2.5" fill="#0091FF" opacity="0.75"/>
               {/* Primary axis nodes */}
               <circle cx="180"  cy="450" r="3.5" fill="#00D5FF" opacity="0.88"/>
               <circle cx="1260" cy="450" r="3.5" fill="#00D5FF" opacity="0.88"/>
@@ -577,8 +576,8 @@ export default function Home() {
               <circle cx="720"  cy="840" r="3.5" fill="#00D5FF" opacity="0.88"/>
               {/* Mid-axis connector dots */}
               <circle cx="360"  cy="450" r="2"   fill="#00B8FF" opacity="0.50"/>
-              <circle cx="635"  cy="450" r="2"   fill="#00B8FF" opacity="0.50"/>
-              <circle cx="805"  cy="450" r="2"   fill="#00B8FF" opacity="0.50"/>
+              <circle cx="812"  cy="450" r="2"   fill="#00B8FF" opacity="0.50"/>
+              <circle cx="988"  cy="450" r="2"   fill="#00B8FF" opacity="0.50"/>
               <circle cx="1080" cy="450" r="2"   fill="#00B8FF" opacity="0.50"/>
             </g>
 
