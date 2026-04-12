@@ -246,7 +246,7 @@ export default function Apply() {
         const data = await res.json().catch(() => ({}))
         throw new Error(data?.error || 'Application failed.')
       }
-      router.push('/apply?submitted=true')
+      router.push('/pending?submitted=true')
     } catch (err: any) {
       setError(err.message || 'Something went wrong.')
     } finally {
@@ -541,7 +541,7 @@ export default function Apply() {
                     Service Areas <span style={{ color: 'var(--color-red)' }}>*</span>
                   </legend>
                   <p style={{ fontSize: 12, color: 'var(--color-text-subtle)', margin: 0 }}>
-                    Select the counties you serve in Pennsylvania.
+                    Select at least one county you serve in Pennsylvania.
                   </p>
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
                     {PA_COUNTIES.map(county => (
@@ -574,7 +574,7 @@ export default function Apply() {
                     Services Offered <span style={{ color: 'var(--color-red)' }}>*</span>
                   </legend>
                   <p style={{ fontSize: 12, color: 'var(--color-text-subtle)', margin: 0 }}>
-                    Select all services you provide.
+                    Select at least one service type.
                   </p>
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
                     {TRADE_TYPES.map(trade => (

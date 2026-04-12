@@ -31,6 +31,74 @@ function PendingNav() {
 }
 
 /**
+ * Confirmation for unauthenticated users who just submitted an application.
+ */
+function SubmittedConfirmation() {
+  return (
+    <div style={{ backgroundColor: 'var(--color-bg)', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+      <PendingNav />
+      <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '48px 24px' }}>
+        <div style={{ width: '100%', maxWidth: 480 }}>
+          <div style={{ backgroundColor: 'var(--color-bg-alt)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 16, padding: '40px', boxShadow: '0 8px 40px rgba(0,0,0,0.3)', overflow: 'hidden' }}>
+
+            {/* Green accent bar */}
+            <div style={{ height: 4, backgroundColor: 'var(--color-green)', borderRadius: '2px 2px 0 0', margin: '-40px -40px 32px' }} />
+
+            {/* Icon */}
+            <div style={{ width: 56, height: 56, borderRadius: 16, backgroundColor: 'var(--color-green-soft)', border: '1px solid rgba(16,185,129,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 24 }}>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--color-green)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+
+            <h1 style={{ fontSize: 24, fontWeight: 800, color: 'var(--color-text)', letterSpacing: '-0.03em', marginBottom: 10 }}>
+              Application received!
+            </h1>
+            <p style={{ fontSize: 15, color: 'var(--color-text-muted)', lineHeight: 1.65, marginBottom: 28 }}>
+              We&apos;ve received your application and will review it personally. You&apos;ll hear from us within <strong style={{ color: 'var(--color-text)', fontWeight: 600 }}>1–2 business days</strong> at the email you provided.
+            </p>
+
+            {/* What happens next */}
+            <div style={{ backgroundColor: 'var(--color-surface)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 12, padding: '16px 20px', marginBottom: 28 }}>
+              <p style={{ fontSize: 11, fontWeight: 700, color: 'var(--color-text-subtle)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 10 }}>What happens next</p>
+              {[
+                { step: '1', text: 'Our team reviews your application personally' },
+                { step: '2', text: 'You\'ll receive an email within 1–2 business days' },
+                { step: '3', text: 'Once approved, you can browse and post jobs immediately' },
+              ].map(({ step, text }) => (
+                <div key={step} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, marginBottom: 8 }}>
+                  <div style={{ width: 20, height: 20, borderRadius: '50%', backgroundColor: 'var(--color-blue-soft)', border: '1px solid rgba(59,130,246,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700, color: 'var(--color-blue)', flexShrink: 0 }}>
+                    {step}
+                  </div>
+                  <p style={{ fontSize: 13, color: 'var(--color-text-muted)', lineHeight: 1.55, margin: 0, paddingTop: 2 }}>{text}</p>
+                </div>
+              ))}
+            </div>
+
+            {/* Actions */}
+            <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+              <a href="/jobs" style={{ flex: 1, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', padding: '11px 16px', borderRadius: 10, fontSize: 13, fontWeight: 600, backgroundColor: 'var(--color-blue)', color: '#fff', textDecoration: 'none', boxShadow: '0 4px 12px rgba(37,99,235,0.3)', minWidth: 120 }}>
+                Browse Open Jobs
+              </a>
+              <a href="/" style={{ flex: 1, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', padding: '11px 16px', borderRadius: 10, fontSize: 13, fontWeight: 500, backgroundColor: 'var(--color-divider)', color: 'var(--color-text)', border: '1px solid rgba(255,255,255,0.1)', textDecoration: 'none', minWidth: 120 }}>
+                Back to Home
+              </a>
+            </div>
+          </div>
+
+          <p style={{ fontSize: 12, color: 'var(--color-input-placeholder)', textAlign: 'center', marginTop: 20 }}>
+            Questions? Email{' '}
+            <a href="mailto:info@tradesource.app" style={{ color: 'var(--color-text-muted)', textDecoration: 'underline' }}>
+              info@tradesource.app
+            </a>
+          </p>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+/**
  * Sign-in CTA for the /pending page.
  */
 function SignInCTA() {
@@ -166,6 +234,10 @@ export default function Pending() {
   const access = useUserAccess()
   const user = access.profile
 
+  // Check if user just submitted (from apply form)
+  const isJustSubmitted = typeof window !== 'undefined'
+    && new URLSearchParams(window.location.search).get('submitted') === 'true'
+
   // Loading — canonical access is still resolving
   if (!access.checked) {
     return (
@@ -179,6 +251,11 @@ export default function Pending() {
         </div>
       </div>
     )
+  }
+
+  // Just submitted — show confirmation (user is not yet signed in)
+  if (isJustSubmitted) {
+    return <SubmittedConfirmation />
   }
 
   // Signed out — show sign-in CTA
