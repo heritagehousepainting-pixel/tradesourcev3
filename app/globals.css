@@ -706,15 +706,26 @@ select:focus-visible {
 }
 
 /* ─── Nav links: readable in light mode ─── */
+/* Exclude the "Request Access" button — it has a blue background and needs white text */
 [data-theme="light"] header a[href="/jobs"],
 [data-theme="light"] header a[href="/apply"],
-[data-theme="light"] header a[href="/post-job"] {
+[data-theme="light"] header a[href="/post-job"],
+[data-theme="light"] header a[href="/founder-login"],
+[data-theme="light"] header a[href="/signin"] {
   color: var(--color-text) !important;
 }
 [data-theme="light"] header a[href="/jobs"]:hover,
 [data-theme="light"] header a[href="/apply"]:hover,
-[data-theme="light"] header a[href="/post-job"]:hover {
+[data-theme="light"] header a[href="/post-job"]:hover,
+[data-theme="light"] header a[href="/founder-login"]:hover,
+[data-theme="light"] header a[href="/signin"]:hover {
   color: var(--color-blue) !important;
+}
+/* "Request Access" button: preserve white text on blue background in light mode */
+[data-theme="light"] header a[href="/apply"],
+[data-theme="light"] header a[href="/apply"]:hover {
+  background: var(--color-blue) !important;
+  color: #fff !important;
 }
 
 /* ─── Chip / selectable-button backgrounds: adapt to dark mode ─── */
