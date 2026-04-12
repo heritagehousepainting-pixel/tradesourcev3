@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { useNavContext } from '@/app/components/NavContext'
-import ScopeAssistant from '@/app/components/ScopeAssistant'
+import ScopeAssistant, { type ScopeFields } from '@/app/components/ScopeAssistant'
 import FloatingAssistant from '@/features/assistant/ui/FloatingAssistant'
 import { supabase } from '@/lib/supabase'
 import { getSession } from '@/lib/auth/client'
@@ -188,6 +188,7 @@ export default function PostJob() {
   const [loggedInContractor, setLoggedInContractor] = useState<any>(null)
   const [photos, setPhotos] = useState<File[]>([])
   const [scopeSource, setScopeSource] = useState<'assistant' | 'manual' | null>(null)
+  const [scopeFields, setScopeFields] = useState<Partial<ScopeFields>>({})
 
   const [form, setForm] = useState({
     title: '',
@@ -216,15 +217,21 @@ export default function PostJob() {
   const update = (field: string, value: string) =>
     setForm(prev => ({ ...prev, [field]: field === 'fixed_price' ? value.replace(/[^0-9]/g, '') : value }))
 
-  const handleScopeGenerated = (scope: string) => {
+  const handleScopeGenerated = (scope: string, fields: Partial<ScopeFields>) => {
     setForm(prev => ({ ...prev, description: scope }))
+    setScopeFields(fields)
     setScopeSource('assistant')
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!form.title || !form.scope || !form.description || !form.area) {
-      setError('Please fill in all required fields: title, service type, location, and description.')
+    if (!form.title || !form.description || !form.area) {
+      setError('Please fill in all required fields: title, service type, location, and scope description.')
+      return
+    }
+    // Require service type: form.scope (manual/AI selection) OR scopeSource (AI builder used)
+    if (!form.scope && !scopeSource) {
+      setError('Please select a service type above.')
       return
     }
     if (!form.fixed_price) {
@@ -266,6 +273,8 @@ export default function PostJob() {
         materials: form.materials,
         photos: uploadedPhotoUrls,
         has_video: false,
+        // ── Structured scope fields from AI Scope Builder ──
+        ...(scopeFields || {}),
       }
       if (loggedInContractor) {
         body.poster_id = loggedInContractor.id

@@ -7,7 +7,7 @@ import { useState } from 'react'
 type TradeType = 'Interior Painting' | 'Exterior Painting' | 'Cabinet Painting'
   | 'Drywall Repair' | 'Power Washing' | 'Staining'
 
-interface ScopeFields {
+export interface ScopeFields {
   // Common
   included_areas: string
   surfaces: string

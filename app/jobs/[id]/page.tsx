@@ -359,6 +359,51 @@ export default function JobDetail() {
               <p style={{ fontSize: 14, color: 'rgba(248,250,252,0.65)', lineHeight: 1.75 }}>{job.description}</p>
             </div>
 
+            {/* Structured Scope Fields */}
+            {(() => {
+              const sf = job as any
+              const rows: { label: string; value: string }[] = [
+                sf.property_type && { label: 'Property type', value: sf.property_type },
+                sf.included_areas && { label: 'Included areas', value: sf.included_areas },
+                sf.surfaces && { label: 'Surfaces', value: sf.surfaces },
+                sf.prep_requirements && { label: 'Prep required', value: sf.prep_requirements },
+                sf.repairs_needed && { label: 'Surface repairs', value: sf.repairs_needed },
+                sf.occupancy && { label: 'Occupancy', value: sf.occupancy },
+                sf.furniture && { label: 'Furniture', value: sf.furniture },
+                sf.materials_notes && { label: 'Materials', value: sf.materials_notes },
+                sf.finish_expectations && { label: 'Finish / sheen', value: sf.finish_expectations },
+                sf.access_notes && { label: 'Access notes', value: sf.access_notes },
+                sf.exclusions && { label: 'Exclusions', value: sf.exclusions },
+                sf.special_instructions && { label: 'Special instructions', value: sf.special_instructions },
+                sf.door_drawer_count && { label: 'Door / drawer count', value: sf.door_drawer_count },
+                sf.current_finish && { label: 'Current finish', value: sf.current_finish },
+                sf.on_site_off_site && { label: 'On-site / off-site', value: sf.on_site_off_site },
+                sf.condition && { label: 'Cabinet condition', value: sf.condition },
+                sf.reinstall_responsibility && { label: 'Reinstall responsibility', value: sf.reinstall_responsibility },
+                sf.stories && { label: 'Stories', value: sf.stories },
+                sf.peeling_priming && { label: 'Peeling / priming', value: sf.peeling_priming },
+                sf.power_washing && { label: 'Power washing', value: sf.power_washing },
+                sf.damage_extent && { label: 'Damage extent', value: sf.damage_extent },
+                sf.texture_match && { label: 'Texture match', value: sf.texture_match },
+              ].filter(Boolean) as { label: string; value: string }[]
+
+              if (rows.length === 0) return null
+
+              return (
+                <div style={{ backgroundColor: 'var(--color-surface-raised)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 14, padding: '24px' }}>
+                  <h2 style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--color-text-subtle)', marginBottom: 16 }}>Scope Details</h2>
+                  <dl style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px 24px', margin: 0 }}>
+                    {rows.map(({ label, value }) => (
+                      <div key={label}>
+                        <dt style={{ fontSize: 11, fontWeight: 600, color: 'rgba(248,250,252,0.4)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}>{label}</dt>
+                        <dd style={{ fontSize: 13, color: 'rgba(248,250,252,0.85)', lineHeight: 1.5, margin: 0, whiteSpace: 'pre-wrap' }}>{value}</dd>
+                      </div>
+                    ))}
+                  </dl>
+                </div>
+              )
+            })()}
+
             {/* Job Photos */}
             {((job.job_photos && job.job_photos.length > 0) || (job.photos && job.photos.length > 0)) && (
               <div style={{ backgroundColor: 'var(--color-surface-raised)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 14, padding: '24px' }}>
