@@ -1121,6 +1121,7 @@ body.no-shell {
 
 [data-homepage-hero] {
   position: relative;
+  overflow: hidden;
 }
 
 /* SVG fills the hero, sits behind content */
