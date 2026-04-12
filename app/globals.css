@@ -1106,130 +1106,48 @@ body.no-shell {
 
 
 
-/* ─── Homepage hero: layered atmospheric texture ──────────────────────────────
+
+
+/* ─── Homepage hero: SVG alien-scale texture ────────────────────────────────
  *
- * Three layers for premium blue-alien scale depth:
- *   1. Scale-like repeating dot grid (very subtle geometric depth)
- *   2. Deep blue radial glows at corners (atmospheric depth)
- *   3. Radial mask fades texture from center so hero text stays crisp
+ * Repeating curved scale pattern rendered via inline SVG.
+ * Uses CSS custom properties --scale-fill and --scale-highlight
+ * to switch between dark mode (deep blue) and light mode (pale blue).
  *
- * Dark mode: richer, more visible, blue-on-blue depth
- * Light mode: much softer, stays premium, not washed out
- * pointer-events: none so it never blocks interaction
- *
- * Applied to [data-homepage-hero] on the homepage hero <section>
+ * SVG pattern: 80×60px tile, 3 scales per tile, offset rows.
+ * Dark mode: rgba(37,99,235,0.22) fill, rgba(59,130,246,0.14) highlight
+ * Light mode: rgba(37,99,235,0.08) fill, rgba(59,130,246,0.06) highlight
  * ──────────────────────────────────────────────────────────────────────────── */
 
-/* Dark mode — richer blue-on-blue depth */
+/* Hero section: positioning context */
 [data-homepage-hero] {
   position: relative;
+  overflow: hidden;
 }
 
-[data-homepage-hero]::before {
-  content: '';
+/* SVG texture: full-bleed behind content, pointer-events blocked */
+[data-homepage-hero] .hero-scale-texture {
   position: absolute;
   inset: 0;
+  width: 100%;
+  height: 100%;
   pointer-events: none;
   z-index: 0;
-
-  /* Layer 1: Blue scale-grid — fine geometric dot pattern */
-  /* Repeating diamond-grid at 40×40px, ultra-subtle */
-  background-image:
-    radial-gradient(
-      circle at 20% 80%,
-      rgba(59, 130, 246, 0.18) 0%,
-      transparent 50%
-    ),
-    radial-gradient(
-      circle at 85% 15%,
-      rgba(37, 99, 235, 0.14) 0%,
-      transparent 45%
-    ),
-    radial-gradient(
-      circle at 60% 60%,
-      rgba(99, 102, 241, 0.08) 0%,
-      transparent 55%
-    ),
-    radial-gradient(
-      circle at 5% 20%,
-      rgba(59, 130, 246, 0.10) 0%,
-      transparent 40%
-    ),
-    /* Fine scale-grid: repeating pattern with diagonal lines */
-    repeating-linear-gradient(
-      -45deg,
-      transparent,
-      transparent 28px,
-      rgba(59, 130, 246, 0.025) 28px,
-      rgba(59, 130, 246, 0.025) 29px
-    ),
-    repeating-linear-gradient(
-      45deg,
-      transparent,
-      transparent 28px,
-      rgba(59, 130, 246, 0.025) 28px,
-      rgba(59, 130, 246, 0.025) 29px
-    );
-
-  /* Layer 2: Extra corner depth glows */
-  background-color: transparent;
-  background-blend-mode: normal, normal, normal, normal, overlay, overlay;
-
-  /* Radial mask: full opacity in corners, fades to 0 at center
-     so the texture doesn't compete with hero text */
-  -webkit-mask-image: radial-gradient(
-    ellipse 80% 80% at 50% 50%,
-    transparent 30%,
-    rgba(0, 0, 0, 0.6) 100%
-  );
-  mask-image: radial-gradient(
-    ellipse 80% 80% at 50% 50%,
-    transparent 30%,
-    rgba(0, 0, 0, 0.6) 100%
-  );
 }
 
-/* Light mode — much softer, blue-toned depth, stays premium */
-[data-theme="light"] [data-homepage-hero]::before {
-  background-image:
-    radial-gradient(
-      circle at 20% 80%,
-      rgba(37, 99, 235, 0.08) 0%,
-      transparent 50%
-    ),
-    radial-gradient(
-      circle at 85% 15%,
-      rgba(37, 99, 235, 0.06) 0%,
-      transparent 45%
-    ),
-    radial-gradient(
-      circle at 60% 60%,
-      rgba(99, 102, 241, 0.04) 0%,
-      transparent 55%
-    ),
-    radial-gradient(
-      circle at 5% 20%,
-      rgba(37, 99, 235, 0.05) 0%,
-      transparent 40%
-    ),
-    repeating-linear-gradient(
-      -45deg,
-      transparent,
-      transparent 28px,
-      rgba(37, 99, 235, 0.018) 28px,
-      rgba(37, 99, 235, 0.018) 29px
-    ),
-    repeating-linear-gradient(
-      45deg,
-      transparent,
-      transparent 28px,
-      rgba(37, 99, 235, 0.018) 28px,
-      rgba(37, 99, 235, 0.018) 29px
-    );
-  background-blend-mode: normal, normal, normal, normal, normal, normal;
+/* Dark mode (default): deep blue scales, visible texture */
+[data-homepage-hero] .hero-scale-texture {
+  --scale-fill: rgba(37, 99, 235, 0.22);
+  --scale-highlight: rgba(59, 130, 246, 0.14);
 }
 
-/* Ensure hero content sits above the texture */
+/* Light mode: pale blue scales, much softer but present */
+[data-theme="light"] [data-homepage-hero] .hero-scale-texture {
+  --scale-fill: rgba(37, 99, 235, 0.08);
+  --scale-highlight: rgba(59, 130, 246, 0.06);
+}
+
+/* Hero content sits above the texture layer */
 [data-homepage-hero] > * {
   position: relative;
   z-index: 1;
