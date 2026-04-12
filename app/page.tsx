@@ -442,8 +442,8 @@ export default function Home() {
                 <stop offset="100%" stopColor="rgba(1,4,16,0.62)"/>
               </radialGradient>
               <linearGradient id="chip-fill" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0%"   stopColor="rgba(0,30,90,0.75)"/>
-                <stop offset="100%" stopColor="rgba(0,15,60,0.90)"/>
+                <stop offset="0%"   stopColor="rgba(0,40,120,0.72)"/>
+                <stop offset="100%" stopColor="rgba(0,20,70,0.88)"/>
               </linearGradient>
               <linearGradient id="c-bottom-fade" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="0%"   stopColor="transparent"/>
@@ -497,7 +497,7 @@ export default function Home() {
                 fontWeight="700"
                 fontFamily="'Inter', sans-serif"
                 letterSpacing="1.5"
-                fill="rgba(200,240,255,0.88)"
+                fill="rgba(240,250,255,0.95)"
               >
                 TradeSource
               </text>
