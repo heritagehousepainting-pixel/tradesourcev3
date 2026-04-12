@@ -307,7 +307,7 @@ export default function Apply() {
         width: '42%', padding: '48px 56px',
         backgroundColor: 'var(--color-bg-alt)',
         backgroundImage: 'repeating-linear-gradient(-45deg, transparent, transparent 8px, rgba(255,255,255,0.012) 8px, rgba(255,255,255,0.012) 9px)',
-        borderRight: '1px solid rgba(255,255,255,0.07)',
+        borderRight: '1px solid var(--color-border)',
         position: 'relative', overflow: 'hidden',
       }}>
         <div style={{
@@ -329,10 +329,10 @@ export default function Apply() {
         {/* Headline */}
         <div>
           <div style={{ width: 32, height: 3, borderRadius: 2, backgroundColor: 'var(--color-orange)', marginBottom: 20 }} />
-          <h1 style={{ fontSize: 'clamp(28px, 3.5vw, 44px)', fontWeight: 800, color: 'var(--color-text)', letterSpacing: '-0.03em', lineHeight: 1.1, marginBottom: 16 }}>
+          <h1 style={{ fontSize: 'clamp(28px, 3.5vw, 44px)', fontWeight: 800, color: 'var(--color-text)', letterSpacing: '-0.03em', lineHeight: 1.1, marginBottom: 16, textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>
             Get access to overflow work in your area.
           </h1>
-          <p style={{ fontSize: 15, color: 'var(--color-text-muted)', lineHeight: 1.7, marginBottom: 32 }}>
+          <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.75)', lineHeight: 1.7, marginBottom: 32, textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>
             TradeSource is a private network of professional painters in Montgomery, Bucks, and Delaware Counties and Philadelphia. We connect contractors who are booked out with contractors who have capacity — fixed price, no bidding.
           </p>
 
@@ -368,14 +368,14 @@ export default function Apply() {
                 </div>
                 <div>
                   <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--color-text)', marginBottom: 2 }}>{title}</div>
-                  <div style={{ fontSize: 12, color: 'var(--color-text-muted)' }}>{sub}</div>
+                  <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>{sub}</div>
                 </div>
               </div>
             ))}
           </div>
         </div>
 
-        <span style={{ fontSize: 11, color: 'var(--color-text-subtle)' }}>
+        <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>
           Phase 1 · Montgomery/Bucks/Delaware/Philadelphia
         </span>
       </div>
@@ -613,7 +613,7 @@ export default function Apply() {
                         <polyline points="14 2 14 8 20 8" />
                       </svg>
                     </div>
-                    <span style={{ fontSize: 13, fontWeight: 700, color: '#1F2937' }}>Required Verification Documents</span>
+                    <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--color-text)', textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>Required Verification Documents</span>
                   </div>
                   <p style={{ fontSize: 12, color: 'var(--color-text-muted)', marginBottom: 16, lineHeight: 1.6 }}>
                     These documents are required to join the network. Your information is kept private and only used for contractor verification.
@@ -738,7 +738,7 @@ export default function Apply() {
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-subtle)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <rect x="3" y="11" width="18" height="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0110 0v4" />
             </svg>
-            <span style={{ fontSize: 11, color: 'var(--color-text-subtle)' }}>
+            <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>
               Your documents are private and used only for contractor verification.
             </span>
           </div>

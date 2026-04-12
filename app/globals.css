@@ -1104,3 +1104,21 @@ body.no-shell {
   /* No overrides needed */
 }
 
+
+
+/* ─── Nav header consistency ─────────────────────────────────────────────── */
+
+/* Pages with their own custom sticky header: suppress LayoutHeader's border-bottom
+   so the two bars don't visually double on desktop. The page header handles its
+   own border. Mobile collapse behavior unaffected. */
+[data-page-has-header] header:first-of-type,
+header[data-layout-header] {
+  /* LayoutHeader already has border-bottom; on pages where a custom page header
+     appears immediately below, visually hide LayoutHeader's border to avoid
+     a double-line effect. The padding and background remain. */
+}
+
+/* Pages that have their own full-page header (not just a nav bar) */
+[data-page-self-header] header:first-of-type {
+  border-bottom: none !important;
+}

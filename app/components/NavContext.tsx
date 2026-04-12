@@ -58,48 +58,51 @@ export function NavProvider({ children }: { children: React.ReactNode }) {
 // ─── LayoutHeader ─────────────────────────────────────────────────────────────
 
 /**
- * Sticky site header — the single nav bar for the entire app.
+ * Sticky site header for all NON-homepage pages.
  *
  * Renders one of two nav variants based on canonical UserAccess:
- *
- *  NOT AUTHENTICATED  →  PUBLIC NAV: Browse Jobs · Apply · Sign In
- *  AUTHENTICATED     →  APP NAV: Browse Jobs · [Post a Job if vetted] · Dashboard
+ *   NOT AUTHENTICATED  →  PUBLIC NAV: Browse Jobs · Apply · Sign In
+ *   AUTHENTICATED     →  APP NAV: Browse Jobs · [Post a Job if vetted] · Dashboard
  *                       [Application Portal if founder]
  *
- * The PUBLIC NAV variant is shown on the homepage for ALL visitors (guest or
- * signed-in) as a design choice — the homepage is always a public landing page.
- * Once the user navigates to any other page, the APP NAV variant shows for
- * authenticated users.
+ * Pages that have their OWN full-page sticky header (logo + branding bar):
+ *   /jobs/[id]   — has "Back to Jobs" bar with Apply CTA
+ *   /admin       — has "Application Portal" branded header
+ *   /contractors/[id] — has "Back" bar with Phase 1 badge
+ *   /terms       — has "TradeSource" wordmark header
+ *   /privacy-policy — same
+ *   /apply       — has custom mini header
+ *   /pending     — has custom PendingNav header
+ *
+ * On these pages, LayoutHeader returns null (no double bar). The page's own
+ * header provides the nav context and the logo consistency.
  *
  * Loading state: nothing renders until access.check completes, preventing
  * a flash of the wrong nav variant.
  *
  * Responsive: desktop shows full nav links; mobile (≤640px) shows hamburger
- * menu with a slide-down drawer containing all links stacked vertically.
+ * with a slide-down drawer containing all links stacked vertically.
  */
 export function LayoutHeader() {
   const { access, handleSignOut } = useNavContext()
   const pathname = usePathname()
 
-  // Never render LayoutHeader on the homepage — HomepageNav in page.tsx handles it
+  // Homepage uses HomepageNav from page.tsx — never render LayoutHeader there
   if (pathname === '/') return null
 
-  // Don't render anything until auth state is resolved.
-  // This prevents a flash of the wrong nav variant.
-  if (!access.checked) {
-    return (
-      <header
-        style={{
-          backgroundColor: 'var(--color-nav)',
-          borderBottom: '1px solid var(--color-nav-border)',
-          position: 'sticky',
-          top: 0,
-          zIndex: 30,
-          height: 60,
-        }}
-      />
-    )
-  }
+  // Pages with their own full-page branded header: suppress LayoutHeader
+  // to avoid a double top-bar. Each page header provides logo + nav context.
+  const pageHasOwnHeader = [
+    '/jobs/',      // job detail: "Back to Jobs" bar with logo + Apply CTA
+    '/admin',     // application portal: branded header with TradeSource logo + breadcrumb
+    '/apply',     // apply page: custom mini header with logo + Apply
+    '/pending',  // pending page: custom PendingNav header
+    '/terms',     // terms page: wordmark header
+    '/privacy-policy', // privacy-policy page: wordmark header
+    '/contractors/',  // contractor profile: "Back" bar with Phase 1 badge
+  ].some(p => pathname.startsWith(p))
+
+  if (pageHasOwnHeader) return null
 
   const showPublicNav = !access.isAuthenticated
   const width = useWindowWidth()
