@@ -441,10 +441,6 @@ export default function Home() {
                 <stop offset="40%"  stopColor="transparent"/>
                 <stop offset="100%" stopColor="rgba(1,4,16,0.62)"/>
               </radialGradient>
-              <linearGradient id="chip-fill" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0%"   stopColor="rgba(0,40,120,0.72)"/>
-                <stop offset="100%" stopColor="rgba(0,20,70,0.88)"/>
-              </linearGradient>
               <linearGradient id="c-bottom-fade" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="0%"   stopColor="transparent"/>
                 <stop offset="100%" stopColor="rgba(1,4,16,0.50)"/>
@@ -457,10 +453,13 @@ export default function Home() {
             {/* Inner radial core glow */}
             <circle cx="720" cy="450" r="120" fill="url(#core-grad)" filter="url(#coreglow)"/>
 
-            {/* Central chip body — 150x90px centered */}
+            {/* Central chip body — 150x90px centered, fully opaque dark fill */}
+            {/* Chip interior elements use the glow filter for integration */}
             <g filter="url(#chipglow)">
-              <path d="M 645 405 L 795 405 L 795 495 L 645 495 Z"
-                    fill="url(#chip-fill)" stroke="#0091FF" strokeWidth="1.5" strokeOpacity="0.90" opacity="0.95"/>
+              {/* Solid opaque chip body — blocks ambient glow completely */}
+              <rect x="645" y="405" width="150" height="90" rx="2"
+                    fill="#040D24" stroke="#0091FF" strokeWidth="1.5" strokeOpacity="0.92"/>
+
               {/* Pin rows — left (5) */}
               <line x1="630" y1="420" x2="645" y2="420" stroke="#0091FF" strokeWidth="1.5" strokeOpacity="0.80"/>
               <line x1="630" y1="435" x2="645" y2="435" stroke="#0091FF" strokeWidth="1.5" strokeOpacity="0.80"/>
@@ -487,20 +486,6 @@ export default function Home() {
               <line x1="720" y1="495" x2="720" y2="507" stroke="#0091FF" strokeWidth="1.5" strokeOpacity="0.80"/>
               <line x1="744" y1="495" x2="744" y2="507" stroke="#0091FF" strokeWidth="1.5" strokeOpacity="0.80"/>
               <line x1="780" y1="495" x2="780" y2="507" stroke="#0091FF" strokeWidth="1.5" strokeOpacity="0.80"/>
-              {/* Chip label — TradeSource in the core */}
-              <text
-                x="720"
-                y="452"
-                textAnchor="middle"
-                dominantBaseline="middle"
-                fontSize="10.5"
-                fontWeight="700"
-                fontFamily="'Inter', sans-serif"
-                letterSpacing="1.5"
-                fill="rgba(240,250,255,0.95)"
-              >
-                TradeSource
-              </text>
               {/* Chip center dot */}
               <circle cx="720" cy="450" r="5.5" fill="#00D5FF" opacity="0.70"/>
               {/* Cross-hair */}
@@ -516,6 +501,21 @@ export default function Home() {
               <line x1="783" y1="491" x2="792" y2="491" stroke="#00C5FF" strokeWidth="1.2" opacity="0.50"/>
               <line x1="792" y1="482" x2="792" y2="491" stroke="#00C5FF" strokeWidth="1.2" opacity="0.50"/>
             </g>
+
+            {/* Chip wordmark — OUTSIDE the glow group: crisp, pure white, fully opaque */}
+            <text
+              x="720"
+              y="452"
+              textAnchor="middle"
+              dominantBaseline="middle"
+              fontSize="15"
+              fontWeight="800"
+              fontFamily="'Inter', sans-serif"
+              letterSpacing="0.5"
+              fill="#FFFFFF"
+            >
+              TradeSource
+            </text>
 
             {/* Primary signal routes — 4-axis from core outward */}
             <g filter="url(#cglow)" opacity="0.50">
