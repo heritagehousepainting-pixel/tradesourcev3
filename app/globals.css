@@ -1111,17 +1111,19 @@ body.no-shell {
   /* No overrides needed */
 }
 
-/* ─── Homepage hero: AI constellation background ───────────────────────────────────
- * 4-layer SVG constellation:
- *   - Layer 0: faint structural grid (crosshairs, scan lines)
- *   - Layer 1: connecting lines (corner clusters + midfield threads)
- *   - Layer 2: regular nodes (glowing circles)
- *   - Layer 3: bright accent nodes (key junctions)
- *   - Layer 4: pulse rings (premium AI atmosphere)
- *   - vignette + bottom fade overlays
+/* ─── Homepage hero: circuit-core background ─────────────────────────────────────
+ * 5-layer SVG composition closer to reference image direction:
+ *   - Layer 0: faint PCB-style structural grid (substrate)
+ *   - Layer 1: central chip / core (rect body + pin rows + glow)
+ *   - Layer 2: routed circuit traces (orthogonal paths from edges to core)
+ *   - Layer 3: junction nodes at trace turn points
+ *   - Layer 4: outer perimeter circuit loops
+ *   + vignette overlay + core radial gradient + top-layer glow
  *
- * Dark mode: electric blue (#3B82F6) constellation, clearly visible
- * Light mode: pale steel-blue, very soft, clearly related but refined
+ * Dark mode: #030B17 background, electric blue (#3B82F6) traces/nodes
+ * Light mode: #F1F5F9 background, steel blue (#93C5FD) softer traces
+ *
+ * Matches the reference image direction: circuit board / system core / structured
  * ─────────────────────────────────────────────────────────────────────────── */
 
 [data-homepage-hero] {
@@ -1135,90 +1137,118 @@ body.no-shell {
   z-index: 0;
 }
 
-/* Hero content sits above the constellation */
+/* Hero content sits above the circuit background */
 [data-homepage-hero] > * {
   position: relative;
   z-index: 1;
 }
 
-/* SVG lines: dark mode — electric blue */
-[data-homepage-hero] .hero-constellation-svg line {
+/* ── SVG element styles ── */
+
+/* Dark mode: all circuit SVG lines */
+[data-homepage-hero] .hero-circuit-svg line,
+[data-homepage-hero] .hero-circuit-svg path {
   stroke: #3B82F6;
-  stroke-opacity: 0.55;
 }
-[data-theme="light"] [data-homepage-hero] .hero-constellation-svg line {
+[data-theme="light"] [data-homepage-hero] .hero-circuit-svg line,
+[data-theme="light"] [data-homepage-hero] .hero-circuit-svg path {
   stroke: #93C5FD;
+}
+
+/* Layer 1: chip body fill */
+[data-homepage-hero] .hero-circuit-svg .hero-circuit-traces path {
+  stroke: #3B82F6;
+  stroke-opacity: 0.60;
+}
+[data-theme="light"] [data-homepage-hero] .hero-circuit-svg .hero-circuit-traces path {
+  stroke: #93C5FD;
+  stroke-opacity: 0.38;
+}
+
+/* Layer 0: grid lines (faint) */
+[data-homepage-hero] .hero-circuit-svg .hero-circuit-grid line {
+  stroke: #3B82F6;
+  stroke-opacity: 0.12;
+}
+[data-theme="light"] [data-homepage-hero] .hero-circuit-svg .hero-circuit-grid line {
+  stroke: #93C5FD;
+  stroke-opacity: 0.10;
+}
+
+/* Layer 0: grid dots */
+[data-homepage-hero] .hero-circuit-svg .hero-circuit-grid circle {
+  fill: #3B82F6;
+}
+[data-theme="light"] [data-homepage-hero] .hero-circuit-svg .hero-circuit-grid circle {
+  fill: #93C5FD;
+}
+
+/* Layer 3: circuit junction nodes */
+[data-homepage-hero] .hero-circuit-svg .hero-circuit-nodes circle {
+  fill: #60A5FA;
+}
+[data-theme="light"] [data-homepage-hero] .hero-circuit-svg .hero-circuit-nodes circle {
+  fill: #60A5FA;
+  fill-opacity: 0.50;
+}
+
+/* Layer 4: outer perimeter loops */
+[data-homepage-hero] .hero-circuit-svg .hero-circuit-outer path {
+  stroke: #2563EB;
+  stroke-opacity: 0.35;
+}
+[data-theme="light"] [data-homepage-hero] .hero-circuit-svg .hero-circuit-outer path {
+  stroke: #93C5FD;
+  stroke-opacity: 0.22;
+}
+
+/* Chip body path fill — dark mode */
+[data-homepage-hero] .hero-circuit-svg path[d^="M 672"] {
+  fill: url(#chip-fill);
+  stroke: #60A5FA;
+  stroke-opacity: 0.85;
+}
+[data-theme="light"] [data-homepage-hero] .hero-circuit-svg path[d^="M 672"] {
+  fill: rgba(59,130,246,0.12);
+  stroke: #2563EB;
   stroke-opacity: 0.35;
 }
 
-/* SVG lines: bright accent lines (Layer 1) — slightly stronger */
-[data-homepage-hero] .hero-constellation-svg .hero-layer-lines line {
-  stroke: #3B82F6;
-  stroke-opacity: 0.55;
-}
-[data-theme="light"] [data-homepage-hero] .hero-constellation-svg .hero-layer-lines line {
-  stroke: #93C5FD;
-  stroke-opacity: 0.30;
-}
-
-/* SVG nodes: dark mode — electric blue */
-[data-homepage-hero] .hero-constellation-svg .hero-layer-nodes circle {
-  fill: #60A5FA;
-}
-[data-theme="light"] [data-homepage-hero] .hero-constellation-svg .hero-layer-nodes circle {
-  fill: #60A5FA;
-  fill-opacity: 0.45;
-}
-
-/* SVG bright nodes: dark mode — bright electric */
-[data-homepage-hero] .hero-constellation-svg .hero-layer-bright circle {
+/* Chip center dot */
+[data-homepage-hero] .hero-circuit-svg .hero-chip-dot {
   fill: #93C5FD;
 }
-[data-theme="light"] [data-homepage-hero] .hero-constellation-svg .hero-layer-bright circle {
+[data-theme="light"] [data-homepage-hero] .hero-circuit-svg .hero-chip-dot {
   fill: #2563EB;
-  fill-opacity: 0.6;
+  fill-opacity: 0.7;
 }
 
-/* SVG pulse rings: dark mode */
-[data-homepage-hero] .hero-constellation-svg .hero-layer-pulse circle {
-  stroke: #3B82F6;
+/* Chip pins */
+[data-homepage-hero] .hero-circuit-svg .hero-chip-pins line {
+  stroke: #60A5FA;
+  stroke-opacity: 0.70;
 }
-[data-theme="light"] [data-homepage-hero] .hero-constellation-svg .hero-layer-pulse circle {
-  stroke: #93C5FD;
-}
-
-/* SVG grid lines: dark mode — faint */
-[data-homepage-hero] .hero-constellation-svg .hero-layer-bg line {
-  stroke: #3B82F6;
-}
-[data-theme="light"] [data-homepage-hero] .hero-constellation-svg .hero-layer-bg line {
-  stroke: #93C5FD;
+[data-theme="light"] [data-homepage-hero] .hero-circuit-svg .hero-chip-pins line {
+  stroke: #60A5FA;
+  stroke-opacity: 0.40;
 }
 
-/* SVG pulse ring fill: transparent in both modes */
-[data-homepage-hero] .hero-constellation-svg .hero-layer-pulse circle {
-  fill: none;
-}
-[data-theme="light"] [data-homepage-hero] .hero-constellation-svg .hero-layer-pulse circle {
-  fill: none;
-}
-
-/* Dark mode hero: very deep navy background + blue-tinted overlay */
+/* ── Dark mode hero background color ── */
 [data-theme="dark"] [data-homepage-hero] {
   background-color: #030B17;
 }
 
-/* Light mode hero: light slate with blue tint */
+/* ── Light mode hero background color ── */
 [data-theme="light"] [data-homepage-hero] {
   background-color: #F1F5F9;
 }
 
-/* Light mode: softer gradient overlay so text stays readable */
+/* ── Light mode: very soft overlay so text stays readable ── */
 [data-theme="light"] [data-homepage-hero] > [aria-hidden="true"] > div:last-child {
-  background: radial-gradient(ellipse 80% 60% at 50% 40%, rgba(59,130,246,0.06) 0%, transparent 70%) !important;
+  background: radial-gradient(ellipse 80% 60% at 50% 50%, rgba(59,130,246,0.06) 0%, transparent 65%) !important;
 }
 
-/* Dark mode: stronger radial glow */
+/* ── Dark mode: stronger radial glow at core ── */
 [data-theme="dark"] [data-homepage-hero] > [aria-hidden="true"] > div:last-child {
-  background: radial-gradient(ellipse 70% 60% at 50% 40%, rgba(30,60,120,0.20) 0%, transparent 70%) !important;
+  background: radial-gradient(ellipse 60% 55% at 50% 50%, rgba(30,60,140,0.18) 0%, transparent 65%) !important;
 }

@@ -356,7 +356,7 @@ export default function Home() {
           borderBottom: '1px solid var(--color-border)',
         }}
       >
-        {/* ── Neural constellation hero background ── */}
+        {/* ── Circuit-core hero background ── */}
         <div
           aria-hidden="true"
           style={{
@@ -366,9 +366,8 @@ export default function Home() {
             overflow: 'hidden',
           }}
         >
-          {/* SVG constellation — nodes + lines + clusters */}
           <svg
-            className="hero-constellation-svg"
+            className="hero-circuit-svg"
             viewBox="0 0 1440 900"
             preserveAspectRatio="xMidYMid slice"
             style={{
@@ -377,273 +376,277 @@ export default function Home() {
             }}
           >
             <defs>
-              {/* Node glow filter */}
-              <filter id="nglow" x="-50%" y="-50%" width="200%" height="200%">
-                <feGaussianBlur in="SourceGraphic" stdDeviation="2.5" result="b" />
+              {/* Soft glow — for circuit lines and nodes */}
+              <filter id="cglow" x="-60%" y="-60%" width="220%" height="220%">
+                <feGaussianBlur in="SourceGraphic" stdDeviation="2" result="b"/>
                 <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
               </filter>
-              {/* Bright node glow filter */}
-              <filter id="bglow" x="-80%" y="-80%" width="260%" height="260%">
-                <feGaussianBlur in="SourceGraphic" stdDeviation="5" result="b" />
+              {/* Core center glow — stronger radial */}
+              <filter id="coreglow" x="-150%" y="-150%" width="400%" height="400%">
+                <feGaussianBlur in="SourceGraphic" stdDeviation="12" result="b"/>
+                <feMerge><feMergeNode in="b"/><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+              </filter>
+              {/* Chip body glow */}
+              <filter id="chipglow" x="-80%" y="-80%" width="260%" height="260%">
+                <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="b"/>
                 <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
               </filter>
-              {/* Line glow */}
-              <filter id="lglow" x="-20%" y="-20%" width="140%" height="140%">
-                <feGaussianBlur in="SourceGraphic" stdDeviation="1.2" result="b" />
-                <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
-              </filter>
-              {/* Radial vignette: center clean, edges dense */}
-              <radialGradient id="vignette" cx="50%" cy="50%" r="55%">
-                <stop offset="0%"   stopColor="transparent" />
-                <stop offset="60%"  stopColor="transparent" />
-                <stop offset="100%" stopColor="rgba(0,0,0,0.55)" />
+              {/* Vignette: edges dark, center open for text */}
+              <radialGradient id="cvignette" cx="50%" cy="50%" r="50%">
+                <stop offset="0%"   stopColor="transparent"/>
+                <stop offset="55%"  stopColor="transparent"/>
+                <stop offset="100%" stopColor="rgba(0,0,0,0.60)"/>
               </radialGradient>
-              {/* Bottom fade: hero bleeds into next section */}
-              <linearGradient id="bottom-fade" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%"   stopColor="transparent" />
-                <stop offset="100%" stopColor="rgba(0,0,0,0.30)" />
+              {/* Core center radial: bright core fading outward */}
+              <radialGradient id="core-grad" cx="50%" cy="50%" r="50%">
+                <stop offset="0%"   stopColor="rgba(59,130,246,0.45)" />
+                <stop offset="40%"  stopColor="rgba(37,99,235,0.18)" />
+                <stop offset="100%" stopColor="transparent" />
+              </radialGradient>
+              {/* Chip body fill */}
+              <linearGradient id="chip-fill" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%"   stopColor="rgba(30,60,120,0.55)"/>
+                <stop offset="100%" stopColor="rgba(15,35,80,0.70)"/>
+              </linearGradient>
+              {/* Bottom fade */}
+              <linearGradient id="c-bottom-fade" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%"   stopColor="transparent"/>
+                <stop offset="100%" stopColor="rgba(0,0,0,0.35)"/>
               </linearGradient>
             </defs>
 
-            {/* ── LAYER 0: Background — faint structural grid ── */}
-            <g className="hero-layer-bg" opacity="0.18">
-              {/* Horizontal scan lines */}
-              <line x1="0" y1="150" x2="1440" y2="150" stroke="currentColor" strokeWidth="0.4" opacity="0.4"/>
-              <line x1="0" y1="300" x2="1440" y2="300" stroke="currentColor" strokeWidth="0.3" opacity="0.3"/>
-              <line x1="0" y1="450" x2="1440" y2="450" stroke="currentColor" strokeWidth="0.4" opacity="0.4"/>
-              <line x1="0" y1="600" x2="1440" y2="600" stroke="currentColor" strokeWidth="0.3" opacity="0.3"/>
-              <line x1="0" y1="750" x2="1440" y2="750" stroke="currentColor" strokeWidth="0.4" opacity="0.4"/>
-              {/* Vertical scan lines */}
-              <line x1="200"  y1="0" x2="200"  y2="900" stroke="currentColor" strokeWidth="0.3" opacity="0.3"/>
-              <line x1="480"  y1="0" x2="480"  y2="900" stroke="currentColor" strokeWidth="0.2" opacity="0.2"/>
-              <line x1="720"  y1="0" x2="720"  y2="900" stroke="currentColor" strokeWidth="0.2" opacity="0.2"/>
-              <line x1="960"  y1="0" x2="960"  y2="900" stroke="currentColor" strokeWidth="0.2" opacity="0.2"/>
-              <line x1="1240" y1="0" x2="1240" y2="900" stroke="currentColor" strokeWidth="0.3" opacity="0.3"/>
-              {/* Cross markers at intersections */}
-              <line x1="196" y1="148" x2="204" y2="152" stroke="currentColor" strokeWidth="0.6" opacity="0.5"/>
-              <line x1="196" y1="152" x2="204" y2="148" stroke="currentColor" strokeWidth="0.6" opacity="0.5"/>
-              <line x1="476" y1="298" x2="484" y2="302" stroke="currentColor" strokeWidth="0.6" opacity="0.5"/>
-              <line x1="476" y1="302" x2="484" y2="298" stroke="currentColor" strokeWidth="0.6" opacity="0.5"/>
-              <line x1="956" y1="598" x2="964" y2="602" stroke="currentColor" strokeWidth="0.6" opacity="0.5"/>
-              <line x1="956" y1="602" x2="964" y2="598" stroke="currentColor" strokeWidth="0.6" opacity="0.5"/>
-              <line x1="1236" y1="148" x2="1244" y2="152" stroke="currentColor" strokeWidth="0.6" opacity="0.5"/>
-              <line x1="1236" y1="152" x2="1244" y2="148" stroke="currentColor" strokeWidth="0.6" opacity="0.5"/>
+            {/* ═══ LAYER 0: Faint structural grid (PCB substrate) ═══ */}
+            <g className="hero-circuit-grid" opacity="0.12">
+              {/* Major horizontals */}
+              <line x1="0" y1="180" x2="1440" y2="180" strokeWidth="0.5"/>
+              <line x1="0" y1="360" x2="1440" y2="360" strokeWidth="0.4"/>
+              <line x1="0" y1="540" x2="1440" y2="540" strokeWidth="0.5"/>
+              <line x1="0" y1="720" x2="1440" y2="720" strokeWidth="0.4"/>
+              {/* Major verticals */}
+              <line x1="240"  y1="0" x2="240"  y2="900" strokeWidth="0.4"/>
+              <line x1="480"  y1="0" x2="480"  y2="900" strokeWidth="0.3"/>
+              <line x1="720"  y1="0" x2="720"  y2="900" strokeWidth="0.3"/>
+              <line x1="960"  y1="0" x2="960"  y2="900" strokeWidth="0.3"/>
+              <line x1="1200" y1="0" x2="1200" y2="900" strokeWidth="0.4"/>
+              {/* Grid intersection dots */}
+              <circle cx="480"  cy="360" r="1" opacity="0.3"/>
+              <circle cx="960"  cy="360" r="1" opacity="0.3"/>
+              <circle cx="480"  cy="540" r="1" opacity="0.3"/>
+              <circle cx="960"  cy="540" r="1" opacity="0.3"/>
+              <circle cx="720"  cy="180" r="1" opacity="0.3"/>
+              <circle cx="720"  cy="720" r="1" opacity="0.3"/>
             </g>
 
-            {/* ── LAYER 1: Connecting lines (under nodes) ── */}
-            <g className="hero-layer-lines" filter="url(#lglow)" opacity="0.55">
-              {/* Top-left corner cluster */}
-              <line x1="0" y1="0"   x2="80"  y2="50"  opacity="0.6"/>
-              <line x1="0" y1="0"   x2="55"  y2="120" opacity="0.5"/>
-              <line x1="80"  y1="50"  x2="160" y2="30"  opacity="0.7"/>
-              <line x1="80"  y1="50"  x2="130" y2="130" opacity="0.55"/>
-              <line x1="55"  y1="120" x2="130" y2="130" opacity="0.7"/>
-              <line x1="55"  y1="120" x2="200" y2="90"  opacity="0.45"/>
-              <line x1="160" y1="30"  x2="280" y2="15"  opacity="0.6"/>
-              <line x1="160" y1="30"  x2="230" y2="150" opacity="0.5"/>
-              <line x1="130" y1="130" x2="230" y2="150" opacity="0.65"/>
-              <line x1="230" y1="150" x2="380" y2="80"  opacity="0.4"/>
-              <line x1="200" y1="90"  x2="380" y2="80"  opacity="0.55"/>
-              <line x1="380" y1="80"  x2="480" y2="200" opacity="0.35"/>
-              <line x1="0"   y1="200" x2="55"  y2="120" opacity="0.45"/>
-              <line x1="0"   y1="200" x2="130" y2="130" opacity="0.35"/>
-              {/* Branching down left edge */}
-              <line x1="55"  y1="120" x2="0"   y2="350" opacity="0.4"/>
-              <line x1="0"   y1="350" x2="60"  y2="450" opacity="0.35"/>
-              <line x1="130" y1="130" x2="0"   y2="350" opacity="0.3"/>
-              <line x1="0"   y1="350" x2="200" y2="280" opacity="0.45"/>
-              <line x1="200" y1="280" x2="300" y2="350" opacity="0.35"/>
-              <line x1="300" y1="350" x2="380" y2="450" opacity="0.4"/>
-              <line x1="0"   y1="450" x2="60"  y2="450" opacity="0.5"/>
-              <line x1="60"  y1="450" x2="200" y2="280" opacity="0.4"/>
-
-              {/* Top-right corner cluster */}
-              <line x1="1440" y1="0"    x2="1360" y2="40"  opacity="0.6"/>
-              <line x1="1440" y1="0"    x2="1380" y2="100" opacity="0.5"/>
-              <line x1="1360" y1="40"  x2="1280" y2="20"  opacity="0.7"/>
-              <line x1="1360" y1="40"  x2="1310" y2="110" opacity="0.55"/>
-              <line x1="1380" y1="100" x2="1310" y2="110" opacity="0.65"/>
-              <line x1="1380" y1="100" x2="1240" y2="70"  opacity="0.45"/>
-              <line x1="1280" y1="20"  x2="1160" y2="10"  opacity="0.6"/>
-              <line x1="1280" y1="20"  x2="1210" y2="130" opacity="0.5"/>
-              <line x1="1310" y1="110" x2="1210" y2="130" opacity="0.6"/>
-              <line x1="1210" y1="130" x2="1060" y2="60"  opacity="0.4"/>
-              <line x1="1240" y1="70"  x2="1060" y2="60"  opacity="0.55"/>
-              <line x1="1060" y1="60"  x2="960"  y2="180" opacity="0.35"/>
-              <line x1="1440" y1="180" x2="1380" y2="100" opacity="0.45"/>
-              <line x1="1440" y1="180" x2="1310" y2="110" opacity="0.35"/>
-              {/* Branching down right edge */}
-              <line x1="1380" y1="100" x2="1440" y2="300" opacity="0.4"/>
-              <line x1="1440" y1="300" x2="1380" y2="400" opacity="0.35"/>
-              <line x1="1310" y1="110" x2="1440" y2="300" opacity="0.3"/>
-              <line x1="1440" y1="300" x2="1240" y2="240" opacity="0.45"/>
-              <line x1="1240" y1="240" x2="1140" y2="300" opacity="0.35"/>
-              <line x1="1140" y1="300" x2="1060" y2="400" opacity="0.4"/>
-
-              {/* Bottom-left cluster */}
-              <line x1="0"   y1="900" x2="100"  y2="820" opacity="0.6"/>
-              <line x1="0"   y1="900" x2="70"   y2="780" opacity="0.5"/>
-              <line x1="100" y1="820" x2="220"  y2="870" opacity="0.65"/>
-              <line x1="100" y1="820" x2="160"  y2="700" opacity="0.5"/>
-              <line x1="70"  y1="780" x2="160"  y2="700" opacity="0.7"/>
-              <line x1="70"  y1="780" x2="300"  y2="750" opacity="0.4"/>
-              <line x1="220" y1="870" x2="360"  y2="820" opacity="0.55"/>
-              <line x1="220" y1="870" x2="280"  y2="720" opacity="0.45"/>
-              <line x1="160" y1="700" x2="280"  y2="720" opacity="0.6"/>
-              <line x1="280" y1="720" x2="460"  y2="650" opacity="0.35"/>
-              <line x1="300" y1="750" x2="460"  y2="650" opacity="0.45"/>
-              <line x1="460" y1="650" x2="560"  y2="750" opacity="0.3"/>
-              <line x1="0"   y1="700" x2="70"   y2="780" opacity="0.45"/>
-              <line x1="0"   y1="700" x2="160"  y2="700" opacity="0.35"/>
-              <line x1="160" y1="700" x2="0"    y2="580" opacity="0.4"/>
-              <line x1="0"   y1="580" x2="80"   y2="480" opacity="0.35"/>
-              <line x1="80"  y1="480" x2="200"  y2="560" opacity="0.4"/>
-
-              {/* Bottom-right cluster */}
-              <line x1="1440" y1="900" x2="1340" y2="830" opacity="0.6"/>
-              <line x1="1440" y1="900" x2="1370" y2="780" opacity="0.5"/>
-              <line x1="1340" y1="830" x2="1220" y2="880" opacity="0.65"/>
-              <line x1="1340" y1="830" x2="1280" y2="710" opacity="0.5"/>
-              <line x1="1370" y1="780" x2="1280" y2="710" opacity="0.7"/>
-              <line x1="1370" y1="780" x2="1140" y2="760" opacity="0.4"/>
-              <line x1="1220" y1="880" x2="1080" y2="840" opacity="0.55"/>
-              <line x1="1220" y1="880" x2="1160" y2="720" opacity="0.45"/>
-              <line x1="1280" y1="710" x2="1160" y2="720" opacity="0.6"/>
-              <line x1="1160" y1="720" x2="980"  y2="660" opacity="0.35"/>
-              <line x1="1140" y1="760" x2="980"  y2="660" opacity="0.45"/>
-              <line x1="980"  y1="660" x2="880"  y2="750" opacity="0.3"/>
-              <line x1="1440" y1="780" x2="1370" y2="780" opacity="0.45"/>
-              <line x1="1440" y1="780" x2="1280" y2="710" opacity="0.35"/>
-              <line x1="1280" y1="710" x2="1440" y2="580" opacity="0.4"/>
-              <line x1="1440" y1="580" x2="1360" y2="480" opacity="0.35"/>
-              <line x1="1360" y1="480" x2="1240" y2="550" opacity="0.4"/>
-
-              {/* Midfield: fewer, cleaner lines — preserves text readability */}
-              <line x1="380" y1="80"  x2="560"  y2="220" opacity="0.3"/>
-              <line x1="560" y1="220" x2="720"  y2="380" opacity="0.25"/>
-              <line x1="480" y1="200" x2="720"  y2="380" opacity="0.2"/>
-              <line x1="1060" y1="60"  x2="880"  y2="200" opacity="0.3"/>
-              <line x1="880" y1="200" x2="720"  y2="380" opacity="0.25"/>
-              <line x1="960"  y1="180" x2="720"  y2="380" opacity="0.2"/>
-              <line x1="280" y1="720" x2="560"  y2="750" opacity="0.3"/>
-              <line x1="560" y1="750" x2="720"  y2="620" opacity="0.25"/>
-              <line x1="460" y1="650" x2="720"  y2="620" opacity="0.2"/>
-              <line x1="1160" y1="720" x2="880"  y2="750" opacity="0.3"/>
-              <line x1="880" y1="750" x2="720"  y2="620" opacity="0.25"/>
-              <line x1="980" y1="660" x2="720"  y2="620" opacity="0.2"/>
+            {/* ═══ LAYER 1: Central chip core ═══ */}
+            {/* Outer glow ring */}
+            <circle cx="720" cy="450" r="80" fill="none" strokeWidth="1" opacity="0.20"/>
+            <circle cx="720" cy="450" r="55" fill="none" strokeWidth="1.5" opacity="0.30"/>
+            {/* Core radial glow */}
+            <circle cx="720" cy="450" r="80" fill="url(#core-grad)" filter="url(#coreglow)"/>
+            {/* Chip body: rounded rect via path */}
+            <g filter="url(#chipglow)">
+              <path d="M 672 420 L 768 420 L 768 480 L 672 480 Z"
+                    fill="url(#chip-fill)" strokeWidth="1.5" opacity="0.85"/>
+              {/* Pin rows — left side */}
+              <line x1="660" y1="428" x2="672" y2="428" strokeWidth="1.5"/>
+              <line x1="660" y1="438" x2="672" y2="438" strokeWidth="1.5"/>
+              <line x1="660" y1="450" x2="672" y2="450" strokeWidth="1.5"/>
+              <line x1="660" y1="462" x2="672" y2="462" strokeWidth="1.5"/>
+              <line x1="660" y1="472" x2="672" y2="472" strokeWidth="1.5"/>
+              {/* Pin rows — right side */}
+              <line x1="768" y1="428" x2="780" y2="428" strokeWidth="1.5"/>
+              <line x1="768" y1="438" x2="780" y2="438" strokeWidth="1.5"/>
+              <line x1="768" y1="450" x2="780" y2="450" strokeWidth="1.5"/>
+              <line x1="768" y1="462" x2="780" y2="462" strokeWidth="1.5"/>
+              <line x1="768" y1="472" x2="780" y2="472" strokeWidth="1.5"/>
+              {/* Pin rows — top side */}
+              <line x1="680" y1="408" x2="680" y2="420" strokeWidth="1.5"/>
+              <line x1="694" y1="408" x2="694" y2="420" strokeWidth="1.5"/>
+              <line x1="708" y1="408" x2="708" y2="420" strokeWidth="1.5"/>
+              <line x1="732" y1="408" x2="732" y2="420" strokeWidth="1.5"/>
+              <line x1="746" y1="408" x2="746" y2="420" strokeWidth="1.5"/>
+              <line x1="760" y1="408" x2="760" y2="420" strokeWidth="1.5"/>
+              {/* Pin rows — bottom side */}
+              <line x1="680" y1="480" x2="680" y2="492" strokeWidth="1.5"/>
+              <line x1="694" y1="480" x2="694" y2="492" strokeWidth="1.5"/>
+              <line x1="708" y1="480" x2="708" y2="492" strokeWidth="1.5"/>
+              <line x1="732" y1="480" x2="732" y2="492" strokeWidth="1.5"/>
+              <line x1="746" y1="480" x2="746" y2="492" strokeWidth="1.5"/>
+              <line x1="760" y1="480" x2="760" y2="492" strokeWidth="1.5"/>
+              {/* Chip center dot */}
+              <circle cx="720" cy="450" r="4" opacity="0.90"/>
+              {/* Chip inner cross-hair */}
+              <line x1="708" y1="450" x2="732" y2="450" strokeWidth="0.5" opacity="0.4"/>
+              <line x1="720" y1="438" x2="720" y2="462" strokeWidth="0.5" opacity="0.4"/>
             </g>
 
-            {/* ── LAYER 2: Regular nodes ── */}
-            <g className="hero-layer-nodes" filter="url(#nglow)" opacity="0.75">
-              {/* Top-left */}
-              <circle cx="0"   cy="0"   r="1.5" opacity="0.7"/>
-              <circle cx="80"  cy="50"  r="2"   opacity="0.85"/>
-              <circle cx="55"  cy="120" r="2"   opacity="0.85"/>
-              <circle cx="160" cy="30"  r="1.5" opacity="0.7"/>
-              <circle cx="130" cy="130" r="2.5" opacity="0.95"/>
-              <circle cx="200" cy="90"  r="1.5" opacity="0.7"/>
-              <circle cx="280" cy="15"  r="1.5" opacity="0.65"/>
-              <circle cx="230" cy="150" r="2"   opacity="0.85"/>
-              <circle cx="380" cy="80"  r="1.5" opacity="0.7"/>
-              <circle cx="0"   cy="200" r="1.5" opacity="0.6"/>
-              <circle cx="0"   cy="350" r="2"   opacity="0.75"/>
-              <circle cx="60"  cy="450" r="1.5" opacity="0.65"/>
-              <circle cx="200" cy="280" r="1.5" opacity="0.7"/>
-              <circle cx="300" cy="350" r="1.5" opacity="0.65"/>
-              <circle cx="380" cy="450" r="1.5" opacity="0.6"/>
+            {/* ═══ LAYER 2: Circuit traces — routed from edges to core ═══ */}
+            <g className="hero-circuit-traces" filter="url(#cglow)" opacity="0.60">
+              {/* ── Top traces (run down) ── */}
+              <path d="M 360 0 L 360 140 L 380 140 L 380 180 L 420 180 L 420 240 L 480 240 L 480 300 L 560 300 L 560 360 L 620 360 L 620 400"
+                    fill="none" strokeWidth="1.2" opacity="0.7"/>
+              <path d="M 720 0 L 720 60 L 680 60 L 680 120 L 640 120 L 640 180 L 620 180 L 620 280 L 640 280 L 640 320 L 680 320 L 680 380 L 700 380 L 700 420"
+                    fill="none" strokeWidth="1.2" opacity="0.65"/>
+              <path d="M 1080 0 L 1080 100 L 1060 100 L 1060 160 L 1020 160 L 1020 220 L 980 220 L 980 280 L 920 280 L 920 340 L 860 340 L 860 400 L 820 400 L 820 420"
+                    fill="none" strokeWidth="1.2" opacity="0.7"/>
 
-              {/* Top-right */}
-              <circle cx="1440" cy="0"   r="1.5" opacity="0.7"/>
-              <circle cx="1360" cy="40"  r="2"   opacity="0.85"/>
-              <circle cx="1380" cy="100" r="2"   opacity="0.85"/>
-              <circle cx="1280" cy="20"  r="1.5" opacity="0.7"/>
-              <circle cx="1310" cy="110" r="2.5" opacity="0.95"/>
-              <circle cx="1240" cy="70"  r="1.5" opacity="0.7"/>
-              <circle cx="1160" cy="10"  r="1.5" opacity="0.65"/>
-              <circle cx="1210" cy="130" r="2"   opacity="0.85"/>
-              <circle cx="1060" cy="60"  r="1.5" opacity="0.7"/>
-              <circle cx="1440" cy="180" r="1.5" opacity="0.6"/>
-              <circle cx="1440" cy="300" r="2"   opacity="0.75"/>
-              <circle cx="1380" cy="400" r="1.5" opacity="0.65"/>
-              <circle cx="1240" cy="240" r="1.5" opacity="0.7"/>
-              <circle cx="1140" cy="300" r="1.5" opacity="0.65"/>
-              <circle cx="1060" cy="400" r="1.5" opacity="0.6"/>
+              {/* ── Bottom traces (run up) ── */}
+              <path d="M 360 900 L 360 760 L 380 760 L 380 720 L 420 720 L 420 660 L 480 660 L 480 600 L 560 600 L 560 540 L 620 540 L 620 500"
+                    fill="none" strokeWidth="1.2" opacity="0.7"/>
+              <path d="M 720 900 L 720 840 L 680 840 L 680 780 L 640 780 L 640 720 L 620 720 L 620 620 L 640 620 L 640 580 L 680 580 L 680 520 L 700 520 L 700 480"
+                    fill="none" strokeWidth="1.2" opacity="0.65"/>
+              <path d="M 1080 900 L 1080 800 L 1060 800 L 1060 740 L 1020 740 L 1020 680 L 980 680 L 980 620 L 920 620 L 920 560 L 860 560 L 860 500 L 820 500 L 820 480"
+                    fill="none" strokeWidth="1.2" opacity="0.7"/>
 
-              {/* Bottom-left */}
-              <circle cx="0"   cy="900" r="1.5" opacity="0.7"/>
-              <circle cx="100"  cy="820" r="2"   opacity="0.85"/>
-              <circle cx="70"   cy="780" r="2"   opacity="0.85"/>
-              <circle cx="220"  cy="870" r="1.5" opacity="0.7"/>
-              <circle cx="160"  cy="700" r="2.5" opacity="0.95"/>
-              <circle cx="300"  cy="750" r="1.5" opacity="0.7"/>
-              <circle cx="360"  cy="820" r="1.5" opacity="0.65"/>
-              <circle cx="280"  cy="720" r="2"   opacity="0.85"/>
-              <circle cx="460"  cy="650" r="1.5" opacity="0.7"/>
-              <circle cx="560"  cy="750" r="1.5" opacity="0.6"/>
-              <circle cx="0"   cy="700" r="1.5" opacity="0.6"/>
-              <circle cx="0"   cy="580" r="1.5" opacity="0.65"/>
-              <circle cx="80"   cy="480" r="1.5" opacity="0.6"/>
-              <circle cx="200"  cy="560" r="1.5" opacity="0.6"/>
+              {/* ── Left traces (run right) ── */}
+              <path d="M 0 200 L 80 200 L 80 220 L 140 220 L 140 280 L 200 280 L 200 340 L 260 340 L 260 380 L 320 380 L 320 420 L 380 420 L 380 450"
+                    fill="none" strokeWidth="1.2" opacity="0.7"/>
+              <path d="M 0 450 L 100 450 L 100 470 L 160 470 L 160 510 L 220 510 L 220 550 L 300 550 L 300 590 L 380 590 L 380 630 L 450 630 L 450 660 L 520 660 L 520 680 L 580 680 L 580 640 L 620 640 L 620 600 L 660 600 L 660 560 L 680 560 L 680 520 L 700 520 L 700 480"
+                    fill="none" strokeWidth="1.2" opacity="0.65"/>
+              <path d="M 0 700 L 60 700 L 60 680 L 120 680 L 120 620 L 180 620 L 180 580 L 260 580 L 260 540 L 320 540 L 320 500 L 380 500 L 380 470"
+                    fill="none" strokeWidth="1.2" opacity="0.7"/>
 
-              {/* Bottom-right */}
-              <circle cx="1440" cy="900" r="1.5" opacity="0.7"/>
-              <circle cx="1340" cy="830" r="2"   opacity="0.85"/>
-              <circle cx="1370" cy="780" r="2"   opacity="0.85"/>
-              <circle cx="1220" cy="880" r="1.5" opacity="0.7"/>
-              <circle cx="1280" cy="710" r="2.5" opacity="0.95"/>
-              <circle cx="1140" cy="760" r="1.5" opacity="0.7"/>
-              <circle cx="1080" cy="840" r="1.5" opacity="0.65"/>
-              <circle cx="1160" cy="720" r="2"   opacity="0.85"/>
-              <circle cx="980"  cy="660" r="1.5" opacity="0.7"/>
-              <circle cx="880"  cy="750" r="1.5" opacity="0.6"/>
-              <circle cx="1440" cy="780" r="1.5" opacity="0.6"/>
-              <circle cx="1440" cy="580" r="1.5" opacity="0.65"/>
-              <circle cx="1360" cy="480" r="1.5" opacity="0.6"/>
-              <circle cx="1240" cy="550" r="1.5" opacity="0.6"/>
+              {/* ── Right traces (run left) ── */}
+              <path d="M 1440 200 L 1360 200 L 1360 220 L 1300 220 L 1300 280 L 1240 280 L 1240 340 L 1180 340 L 1180 380 L 1120 380 L 1120 420 L 1060 420 L 1060 450"
+                    fill="none" strokeWidth="1.2" opacity="0.7"/>
+              <path d="M 1440 450 L 1340 450 L 1340 430 L 1280 430 L 1280 390 L 1220 390 L 1220 350 L 1140 350 L 1140 310 L 1060 310 L 1060 280 L 1000 280 L 1000 310 L 940 310 L 940 350 L 880 350 L 880 390 L 820 390 L 820 420 L 760 420 L 760 450"
+                    fill="none" strokeWidth="1.2" opacity="0.65"/>
+              <path d="M 1440 700 L 1380 700 L 1380 680 L 1320 680 L 1320 620 L 1260 620 L 1260 580 L 1180 580 L 1180 540 L 1120 540 L 1120 500 L 1060 500 L 1060 470"
+                    fill="none" strokeWidth="1.2" opacity="0.7"/>
 
-              {/* Scattered midfield nodes (few, keeps center readable) */}
-              <circle cx="560"  cy="220" r="1.5" opacity="0.55"/>
-              <circle cx="720"  cy="380" r="1.5" opacity="0.5"/>
-              <circle cx="880"  cy="200" r="1.5" opacity="0.55"/>
-              <circle cx="560"  cy="750" r="1.5" opacity="0.55"/>
-              <circle cx="880"  cy="750" r="1.5" opacity="0.55"/>
+              {/* ── Diagonal corner traces ── */}
+              <path d="M 0 0 L 40 0 L 40 40 L 100 40 L 100 100 L 180 100 L 180 160 L 260 160 L 260 200 L 320 200 L 320 240 L 380 240 L 380 280 L 420 280 L 420 320 L 480 320 L 480 360 L 540 360 L 540 400 L 600 400 L 600 420"
+                    fill="none" strokeWidth="0.8" opacity="0.45"/>
+              <path d="M 1440 0 L 1400 0 L 1400 40 L 1340 40 L 1340 100 L 1260 100 L 1260 160 L 1180 160 L 1180 200 L 1120 200 L 1120 240 L 1060 240 L 1060 280 L 1000 280 L 1000 320 L 940 320 L 940 360 L 880 360 L 880 400 L 820 400 L 820 420"
+                    fill="none" strokeWidth="0.8" opacity="0.45"/>
+              <path d="M 0 900 L 40 900 L 40 860 L 100 860 L 100 800 L 180 800 L 180 740 L 260 740 L 260 700 L 320 700 L 320 660 L 380 660 L 380 620 L 420 620 L 420 580 L 480 580 L 480 540 L 540 540 L 540 500 L 600 500 L 600 480"
+                    fill="none" strokeWidth="0.8" opacity="0.45"/>
+              <path d="M 1440 900 L 1400 900 L 1400 860 L 1340 860 L 1340 800 L 1260 800 L 1260 740 L 1180 740 L 1180 700 L 1120 700 L 1120 660 L 1060 660 L 1060 620 L 1000 620 L 1000 580 L 940 580 L 940 540 L 880 540 L 880 500 L 820 500 L 820 480"
+                    fill="none" strokeWidth="0.8" opacity="0.45"/>
+
+              {/* ── Midfield thin signal lines ── */}
+              <line x1="100" y1="450" x2="300" y2="450" opacity="0.3" strokeWidth="0.8"/>
+              <line x1="1140" y1="450" x2="1340" y2="450" opacity="0.3" strokeWidth="0.8"/>
+              <line x1="720" y1="100" x2="720" y2="300" opacity="0.3" strokeWidth="0.8"/>
+              <line x1="720" y1="600" x2="720" y2="800" opacity="0.3" strokeWidth="0.8"/>
+              <line x1="200" y1="340" x2="400" y2="340" opacity="0.25" strokeWidth="0.6"/>
+              <line x1="1240" y1="340" x2="1040" y2="340" opacity="0.25" strokeWidth="0.6"/>
             </g>
 
-            {/* ── LAYER 3: Bright accent nodes (key junctions) ── */}
-            <g className="hero-layer-bright" filter="url(#bglow)" opacity="1">
-              <circle cx="130"  cy="130" r="3.5" opacity="0.9"/>
-              <circle cx="1310" cy="110" r="3.5" opacity="0.9"/>
-              <circle cx="160"  cy="700" r="3.5" opacity="0.9"/>
-              <circle cx="1280" cy="710" r="3.5" opacity="0.9"/>
-              <circle cx="230"  cy="150" r="2.5" opacity="0.85"/>
-              <circle cx="1210" cy="130" r="2.5" opacity="0.85"/>
-              <circle cx="280"  cy="720" r="2.5" opacity="0.85"/>
-              <circle cx="1160" cy="720" r="2.5" opacity="0.85"/>
+            {/* ═══ LAYER 3: Junction nodes on trace paths ═══ */}
+            <g className="hero-circuit-nodes" filter="url(#cglow)" opacity="0.80">
+              {/* Top junction points */}
+              <circle cx="360"  cy="140" r="2.5" opacity="0.8"/>
+              <circle cx="380"  cy="180" r="2"   opacity="0.7"/>
+              <circle cx="420"  cy="240" r="2"   opacity="0.7"/>
+              <circle cx="480"  cy="300" r="2"   opacity="0.7"/>
+              <circle cx="560"  cy="360" r="2.5" opacity="0.8"/>
+              <circle cx="620"  cy="400" r="3"   opacity="0.9"/>
+              <circle cx="720"  cy="60"  r="2"   opacity="0.7"/>
+              <circle cx="680"  cy="120" r="2"   opacity="0.7"/>
+              <circle cx="640"  cy="180" r="2"   opacity="0.7"/>
+              <circle cx="700"  cy="380" r="2"   opacity="0.7"/>
+              <circle cx="1080" cy="100" r="2.5" opacity="0.8"/>
+              <circle cx="1060" cy="160" r="2"   opacity="0.7"/>
+              <circle cx="1020" cy="220" r="2"   opacity="0.7"/>
+              <circle cx="980"  cy="280" r="2"   opacity="0.7"/>
+              <circle cx="920"  cy="340" r="2"   opacity="0.7"/>
+              <circle cx="860"  cy="400" r="2.5" opacity="0.8"/>
+              <circle cx="820"  cy="420" r="3"   opacity="0.9"/>
+
+              {/* Bottom junction points */}
+              <circle cx="360"  cy="760" r="2.5" opacity="0.8"/>
+              <circle cx="380"  cy="720" r="2"   opacity="0.7"/>
+              <circle cx="420"  cy="660" r="2"   opacity="0.7"/>
+              <circle cx="480"  cy="600" r="2"   opacity="0.7"/>
+              <circle cx="560"  cy="540" r="2.5" opacity="0.8"/>
+              <circle cx="620"  cy="500" r="3"   opacity="0.9"/>
+              <circle cx="720"  cy="840" r="2"   opacity="0.7"/>
+              <circle cx="680"  cy="780" r="2"   opacity="0.7"/>
+              <circle cx="640"  cy="720" r="2"   opacity="0.7"/>
+              <circle cx="700"  cy="520" r="2"   opacity="0.7"/>
+              <circle cx="1080" cy="800" r="2.5" opacity="0.8"/>
+              <circle cx="1060" cy="740" r="2"   opacity="0.7"/>
+              <circle cx="1020" cy="680" r="2"   opacity="0.7"/>
+              <circle cx="980"  cy="620" r="2"   opacity="0.7"/>
+              <circle cx="920"  cy="560" r="2"   opacity="0.7"/>
+              <circle cx="860"  cy="500" r="2.5" opacity="0.8"/>
+              <circle cx="820"  cy="480" r="3"   opacity="0.9"/>
+
+              {/* Left side junction points */}
+              <circle cx="80"   cy="220" r="2"   opacity="0.7"/>
+              <circle cx="140"  cy="280" r="2"   opacity="0.7"/>
+              <circle cx="200"  cy="340" r="2"   opacity="0.7"/>
+              <circle cx="260"  cy="380" r="2"   opacity="0.7"/>
+              <circle cx="320"  cy="420" r="2.5" opacity="0.8"/>
+              <circle cx="380"  cy="450" r="3"   opacity="0.9"/>
+              <circle cx="100"  cy="470" r="2"   opacity="0.7"/>
+              <circle cx="160"  cy="510" r="2"   opacity="0.7"/>
+              <circle cx="220"  cy="550" r="2"   opacity="0.7"/>
+              <circle cx="300"  cy="590" r="2"   opacity="0.7"/>
+              <circle cx="380"  cy="630" r="2.5" opacity="0.8"/>
+              <circle cx="580"  cy="640" r="2"   opacity="0.7"/>
+              <circle cx="660"  cy="560" r="2"   opacity="0.7"/>
+              <circle cx="700"  cy="480" r="3"   opacity="0.9"/>
+              <circle cx="60"   cy="680" r="2"   opacity="0.7"/>
+              <circle cx="120"  cy="620" r="2"   opacity="0.7"/>
+              <circle cx="180"  cy="580" r="2"   opacity="0.7"/>
+              <circle cx="260"  cy="540" r="2"   opacity="0.7"/>
+              <circle cx="320"  cy="500" r="2.5" opacity="0.8"/>
+              <circle cx="380"  cy="470" r="3"   opacity="0.9"/>
+
+              {/* Right side junction points */}
+              <circle cx="1360" cy="220" r="2"   opacity="0.7"/>
+              <circle cx="1300" cy="280" r="2"   opacity="0.7"/>
+              <circle cx="1240" cy="340" r="2"   opacity="0.7"/>
+              <circle cx="1180" cy="380" r="2"   opacity="0.7"/>
+              <circle cx="1120" cy="420" r="2.5" opacity="0.8"/>
+              <circle cx="1060" cy="450" r="3"   opacity="0.9"/>
+              <circle cx="1340" cy="430" r="2"   opacity="0.7"/>
+              <circle cx="1280" cy="390" r="2"   opacity="0.7"/>
+              <circle cx="1220" cy="350" r="2"   opacity="0.7"/>
+              <circle cx="1140" cy="310" r="2"   opacity="0.7"/>
+              <circle cx="1060" cy="280" r="2.5" opacity="0.8"/>
+              <circle cx="1000" cy="310" r="2"   opacity="0.7"/>
+              <circle cx="940"  cy="350" r="2"   opacity="0.7"/>
+              <circle cx="880"  cy="390" r="2"   opacity="0.7"/>
+              <circle cx="820"  cy="420" r="2.5" opacity="0.8"/>
+              <circle cx="760"  cy="450" r="3"   opacity="0.9"/>
+              <circle cx="1380" cy="680" r="2"   opacity="0.7"/>
+              <circle cx="1320" cy="620" r="2"   opacity="0.7"/>
+              <circle cx="1260" cy="580" r="2"   opacity="0.7"/>
+              <circle cx="1180" cy="540" r="2"   opacity="0.7"/>
+              <circle cx="1120" cy="500" r="2.5" opacity="0.8"/>
+              <circle cx="1060" cy="470" r="3"   opacity="0.9"/>
             </g>
 
-            {/* ── LAYER 4: Pulse rings on key nodes (premium AI feel) ── */}
-            <g className="hero-layer-pulse" opacity="0.4">
-              <circle cx="130"  cy="130" r="12" fill="none" strokeWidth="0.8" opacity="0.3"/>
-              <circle cx="130"  cy="130" r="20" fill="none" strokeWidth="0.4" opacity="0.15"/>
-              <circle cx="1310" cy="110" r="12" fill="none" strokeWidth="0.8" opacity="0.3"/>
-              <circle cx="1310" cy="110" r="20" fill="none" strokeWidth="0.4" opacity="0.15"/>
-              <circle cx="160"  cy="700" r="12" fill="none" strokeWidth="0.8" opacity="0.3"/>
-              <circle cx="160"  cy="700" r="20" fill="none" strokeWidth="0.4" opacity="0.15"/>
-              <circle cx="1280" cy="710" r="12" fill="none" strokeWidth="0.8" opacity="0.3"/>
-              <circle cx="1280" cy="710" r="20" fill="none" strokeWidth="0.4" opacity="0.15"/>
+            {/* ═══ LAYER 4: Outer ring connectors (system architecture lines) ═══ */}
+            <g className="hero-circuit-outer" opacity="0.35">
+              {/* Outer perimeter circuit loop — top */}
+              <path d="M 80 0 L 80 40 L 200 40 L 200 80 L 340 80 L 340 120 L 500 120 L 500 80 L 700 80 L 700 120 L 900 120 L 900 80 L 1100 80 L 1100 120 L 1260 120 L 1260 80 L 1360 80 L 1360 0"
+                    fill="none" strokeWidth="0.8"/>
+              {/* Outer perimeter circuit loop — bottom */}
+              <path d="M 80 900 L 80 860 L 200 860 L 200 820 L 340 820 L 340 780 L 500 780 L 500 820 L 700 820 L 700 780 L 900 780 L 900 820 L 1100 820 L 1100 780 L 1260 780 L 1260 820 L 1360 820 L 1360 900"
+                    fill="none" strokeWidth="0.8"/>
+              {/* Outer perimeter circuit loop — left */}
+              <path d="M 0 80 L 40 80 L 40 200 L 80 200 L 80 340 L 120 340 L 120 500 L 80 500 L 80 700 L 120 700 L 120 860 L 40 860 L 40 900"
+                    fill="none" strokeWidth="0.8"/>
+              {/* Outer perimeter circuit loop — right */}
+              <path d="M 1440 80 L 1400 80 L 1400 200 L 1360 200 L 1360 340 L 1320 340 L 1320 500 L 1360 500 L 1360 700 L 1320 700 L 1320 860 L 1400 860 L 1400 900"
+                    fill="none" strokeWidth="0.8"/>
             </g>
 
-            {/* ── Vignette overlay — center stays clean for text readability ── */}
-            <rect width="1440" height="900" fill="url(#vignette)" />
-            {/* Bottom fade — hero bleeds into ticker */}
-            <rect x="0" y="720" width="1440" height="180" fill="url(#bottom-fade)" />
+            {/* ── Vignette: dark edges, open center for text ── */}
+            <rect width="1440" height="900" fill="url(#cvignette)"/>
+            {/* Bottom fade: hero into ticker */}
+            <rect x="0" y="680" width="1440" height="220" fill="url(#c-bottom-fade)"/>
           </svg>
 
-          {/* Soft gradient overlay — warm glow at center, dark edges */}
+          {/* Top-layer radial glow: centered on chip, fades out */}
           <div style={{
             position: 'absolute', inset: 0,
-            background: 'radial-gradient(ellipse 70% 60% at 50% 40%, rgba(30,60,120,0.15) 0%, transparent 70%)',
-          }} />
+            background: 'radial-gradient(ellipse 60% 55% at 50% 50%, rgba(30,60,140,0.18) 0%, transparent 65%)',
+          }}/>
         </div>
         <div style={{ maxWidth: 1160, margin: '0 auto', padding: '80px 56px 0' }}>
 
