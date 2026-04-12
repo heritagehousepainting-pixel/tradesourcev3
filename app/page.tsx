@@ -364,17 +364,6 @@ export default function Home() {
           }}>
             {/* Left */}
             <div style={{ paddingTop: 16 }}>
-              {/* Contractor identity badge — visible on ALL screens for instant context */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
-                <div style={{ width: 20, height: 1, backgroundColor: 'var(--color-blue)' }} />
-                <span style={{
-                  fontSize: 10, fontWeight: 700, letterSpacing: 2.5,
-                  textTransform: 'uppercase', color: 'var(--color-blue)',
-                  opacity: 0.8,
-                }}>
-                  Built for contractors
-                </span>
-              </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
                 <div style={{ width: 32, height: 1, backgroundColor: 'var(--color-blue)' }} />
                 <span style={{
@@ -387,17 +376,32 @@ export default function Home() {
               <h1 style={{
                 fontSize: 'clamp(44px, 6vw, 80px)', fontWeight: 900,
                 lineHeight: 1.0, letterSpacing: '-2.5px',
-                maxWidth: 760, marginBottom: 24, color: 'var(--color-text)',
+                maxWidth: 760, marginBottom: 20, color: 'var(--color-text)',
               }}>
-                More work than<br />your crew can handle?
+                Your work.<br />Your rate.<br />Your crew.
               </h1>
               <p style={{
-                fontSize: 17, color: 'var(--color-text-muted)',
-                maxWidth: 480, lineHeight: 1.7, marginBottom: 36,
+                fontSize: 15, color: 'var(--color-text-muted)',
+                maxWidth: 420, lineHeight: 1.65, marginBottom: 28,
               }}>
-                A private network of vetted painting contractors in the four-county Philadelphia area. Post your work at your rate. Choose who you send it to.
+                A private network of vetted painting contractors in the four-county Philadelphia area. Post jobs at your rate — no bidding, no commission.
               </p>
-              <div style={{ display: 'flex', gap: 12 }}>
+              {/* "Built for contractors" — bold accent badge below sub-copy */}
+              <div style={{
+                display: 'inline-flex', alignItems: 'center', gap: 8,
+                background: 'var(--color-blue-dim)',
+                border: '1px solid var(--color-blue-border)',
+                borderRadius: 100, padding: '6px 14px',
+                marginBottom: 28,
+              }}>
+                <span style={{
+                  fontSize: 11, fontWeight: 700, letterSpacing: 1.5,
+                  textTransform: 'uppercase', color: 'var(--color-blue)',
+                }}>
+                  Built for contractors
+                </span>
+              </div>
+              <div style={{ display: 'flex', gap: 10 }}>
                 <a href="/apply"
                   style={{
                     background: 'var(--color-blue)', color: '#fff',
@@ -418,9 +422,9 @@ export default function Home() {
                 </a>
                 <a href="/jobs"
                   style={{
-                    background: 'transparent', color: 'var(--color-text)',
+                    background: 'transparent', color: 'var(--color-text-muted)',
                     border: '1px solid var(--color-border-md)',
-                    padding: '14px 28px', borderRadius: 10,
+                    padding: '14px 24px', borderRadius: 10,
                     fontWeight: 600, fontSize: 15, textDecoration: 'none',
                     display: 'inline-flex', alignItems: 'center', gap: 8,
                     transition: 'border-color 0.2s, background 0.2s',

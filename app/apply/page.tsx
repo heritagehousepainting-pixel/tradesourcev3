@@ -536,14 +536,14 @@ export default function Apply() {
                 <div style={{ height: 1, backgroundColor: 'var(--color-surface)', margin: '4px 0' }} />
 
                 {/* Service Areas — wrapped in fieldset for accessibility */}
-                <fieldset style={{ border: 'none', padding: 0, margin: 0 }}>
-                  <legend style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 4 }}>
+                <fieldset style={{ border: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 10 }}>
+                  <legend style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 0, padding: 0 }}>
                     Service Areas <span style={{ color: 'var(--color-red)' }}>*</span>
                   </legend>
-                  <p style={{ fontSize: 12, color: 'var(--color-text-subtle)', marginBottom: 10 }}>
+                  <p style={{ fontSize: 12, color: 'var(--color-text-subtle)', margin: 0 }}>
                     Select the counties you serve in Pennsylvania.
                   </p>
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, paddingBottom: 2 }}>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
                     {PA_COUNTIES.map(county => (
                       <button
                         key={county}
@@ -569,14 +569,14 @@ export default function Apply() {
                 </fieldset>
 
                 {/* Services Offered — wrapped in fieldset for accessibility */}
-                <fieldset style={{ border: 'none', padding: 0, margin: 0 }}>
-                  <legend style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 4 }}>
+                <fieldset style={{ border: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 10 }}>
+                  <legend style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 0, padding: 0 }}>
                     Services Offered <span style={{ color: 'var(--color-red)' }}>*</span>
                   </legend>
-                  <p style={{ fontSize: 12, color: 'var(--color-text-subtle)', marginBottom: 10 }}>
+                  <p style={{ fontSize: 12, color: 'var(--color-text-subtle)', margin: 0 }}>
                     Select all services you provide.
                   </p>
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, paddingBottom: 2 }}>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
                     {TRADE_TYPES.map(trade => (
                       <button
                         key={trade}
