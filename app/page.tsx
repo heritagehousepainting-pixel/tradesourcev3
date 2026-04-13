@@ -423,7 +423,7 @@ export default function Home() {
               }}>
                 The Private Painting Network
               </h1>
-              <p style={{
+              <p className="hero-blue-sub" style={{
                 fontSize: 15, color: 'var(--color-blue)', fontWeight: 600,
                 maxWidth: 520, lineHeight: 1.65, marginBottom: 28, letterSpacing: '-0.2px',
               }}>

@@ -743,6 +743,9 @@ select:focus-visible {
 [data-theme="light"] [data-homepage-hero] .hero-sub-copy {
   color: rgba(248, 250, 252, 0.72) !important;
 }
+[data-theme="light"] [data-homepage-hero] .hero-blue-sub {
+  color: var(--color-blue) !important;
+}
 /* "See Open Jobs" button in light mode: white border + light text */
 [data-theme="light"] [data-homepage-hero] a[href="/jobs"] {
   color: rgba(248, 250, 252, 0.85) !important;
