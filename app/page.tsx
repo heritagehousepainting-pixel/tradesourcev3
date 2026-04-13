@@ -407,7 +407,7 @@ export default function Home() {
           }}>
             {/* Left */}
             <div style={{ paddingTop: 16 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
+              <div className="hero-badge-row" style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
                 <div style={{ width: 32, height: 1, backgroundColor: 'var(--color-blue)' }} />
                 <span style={{
                   fontSize: 11, fontWeight: 700, letterSpacing: 3,
@@ -416,7 +416,7 @@ export default function Home() {
                   Phase 1 — Philadelphia Region
                 </span>
               </div>
-              <h1 style={{
+              <h1 className="hero-headline" style={{
                 fontSize: 'clamp(44px, 6vw, 80px)', fontWeight: 900,
                 lineHeight: 1.0, letterSpacing: '-2.5px',
                 maxWidth: 520, marginBottom: 16, color: 'var(--color-text)',
@@ -435,38 +435,41 @@ export default function Home() {
               }}>
                 A private network of vetted painting contractors in the four-county Philadelphia area. Post jobs at your rate — no bidding, no commission. And AI tools built specifically for the work.
               </p>
-              {/* "Built for contractors" — bold accent badge below sub-copy */}
-              <div style={{
-                display: 'inline-flex', alignItems: 'center', gap: 8,
-                background: 'var(--color-blue-dim)',
-                border: '1px solid var(--color-blue-border)',
-                borderRadius: 100, padding: '6px 14px',
-                marginBottom: 12,
-              }}>
-                <span style={{
-                  fontSize: 11, fontWeight: 700, letterSpacing: 1.5,
-                  textTransform: 'uppercase', color: 'var(--color-blue)',
+              {/* Pills row — wrapped for stable CSS targeting */}
+              <div className="hero-pills-row">
+                {/* "Built for contractors" — bold accent badge below sub-copy */}
+                <div style={{
+                  display: 'inline-flex', alignItems: 'center', gap: 8,
+                  background: 'var(--color-blue-dim)',
+                  border: '1px solid var(--color-blue-border)',
+                  borderRadius: 100, padding: '6px 14px',
+                  marginBottom: 12,
                 }}>
-                  Built for contractors
-                </span>
-              </div>
-              {/* AI tools — power badge */}
-              <div style={{
-                display: 'inline-flex', alignItems: 'center', gap: 8,
-                background: 'rgba(5,150,105,0.1)',
-                border: '1px solid rgba(5,150,105,0.25)',
-                borderRadius: 100, padding: '6px 14px',
-                marginBottom: 28,
-              }}>
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="2.5" strokeLinecap="round">
-                  <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
-                </svg>
-                <span style={{
-                  fontSize: 11, fontWeight: 700, letterSpacing: 1.5,
-                  textTransform: 'uppercase', color: '#10b981',
+                  <span style={{
+                    fontSize: 11, fontWeight: 700, letterSpacing: 1.5,
+                    textTransform: 'uppercase', color: 'var(--color-blue)',
+                  }}>
+                    Built for contractors
+                  </span>
+                </div>
+                {/* AI tools — power badge */}
+                <div style={{
+                  display: 'inline-flex', alignItems: 'center', gap: 8,
+                  background: 'rgba(5,150,105,0.1)',
+                  border: '1px solid rgba(5,150,105,0.25)',
+                  borderRadius: 100, padding: '6px 14px',
+                  marginBottom: 28,
                 }}>
-                  AI tools built for contractors
-                </span>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="2.5" strokeLinecap="round">
+                    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                  </svg>
+                  <span style={{
+                    fontSize: 11, fontWeight: 700, letterSpacing: 1.5,
+                    textTransform: 'uppercase', color: '#10b981',
+                  }}>
+                    AI tools built for contractors
+                  </span>
+                </div>
               </div>
               <div style={{ display: 'flex', gap: 10 }}>
                 <a href="/apply"
