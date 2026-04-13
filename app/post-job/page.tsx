@@ -610,6 +610,46 @@ export default function PostJob() {
                         tradeType={form.scope}
                         onGenerated={handleScopeGenerated}
                       />
+                      {/* ── Manual fallback: always available below the AI builder ── */}
+                      <div style={{ marginTop: 10, paddingTop: 10, borderTop: '1px solid var(--color-border)' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
+                          <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--color-text-muted)' }}>Or describe the job yourself</span>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              // Focus the manual textarea below
+                              const el = document.getElementById('manual-job-description')
+                              if (el) el.focus()
+                            }}
+                            style={{ fontSize: 11, fontWeight: 600, color: 'var(--color-blue)', background: 'none', border: 'none', cursor: 'pointer', padding: '2px 0' }}
+                          >
+                            Write manually ↓
+                          </button>
+                        </div>
+                        <textarea
+                          id="manual-job-description"
+                          value={form.description || ''}
+                          onChange={e => handleScopeGenerated(e.target.value, {})}
+                          placeholder="Describe the work — scope, prep, surfaces, expectations, anything the contractor needs to know…"
+                          rows={4}
+                          style={{
+                            width: '100%',
+                            padding: '11px 14px',
+                            borderRadius: 10,
+                            fontSize: 13,
+                            border: '1.5px solid var(--color-input-border)',
+                            backgroundColor: 'var(--color-input-bg)',
+                            color: 'var(--color-input-text)',
+                            fontFamily: 'inherit',
+                            lineHeight: 1.6,
+                            resize: 'vertical',
+                            outline: 'none',
+                            transition: 'border-color 0.15s',
+                          }}
+                          onFocus={e => e.target.style.borderColor = 'var(--color-blue)'}
+                          onBlur={e => e.target.style.borderColor = 'var(--color-input-border)'}
+                        />
+                      </div>
                     </div>
                   ) : (
                     <div style={{
