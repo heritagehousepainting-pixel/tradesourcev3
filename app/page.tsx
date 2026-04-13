@@ -404,12 +404,12 @@ export default function Home() {
           aria-hidden="true"
           style={{
             position: 'absolute',
-            // Position chip center at the midpoint between headline endpoint (590px) and stats card center (1124px)
-            // Midpoint = 857px / viewport width 1440px = 59.6%
-            // Chip width ≈ 240px, so left edge = 59.6% - half chip width
-            left: '50%',
+            // Chip center at 857px (midpoint of period at 590px and stats card at 1124px)
+            // 857px / 1440px viewport = 59.5%
+            // Chip ~240px wide — center at 857px → left edge at 737px
+            left: '59.5%',
             top: '50%',
-            transform: 'translate(-50%, -50%)',
+            transform: 'translateX(-50%) translateY(-50%)',
             zIndex: 2,
             pointerEvents: 'none',
           }}
