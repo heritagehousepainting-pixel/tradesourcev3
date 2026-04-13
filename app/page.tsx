@@ -405,8 +405,8 @@ export default function Home() {
           style={{
             position: 'absolute',
             // Chip center at 857px (midpoint of period at 590px and stats card at 1124px)
-            // Debug: test 70% to see where chip goes, then refine
-            left: '70%',
+            // At 70%: center=1005px. Delta per 1% ≈ 13.6px. Need -148px → -10.9% → 59.1%
+            left: '59.1%',
             top: '50%',
             transform: 'translateX(-50%) translateY(-50%)',
             zIndex: 2,
