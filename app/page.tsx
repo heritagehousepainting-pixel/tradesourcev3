@@ -393,6 +393,9 @@ export default function Home() {
           {/* Right side lets reference image show through (chip area) */}
           <div className="hero-overlay" style={{
             position: 'absolute', inset: 0,
+            /* Desktop: linear gradient darkens left for text readability */
+            /* Mobile: CSS .hero-overlay rule overrides this with radial-gradient */
+            background: 'linear-gradient(90deg, rgba(1,5,18,0.80) 0%, rgba(1,5,18,0.55) 40%, rgba(1,5,18,0.30) 62%, transparent 85%)',
           }}/>
         </div></div>
         <div style={{ maxWidth: 1160, margin: '0 auto', padding: '80px 56px 0' }}>
