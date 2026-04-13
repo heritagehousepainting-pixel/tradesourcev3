@@ -721,9 +721,16 @@ select:focus-visible {
 [data-theme="light"] header a[href="/signin"]:hover {
   color: var(--color-blue) !important;
 }
-/* "Request Access" button: preserve white text on blue background in light mode */
-[data-theme="light"] header a[href="/apply"],
-[data-theme="light"] header a[href="/apply"]:hover {
+/* "Apply" nav text link: neutral in light mode */
+/* Selector targets only the plain nav link (no background), not the "Request Access" button (has inline background) */
+[data-theme="light"] header > div > a[href="/apply"]:not([style*="background"]) {
+  color: var(--color-text) !important;
+}
+[data-theme="light"] header > div > a[href="/apply"]:not([style*="background"]):hover {
+  color: var(--color-blue) !important;
+}
+/* "Request Access" button: blue bg + white text in light mode */
+[data-theme="light"] header > div > a[href="/apply"][style*="background"] {
   background: var(--color-blue) !important;
   color: #fff !important;
 }

@@ -621,42 +621,7 @@ export default function Home() {
             border: '1px solid var(--color-border)',
             borderRadius: 20, overflow: 'hidden',
           }}>
-            {/* Left — red / "today" */}
-            <div style={{
-              background: 'var(--color-bg-card)',
-              padding: '56px 48px',
-            }}>
-              <div style={{
-                fontSize: 11, fontWeight: 700, letterSpacing: 2,
-                textTransform: 'uppercase', color: 'var(--color-red)', marginBottom: 24,
-              }}>
-                How it works today
-              </div>
-              <ul style={{
-                listStyle: 'none', padding: 0, margin: 0,
-                display: 'flex', flexDirection: 'column', gap: 18,
-              }}>
-                {[
-                  "Facebook Marketplace — you don't know who you're calling",
-                  'Craigslist — no vetting, no accountability',
-                  'Google search — pure luck, no verification',
-                  'Paint store cards — someone who knows someone',
-                  'Word of mouth — limited reach, inconsistent quality',
-                ].map(item => (
-                  <li key={item} style={{
-                    display: 'flex', alignItems: 'flex-start', gap: 14,
-                    fontSize: 15, color: 'var(--color-text-muted)', lineHeight: 1.5,
-                  }}>
-                    <span style={{ fontWeight: 700, fontSize: 16, color: 'var(--color-red)', flexShrink: 0 }}>
-                      —
-                    </span>
-                    {item}
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {/* Right — green / TradeSource */}
+            {/* Left — green / TradeSource */}
             <div style={{
               background: 'var(--color-bg-card)',
               padding: '56px 48px',
@@ -693,6 +658,41 @@ export default function Home() {
                         <path d="M5 13l4 4L19 7" />
                       </svg>
                     </div>
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Right — red / "today" */}
+            <div style={{
+              background: 'var(--color-bg-card)',
+              padding: '56px 48px',
+            }}>
+              <div style={{
+                fontSize: 11, fontWeight: 700, letterSpacing: 2,
+                textTransform: 'uppercase', color: 'var(--color-red)', marginBottom: 24,
+              }}>
+                How it works today
+              </div>
+              <ul style={{
+                listStyle: 'none', padding: 0, margin: 0,
+                display: 'flex', flexDirection: 'column', gap: 18,
+              }}>
+                {[
+                  "Facebook Marketplace — you don't know who you're calling",
+                  'Craigslist — no vetting, no accountability',
+                  'Google search — pure luck, no verification',
+                  'Paint store cards — someone who knows someone',
+                  'Word of mouth — limited reach, inconsistent quality',
+                ].map(item => (
+                  <li key={item} style={{
+                    display: 'flex', alignItems: 'flex-start', gap: 14,
+                    fontSize: 15, color: 'var(--color-text-muted)', lineHeight: 1.5,
+                  }}>
+                    <span style={{ fontWeight: 700, fontSize: 16, color: 'var(--color-red)', flexShrink: 0 }}>
+                      —
+                    </span>
                     {item}
                   </li>
                 ))}
