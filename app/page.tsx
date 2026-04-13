@@ -392,7 +392,7 @@ export default function Home() {
           {/* Right side lets reference image show through (chip area) */}
           <div style={{
             position: 'absolute', inset: 0,
-            background: 'linear-gradient(90deg, rgba(1,5,18,0.80) 0%, rgba(1,5,18,0.55) 35%, rgba(1,5,18,0.30) 55%, transparent 75%)',
+            background: 'linear-gradient(90deg, rgba(1,5,18,0.80) 0%, rgba(1,5,18,0.55) 40%, rgba(1,5,18,0.30) 62%, transparent 85%)',
           }}/>
         </div></div>
         <div style={{ maxWidth: 1160, margin: '0 auto', padding: '80px 56px 0' }}>
@@ -426,7 +426,7 @@ export default function Home() {
                 fontSize: 15, color: 'var(--color-text-muted)',
                 maxWidth: 420, lineHeight: 1.65, marginBottom: 28,
               }}>
-                A private network of vetted painting contractors in the four-county Philadelphia area. Post jobs at your rate — no bidding, no commission. And AI tools built specifically for the work.mission. And AI tools built specifically for the work.mission.
+                A private network of vetted painting contractors in the four-county Philadelphia area. Post jobs at your rate — no bidding, no commission. And AI tools built specifically for the work.
               </p>
               {/* "Built for contractors" — bold accent badge below sub-copy */}
               <div style={{
