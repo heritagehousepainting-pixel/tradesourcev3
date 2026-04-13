@@ -832,9 +832,9 @@ body.no-shell {
     background-color: transparent !important;
   }
 
-  /* Reference image: desktop — chip centered between headline and stats card */
+  /* Reference image: desktop — chip at page center (50%) */
   [data-homepage-hero] img {
-    object-position: 59.6% 50%;
+    object-position: 40.4% 50% !important;
   }
 
   /* Reference image: mobile — dark edge aligns with text zone */

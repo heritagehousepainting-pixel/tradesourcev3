@@ -385,7 +385,7 @@ export default function Home() {
               position: 'absolute', inset: 0,
               width: '100%', height: '100%',
               objectFit: 'cover',
-              objectPosition: '59.6% 50%',
+              objectPosition: '40.4% 50%',
               display: 'block',
             }}
           />
