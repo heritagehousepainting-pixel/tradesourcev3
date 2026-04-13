@@ -833,13 +833,13 @@ body.no-shell {
   }
 
   /* Reference image: desktop — chip centered between headline and stats card */
-  #homepage-hero img {
+  [data-homepage-hero] img {
     object-position: 59% 50% !important;
   }
 
   /* Reference image: mobile — dark edge aligns with text zone */
   @media (max-width: 640px) {
-    #homepage-hero img {
+    [data-homepage-hero] img {
       object-position: 12% 50% !important;
       opacity: 0.25 !important;
     }
