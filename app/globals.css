@@ -815,9 +815,7 @@ body.no-shell {
    Mobile: ≤640px | Tablet: 641–1024px | Desktop: 1025px+
 ═══════════════════════════════════════════════════ */
 
-@media (max-width: 640px) {
-
-  /* ── Mobile hero: purpose-built for phone ── */
+@media (max-width: 640px) {  /* ── Mobile hero: purpose-built for phone ── */
 
   /* Hero section: solid dark background — reference image is ambient art behind it */
   [data-homepage-hero] {
@@ -834,123 +832,153 @@ body.no-shell {
     background-color: transparent !important;
   }
 
-  /* Reference image on mobile: positioned so dark area aligns with content */
+  /* Reference image on mobile: repositioned left so dark art edge aligns with text zone */
   [data-homepage-hero] img {
     object-position: 15% 50% !important;
-    opacity: 0.30 !important;
+    opacity: 0.28 !important;
   }
 
-  /* Hero overlay on mobile: vertical gradient — dark at top covers text zone fully */
+  /* Hero overlay: radial dark spot — darkest at center, fades to edges
+     Creates the illusion that the hero has a natural dark focal area
+     that the text zone sits in — instead of a flat gradient */
   [data-homepage-hero] > [aria-hidden="true"] > div:nth-child(2) {
-    background: linear-gradient(180deg, rgba(2,8,22,0.90) 0%, rgba(2,8,22,0.78) 50%, rgba(2,8,22,0.60) 100%) !important;
+    background: radial-gradient(ellipse 70% 70% at 60% 50%, rgba(2,8,22,0.45) 0%, rgba(2,8,22,0.75) 50%, rgba(1,5,18,0.92) 100%) !important;
   }
 
-  /* Hero content container: tight mobile padding */
+  /* Hero content container: generous top padding, bottom breathing room */
   [data-homepage-hero] > div[style*="max-width"] {
-    padding: 20px 20px 28px !important;
+    padding: 32px 20px 36px !important;
   }
 
-  /* Hero inner grid: 1 column, tight */
-  [style*="grid-template-columns:1fr auto"],
-  [style*="gridTemplateColumns:1fr auto"] {
-    grid-template-columns: 1fr !important;
-    gap: 0 !important;
-    border-bottom: none !important;
+  /* Mobile stats panel: ABOVE text, 2x2 grid — visual anchor at top */
+  .mobile-stats-panel {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 8px !important;
+    margin-bottom: 24px !important;
+    margin-top: 0 !important;
+  }
+  .mobile-stats-panel > div {
+    background: rgba(2, 10, 28, 0.88) !important;
+    border-radius: 10px !important;
+    padding: 14px 12px !important;
+    text-align: center !important;
+  }
+  .mobile-stats-panel > div > div:first-child {
+    font-size: 20px !important;
+    font-weight: 800 !important;
+    letter-spacing: -0.5px !important;
+    color: rgba(195, 225, 255, 0.95) !important;
+    line-height: 1.1 !important;
+  }
+  .mobile-stats-panel > div > div:last-child {
+    font-size: 10px !important;
+    color: rgba(140, 185, 255, 0.60) !important;
+    margin-top: 4px !important;
+    font-weight: 500 !important;
+    letter-spacing: 0.5px !important;
+  }
+
+  /* Hide the original desktop stats panel on mobile */
+  [data-homepage-hero] > div[style*="max-width"] > div > div:last-child {
+    display: none !important;
+  }
+
+  /* Hero inner grid: stack, generous padding-bottom */
+  [data-homepage-hero] > div[style*="max-width"] > div {
+    display: flex !important;
+    flex-direction: column !important;
+  }
+  [data-homepage-hero] > div[style*="max-width"] > div > div:first-child,
+  [data-homepage-hero] > div[style*="max-width"] > div > div:not(:last-child) {
+    padding-top: 0 !important;
     padding-bottom: 0 !important;
   }
-
-  /* Hero left column: tighter top */
-  [data-homepage-hero] > div[style*="max-width"] > div > div:first-child {
-    padding-top: 0 !important;
+  [style*="grid-template-columns:1fr auto"],
+  [style*="gridTemplateColumns:1fr auto"] {
+    display: flex !important;
+    flex-direction: column !important;
+    border-bottom: none !important;
   }
 
-  /* Phase label row: very tight bottom margin */
+  /* Phase label row: comfortable spacing */
   [data-homepage-hero] > div[style*="max-width"] > div > div[style*="gap: 12"][style*="align-items: center"] {
-    margin-bottom: 8px !important;
+    margin-bottom: 14px !important;
   }
 
-  /* Hero headline: tight, smaller clamp */
+  /* Hero headline: large, commanding, plenty of breathing room */
   [style*="clamp(44px"] {
-    font-size: clamp(28px, 11vw, 60px) !important;
-    letter-spacing: -1px !important;
-    margin-bottom: 10px !important;
+    font-size: clamp(34px, 12vw, 64px) !important;
+    letter-spacing: -1.5px !important;
+    margin-bottom: 16px !important;
+    line-height: 1.0 !important;
   }
 
-  /* Hero sub-copy: tighter, light blue-white for readability on dark bg */
+  /* Hero sub-copy: comfortable reading size and spacing */
   [data-homepage-hero] > div[style*="max-width"] > div > div > p {
-    font-size: 14px !important;
-    line-height: 1.50 !important;
-    margin-bottom: 12px !important;
-    color: rgba(195, 220, 255, 0.82) !important;
+    font-size: 15px !important;
+    line-height: 1.60 !important;
+    margin-bottom: 18px !important;
+    color: rgba(195, 220, 255, 0.80) !important;
+    max-width: none !important;
   }
 
-  /* Badges: very compact pills */
+  /* Badges: comfortable spacing */
   [data-homepage-hero] > div[style*="max-width"] > div > div > div[style*="display: inline-flex"] {
-    margin-bottom: 10px !important;
+    margin-bottom: 12px !important;
+  }
+  [data-homepage-hero] > div[style*="max-width"] > div > div > div[style*="display: inline-flex"] + div[style*="display: inline-flex"] {
+    margin-bottom: 16px !important;
   }
   [data-homepage-hero] [style*="display: inline-flex"] span {
-    font-size: 10px !important;
-    padding: 4px 10px !important;
+    font-size: 11px !important;
+    padding: 6px 14px !important;
   }
 
-  /* CTA buttons: full width, comfortable */
+  /* CTA buttons: full width, comfortable height */
   [data-homepage-hero] > div[style*="max-width"] a[style*="border-radius: 10"] {
     width: 100% !important;
     justify-content: center !important;
     text-align: center !important;
-    padding: 14px 16px !important;
-    font-size: 14px !important;
+    padding: 15px 20px !important;
+    font-size: 15px !important;
   }
-  /* Secondary CTA: light border */
+  /* Secondary CTA: subtle border */
   [data-homepage-hero] > div[style*="max-width"] a[style*="border: 1px solid"] {
     border-color: rgba(255,255,255,0.18) !important;
   }
 
-  /* CTA row: vertical stack, very tight */
+  /* CTA row: vertical stack, comfortable gap */
   [data-homepage-hero] > div[style*="max-width"] > div > div[style*="display: flex"][style*="gap: 10"],
   [data-homepage-hero] [style*="display:flex"][style*="gap:10"] {
     flex-direction: column !important;
-    gap: 8px !important;
+    gap: 10px !important;
   }
 
-  /* Stats panel: full width, dark card — feels like part of the hero composition */
-  [style*="min-width:240px"],
-  [style*="minWidth:240"] {
-    min-width: unset !important;
-    width: 100% !important;
-    margin-top: 16px !important;
-    padding: 16px 20px !important;
-    box-sizing: border-box !important;
-    flex-shrink: 0 !important;
-    background-color: rgba(2, 10, 28, 0.92) !important;
-    border: 1px solid rgba(255,255,255,0.06) !important;
-    border-radius: 12px !important;
-  }
-  /* Stats panel: light text on dark card */
-  [style*="min-width:240px"] *,
-  [style*="minWidth:240"] * {
-    color: rgba(220, 240, 255, 0.90) !important;
-  }
-  /* Stats numbers: bold, large */
-  [style*="min-width:240px"] [style*="font-size:28px"],
-  [style*="minWidth:240"] [style*="font-size:28px"] {
-    font-size: 24px !important;
-  }
-  /* Stats labels: muted */
-  [style*="min-width:240px"] div[style*="font-size:12"],
-  [style*="minWidth:240"] div[style*="font-size:12"] {
-    font-size: 10px !important;
-    color: rgba(180, 210, 255, 0.60) !important;
-  }
-  /* Stats panel label: hidden on mobile */
-  [style*="min-width:240px"] > div:first-child,
-  [style*="minWidth:240"] > div:first-child {
+  /* Desktop stats panel (inside grid): hide on mobile */
+  [data-homepage-hero] > div[style*="max-width"] > div > div:last-child {
     display: none !important;
   }
-  /* Stats panel: remove last divider */
-  [style*="min-width:240px"] > div:last-child,
-  [style*="minWidth:240"] > div:last-child {
-    border-bottom: none !important;
+
+  /* Trust strip: compact but readable */
+  [style*="padding:14px 56px"] {
+    padding: 10px 12px !important;
+  }
+  /* Verified label: compact */
+  [style*="white-space:nowrap"][style*="margin-right:32"],
+  [style*="whiteSpace:nowrap"][style*="marginRight:32"] {
+    display: block !important;
+    margin-right: 0 !important;
+    margin-bottom: 4px !important;
+    font-size: 9px !important;
+    letter-spacing: 1.5px !important;
+  }
+  /* Trust strip items: very compact, one per line if needed */
+  [style*="padding:0 24px"] {
+    padding: 2px 0 !important;
+    border-right: none !important;
+    font-size: 10px !important;
+    border-left: none !important;
   }
 
   /* Trust strip: compact */
