@@ -419,13 +419,13 @@ export default function Home() {
               <h1 style={{
                 fontSize: 'clamp(44px, 6vw, 80px)', fontWeight: 900,
                 lineHeight: 1.0, letterSpacing: '-2.5px',
-                maxWidth: 760, marginBottom: 20, color: 'var(--color-text)',
+                maxWidth: 520, marginBottom: 16, color: 'var(--color-text)',
               }}>
                 The Private Painting Network
               </h1>
               <p style={{
                 fontSize: 15, color: 'var(--color-blue)', fontWeight: 600,
-                maxWidth: 420, lineHeight: 1.65, marginBottom: 28, letterSpacing: '-0.2px',
+                maxWidth: 520, lineHeight: 1.65, marginBottom: 28, letterSpacing: '-0.2px',
               }}>
                 Built for Painters, Made by Painters.
               </p>
