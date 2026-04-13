@@ -832,9 +832,10 @@ body.no-shell {
     background-color: transparent !important;
   }
 
-  /* Reference image: desktop — chip at page center */
+  /* Reference image: desktop — chip at page center (transform shifts chip from 857px to 720px) */
   [data-homepage-hero] img {
-    object-position: -9.6% 50%;
+    object-position: 50% 50% !important;
+    transform: translateX(-137px) !important;
   }
 
   /* Reference image: mobile — dark edge aligns with text zone */
