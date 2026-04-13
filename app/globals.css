@@ -832,7 +832,7 @@ body.no-shell {
     background-color: transparent !important;
   }
 
-  /* Reference image: mobile — fade to ambient art */
+  /* Reference image: mobile — dark edge aligns with text zone */
   @media (max-width: 640px) {
     [data-homepage-hero] img {
       object-position: 12% 50% !important;
