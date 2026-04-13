@@ -980,6 +980,14 @@ body.no-shell {
     font-size: 10px !important;
   }
 
+
+  /* Mobile stats band: hide on desktop (stats panel is on the right instead) */
+  @media (min-width: 641px) {
+    .mobile-hero-stats-band {
+      display: none !important;
+    }
+  }
+
   /* Problem/solution section padding */
   [style*="padding:104px 56px"] {
     padding: 52px 20px !important;
