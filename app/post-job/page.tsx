@@ -223,7 +223,7 @@ export default function PostJob() {
     setScopeSource(source || 'assistant')
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const postJob = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!form.title || !form.description || !form.area) {
       setError('Please fill in all required fields: title, service type, location, and scope description.')
@@ -276,9 +276,10 @@ export default function PostJob() {
         // ── Structured scope fields from AI Scope Builder ──
         ...(scopeFields || {}),
       }
-      if (loggedInContractor) {
-        body.poster_id = loggedInContractor.id
-        body.contractor_id = loggedInContractor.id
+      const resolvedPosterId = loggedInContractor?.id || access.contractorProfileId
+      if (resolvedPosterId) {
+        body.poster_id = resolvedPosterId
+        body.contractor_id = resolvedPosterId
       } else if (form.homeowner_name && form.homeowner_email) {
         body.homeowner_name = form.homeowner_name
         body.homeowner_email = form.homeowner_email
@@ -291,12 +292,11 @@ export default function PostJob() {
       })
       if (!res.ok) {
         const data = await res.json().catch(() => ({}))
-        throw new Error(data?.error || 'Failed to post job.')
+        throw new Error(data?.error || `Failed to post job (HTTP ${res.status}).`)
       }
       setSubmitted(true)
     } catch (err: any) {
       setError(err.message || 'Something went wrong.')
-    } finally {
       setLoading(false)
     }
   }
@@ -438,7 +438,7 @@ export default function PostJob() {
                 </div>
               )}
 
-              <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+              <form onSubmit={postJob} style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
 
                 {/* Title + Scope */}
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
