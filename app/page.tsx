@@ -377,7 +377,7 @@ export default function Home() {
             overflow: 'hidden',
           }}
         >
-          {/* Reference image as base background — chip region masked off-screen */}
+          {/* Reference image as base background */}
           <img
             src="/hero-bg.png"
             alt=""
@@ -385,11 +385,10 @@ export default function Home() {
               position: 'absolute', inset: 0,
               width: '100%', height: '100%',
               objectFit: 'cover',
-              // Shift image far right so the embedded chip moves off the visible viewport
-              // Chip in image is at ~60% of image width — pushing to 100%+ moves it off-screen right
-              objectPosition: '100% 50%',
+              objectPosition: '59.6% 50%',
               display: 'block',
-            }} />
+            }}
+          />
 
           {/* Dark overlay — darkens left side for text readability */}
           {/* Right side lets reference image show through (chip area) */}
@@ -397,56 +396,6 @@ export default function Home() {
             position: 'absolute', inset: 0,
             background: 'linear-gradient(90deg, rgba(1,5,18,0.80) 0%, rgba(1,5,18,0.55) 40%, rgba(1,5,18,0.30) 62%, transparent 85%)',
           }}/>
-        </div>
-
-        {/* ── Chip layer: independently positionable — replaces the embedded chip in the reference image ── */}
-        <div
-          aria-hidden="true"
-          style={{
-            position: 'absolute',
-            // Chip center at 857px — 59.1% gives 850px, 59.3% gives ~854px, 59.5% gives ~857px
-            left: '59.5%',
-            top: '50%',
-            transform: 'translateX(-50%) translateY(-50%)',
-            zIndex: 2,
-            pointerEvents: 'none',
-          }}
-        >
-          {/* Chip background — dark rounded card */}
-          <div style={{
-            background: 'rgba(1, 5, 18, 0.92)',
-            border: '1px solid rgba(255,255,255,0.10)',
-            borderRadius: 14,
-            padding: '18px 28px',
-            display: 'flex',
-            alignItems: 'center',
-            gap: 12,
-            boxShadow: '0 0 60px rgba(37,99,235,0.15), 0 0 120px rgba(37,99,235,0.08)',
-          }}>
-            {/* Lightning bolt icon */}
-            <div style={{
-              width: 28, height: 28,
-              borderRadius: 7,
-              background: 'var(--color-blue)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              flexShrink: 0,
-            }}>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M13 10V3L4 14h7v7l9-11h-7z" />
-              </svg>
-            </div>
-            {/* Chip label */}
-            <span style={{
-              fontSize: 13,
-              fontWeight: 700,
-              letterSpacing: '-0.02em',
-              color: 'rgba(195, 225, 255, 0.95)',
-            }}>
-              TradeSource
-            </span>
-          </div>
         </div></div>
         <div style={{ maxWidth: 1160, margin: '0 auto', padding: '80px 56px 0' }}>
 

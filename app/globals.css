@@ -832,9 +832,9 @@ body.no-shell {
     background-color: transparent !important;
   }
 
-  /* Background image: chip region visible but will be visually paired with independent chip layer */
-  [data-homepage-hero] > [aria-hidden="true"] > div > img {
-    object-position: 59.6% 50% !important;
+  /* Reference image: desktop — chip centered between headline and stats card */
+  [data-homepage-hero] img {
+    object-position: 59.6% 50%;
   }
 
   /* Reference image: mobile — dark edge aligns with text zone */
