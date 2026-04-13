@@ -391,9 +391,8 @@ export default function Home() {
 
           {/* Dark overlay — darkens left side for text readability */}
           {/* Right side lets reference image show through (chip area) */}
-          <div style={{
+          <div className="hero-overlay" style={{
             position: 'absolute', inset: 0,
-            background: 'linear-gradient(90deg, rgba(1,5,18,0.80) 0%, rgba(1,5,18,0.55) 40%, rgba(1,5,18,0.30) 62%, transparent 85%)',
           }}/>
         </div></div>
         <div style={{ maxWidth: 1160, margin: '0 auto', padding: '80px 56px 0' }}>
@@ -425,7 +424,7 @@ export default function Home() {
               </h1>
               <p className="hero-blue-sub" style={{
                 fontSize: 15, color: 'var(--color-blue)', fontWeight: 600,
-                maxWidth: 520, lineHeight: 1.65, marginBottom: 28, letterSpacing: '-0.2px',
+                maxWidth: 520, lineHeight: 1.65, letterSpacing: '-0.2px',
               }}>
                 Built for Painters, Made by Painters.
               </p>
