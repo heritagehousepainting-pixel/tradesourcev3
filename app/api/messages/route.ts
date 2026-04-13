@@ -23,7 +23,8 @@ export async function GET(request: Request) {
 
     // Verify the authenticated user is a participant in this thread.
     // Founders/admins bypass this check.
-    // Participants are: the contractor on the thread OR the job poster (homeowner).
+    // contractor_id and poster_id in the DB are contractor_applications.id values,
+    // not Supabase auth UIDs — use contractorProfileId for correct matching.
     if (!access.isFounderEmail && access.userId) {
       const { data: thread } = await supabase
         .from('message_threads')
@@ -36,7 +37,11 @@ export async function GET(request: Request) {
       }
 
       const jobPosterId = (thread as any).jobs?.poster_id
-      const isParticipant = thread.contractor_id === access.userId || jobPosterId === access.userId
+      const profileId = (access as any).contractorProfileId ?? access.profile?.id ?? null
+      const isParticipant = profileId && (
+        String(thread.contractor_id) === String(profileId) ||
+        (jobPosterId && String(jobPosterId) === String(profileId))
+      )
       if (!isParticipant) {
         return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
       }
@@ -79,6 +84,7 @@ export async function POST(request: Request) {
     const supabase = await getSupabaseAdminClient()
 
     // Verify sender is a thread participant (contractor or job poster)
+    // contractor_id and poster_id are contractor_applications.id values, not auth UIDs.
     if (!access.isFounderEmail && access.userId) {
       const { data: thread } = await supabase
         .from('message_threads')
@@ -91,7 +97,11 @@ export async function POST(request: Request) {
       }
 
       const jobPosterId = (thread as any).jobs?.poster_id
-      const isParticipant = thread.contractor_id === access.userId || jobPosterId === access.userId
+      const profileId = (access as any).contractorProfileId ?? access.profile?.id ?? null
+      const isParticipant = profileId && (
+        String(thread.contractor_id) === String(profileId) ||
+        (jobPosterId && String(jobPosterId) === String(profileId))
+      )
       if (!isParticipant) {
         return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
       }

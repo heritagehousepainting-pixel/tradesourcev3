@@ -26,8 +26,12 @@ export async function GET(request: Request) {
 
     if (!access.isFounderEmail && access.userId) {
       // Non-founders: only threads where they are the contractor.
-      // Avoids the broken `.or()` query that fails on RLS in Edge Runtime.
-      query = query.eq('contractor_id', access.userId)
+      // contractor_id in message_threads stores the contractor_applications.id,
+      // not the Supabase auth UID. Use contractorProfileId to match correctly.
+      const profileId = (access as any).contractorProfileId ?? access.profile?.id ?? null
+      if (profileId) {
+        query = query.eq('contractor_id', profileId)
+      }
     }
 
     if (contractorId) query = query.eq('contractor_id', contractorId)
