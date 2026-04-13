@@ -428,12 +428,15 @@ export default function Home() {
               }}>
                 Built for Painters, Made by Painters.
               </p>
-              <p style={{
-                fontSize: 15, color: 'var(--color-text-muted)',
-                maxWidth: 420, lineHeight: 1.65, marginBottom: 28,
-              }}>
-                A private network of vetted painting contractors in the four-county Philadelphia area. Post jobs at your rate — no bidding, no commission. And AI tools built specifically for the work.
-              </p>
+              {/* S3-A: body copy — visible on desktop, hidden on mobile */}
+              <div className="hero-body-copy" style={{ marginBottom: 28 }}>
+                <p style={{
+                  fontSize: 15, color: 'var(--color-text-muted)',
+                  maxWidth: 420, lineHeight: 1.65,
+                }}>
+                  A private network of vetted painting contractors in the four-county Philadelphia area. Post jobs at your rate — no bidding, no commission. And AI tools built specifically for the work.
+                </p>
+              </div>
               {/* Pills row — wrapped for stable CSS targeting */}
               <div className="hero-pills-row">
                 {/* "Built for contractors" — bold accent badge below sub-copy */}
@@ -470,7 +473,7 @@ export default function Home() {
                   </span>
                 </div>
               </div>
-              <div style={{ display: 'flex', gap: 10 }}>
+              <div className="hero-cta-row" style={{ display: 'flex', gap: 10 }}>
                 <a href="/apply"
                   style={{
                     background: 'var(--color-blue)', color: '#fff',

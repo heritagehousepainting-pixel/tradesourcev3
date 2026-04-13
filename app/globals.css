@@ -851,9 +851,19 @@ body.no-shell {
     line-height: 0.93 !important;
   }
 
-  /* S3-B: Sub-copy — tighter to pills on mobile */
+  /* S3-B CORRECTED: Sub-copy — tighter to pills on mobile */
   [data-homepage-hero] > div[style*="max-width"] > div > div > p.hero-blue-sub {
-    margin-bottom: 16px !important;
+    margin-bottom: 8px !important;
+  }
+
+  /* S3-A: Body copy — hidden on mobile hero, visible on desktop */
+  .hero-body-copy {
+    display: none !important;
+  }
+
+  /* Pills → CTAs: breathing room on mobile */
+  .hero-cta-row {
+    margin-top: 20px !important;
   }
 
   /* Hero content container: generous top breathing room */
