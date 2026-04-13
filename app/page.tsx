@@ -539,32 +539,7 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Mobile stats band: full-width dark strip below CTAs */}
-          <div className="mobile-hero-stats-band" style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            paddingTop: 20,
-            marginTop: 4,
-          }}>
-            {[
-              { n: '4', label: 'Counties' },
-              { n: '5', label: 'Checks' },
-              { n: '0', label: 'Lead Fees' },
-              { n: '100%', label: 'Vetted' },
-            ].map((stat) => (
-              <div key={stat.label} style={{ textAlign: 'center' }}>
-                <div style={{
-                  fontSize: 18, fontWeight: 800, letterSpacing: '-0.5px',
-                  color: 'rgba(195, 225, 255, 0.95)', lineHeight: 1.1,
-                }}>{stat.n}</div>
-                <div style={{
-                  fontSize: 9, color: 'rgba(140, 185, 255, 0.55)',
-                  marginTop: 4, fontWeight: 600, letterSpacing: '0.5px',
-                }}>{stat.label}</div>
-              </div>
-            ))}
-          </div>
-        </div>
+</div>
       </section>
 
       {/* ─── TICKER ─── */}
