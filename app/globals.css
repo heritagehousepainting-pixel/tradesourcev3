@@ -1187,8 +1187,8 @@ body.no-shell {
 
 /* Reference image: desktop — chip at page center (transform shifts chip from 857px to 720px) */
 [data-homepage-hero] img {
-  object-position: 50% 50% !important;
-  transform: translateX(-137px) !important;
+  object-position: 50% 50%;
+  transform: translateX(-137px);
 }
 
 /* Tablet polish */
