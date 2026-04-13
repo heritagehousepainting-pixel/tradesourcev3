@@ -217,10 +217,10 @@ export default function PostJob() {
   const update = (field: string, value: string) =>
     setForm(prev => ({ ...prev, [field]: field === 'fixed_price' ? value.replace(/[^0-9]/g, '') : value }))
 
-  const handleScopeGenerated = (scope: string, fields: Partial<ScopeFields>) => {
+  const handleScopeGenerated = (scope: string, fields: Partial<ScopeFields>, source?: 'assistant' | 'manual') => {
     setForm(prev => ({ ...prev, description: scope }))
     setScopeFields(fields)
-    setScopeSource('assistant')
+    setScopeSource(source || 'assistant')
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -467,7 +467,12 @@ export default function PostJob() {
                       id="job-scope"
                       name="scope"
                       value={form.scope}
-                      onChange={e => { update('scope', e.target.value); setForm(prev => ({ ...prev, description: '', scope: e.target.value })); setScopeSource(null) }}
+                      onChange={e => {
+                        const val = e.target.value
+                        update('scope', val)
+                        setForm(prev => ({ ...prev, description: '', scope: val }))
+                        setScopeSource(null)
+                      }}
                       required
                       style={{ width: '100%', padding: '11px 14px', borderRadius: 10, fontSize: 14, border: '1.5px solid var(--color-input-border)', outline: 'none', transition: 'border-color 0.15s', color: 'var(--color-text)', cursor: 'pointer' }}
                       onFocus={e => e.target.style.borderColor = 'var(--color-blue)'}
@@ -629,7 +634,7 @@ export default function PostJob() {
                         <textarea
                           id="manual-job-description"
                           value={form.description || ''}
-                          onChange={e => handleScopeGenerated(e.target.value, {})}
+                          onChange={e => handleScopeGenerated(e.target.value, {}, 'manual')}
                           placeholder="Describe the work — scope, prep, surfaces, expectations, anything the contractor needs to know…"
                           rows={4}
                           style={{
