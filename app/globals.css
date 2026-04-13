@@ -836,9 +836,9 @@ body.no-shell {
   }
 
 
-  /* Hero overlay on mobile: radial dark spot — natural focal depth, not a flat gradient */
+  /* Hero overlay on mobile: lighter dark spot — circuit art shows through more clearly */
   [data-homepage-hero] > [aria-hidden="true"] > div:nth-child(2) {
-    background: radial-gradient(ellipse 80% 80% at 55% 50%, rgba(2,8,22,0.50) 0%, rgba(2,8,22,0.80) 50%, rgba(1,5,18,0.95) 100%) !important;
+    background: radial-gradient(ellipse 70% 70% at 55% 50%, rgba(2,8,22,0.30) 0%, rgba(2,8,22,0.55) 50%, rgba(1,5,18,0.85) 100%) !important;
   }
 
   /* Hero content container: generous top breathing room */
@@ -876,7 +876,7 @@ body.no-shell {
   [data-homepage-hero] > div[style*="max-width"] > div > div > p {
     font-size: 15px !important;
     line-height: 1.55 !important;
-    margin-bottom: 16px !important;
+    margin-bottom: 8px !important;
     color: rgba(200, 220, 255, 0.80) !important;
     max-width: none !important;
   }
@@ -910,7 +910,7 @@ body.no-shell {
   [data-homepage-hero] > div[style*="max-width"] > div > div[style*="display: flex"][style*="gap: 10"],
   [data-homepage-hero] [style*="display:flex"][style*="gap:10"] {
     flex-direction: column !important;
-    gap: 10px !important;
+    gap: 28px !important;
   }
 
   /* Mobile stats band: BELOW CTAs, horizontal 4-column row */
@@ -1167,7 +1167,7 @@ body.no-shell {
   [style*="letter-spacing:3"][style*="text-transform:uppercase"][style*="color:var(--color-blue)"] {
     font-size: 9px !important;
     letter-spacing: 1.5px !important;
-    margin-bottom: 12px !important;
+    margin-bottom: 8px !important;
   }
 
   /* Nav button tap targets */
