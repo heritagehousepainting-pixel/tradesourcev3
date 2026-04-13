@@ -64,6 +64,7 @@ export async function PUT(request: Request, { params }: RouteParams) {
       'verified_w9',
       'notes',
       'reviewed_at',
+      'auth_user_id',
     ]
     const updateData: Record<string, unknown> = {}
     for (const field of allowedFields) {
@@ -99,10 +100,13 @@ export async function PUT(request: Request, { params }: RouteParams) {
 
       // Only send invite if no auth_user_id already exists (avoid duplicate invites)
       if (!existing.auth_user_id) {
-        const { error: inviteErr } = await supabase.auth.admin.inviteUserByEmail(existing.email)
+        const { data: inviteData, error: inviteErr } = await supabase.auth.admin.inviteUserByEmail(existing.email)
         if (inviteErr) {
           console.error('Failed to send invite on approval:', inviteErr.message)
           // Non-fatal: approval still succeeds; admin can manually resend invite
+        } else if (inviteData?.user?.id) {
+          // Auth account created — link it to contractor_applications immediately
+          updateData.auth_user_id = inviteData.user.id
         }
       }
     }
