@@ -1206,8 +1206,7 @@ body.no-shell {
     padding: 16px !important;
   }
   /* Reference image: mobile — chip at left edge, dark gradient on right */
-  /* Scoped to :not(.hero-desktop) — desktop CSS cannot affect this path */
-  [data-homepage-hero]:not(.hero-desktop) img {
+  [data-homepage-hero] img {
     object-position: 12% 50% !important;
     opacity: 0.25 !important;
     transform: none !important;
@@ -1216,10 +1215,12 @@ body.no-shell {
 }
 
 /* Reference image: desktop — chip centered in hero background */
-/* Scoped to .hero-desktop — mobile CSS cannot affect this path */
-[data-homepage-hero].hero-desktop img {
-  object-position: 57.5% 50% !important;
-  transform: translateX(-137px) !important;
+/* Desktop-only media query — mobile CSS inside @media(max-width:640px) cannot override */
+@media (min-width: 641px) {
+  [data-homepage-hero] img {
+    object-position: 57.5% 50% !important;
+    transform: translateX(-137px) !important;
+  }
 }
 
 /* Tablet polish */

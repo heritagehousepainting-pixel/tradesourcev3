@@ -352,7 +352,6 @@ export default function Home() {
       <section
         id="homepage-hero"
         data-homepage-hero
-        className="hero-desktop"
         style={{
           background: 'var(--color-bg-primary)',
           borderBottom: '1px solid var(--color-border)',
