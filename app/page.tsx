@@ -404,9 +404,8 @@ export default function Home() {
           aria-hidden="true"
           style={{
             position: 'absolute',
-            // Chip center at 857px (midpoint of period at 590px and stats card at 1124px)
-            // At 70%: center=1005px. Delta per 1% ≈ 13.6px. Need -148px → -10.9% → 59.1%
-            left: '59.1%',
+            // Chip center at 857px — 59.1% gives 850px, 59.3% gives ~854px, 59.5% gives ~857px
+            left: '59.5%',
             top: '50%',
             transform: 'translateX(-50%) translateY(-50%)',
             zIndex: 2,
