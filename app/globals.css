@@ -1216,7 +1216,7 @@ body.no-shell {
 
 /* Reference image: desktop — chip positioned between headline and stats card */
 [data-homepage-hero] img {
-  object-position: 49.54% 50%;
+  object-position: 47% 50%;
   transform: translateX(-137px);
 }
 
