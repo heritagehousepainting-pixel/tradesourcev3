@@ -383,7 +383,7 @@ export default function Home() {
             style={{
               position: 'absolute', inset: 0,
               width: '100%', height: '100%',
-              objectFit: 'cover', objectPosition: 'center',
+              objectFit: 'cover', objectPosition: '59% 50%',
               display: 'block',
             }}
           />
