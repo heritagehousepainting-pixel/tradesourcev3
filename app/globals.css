@@ -834,7 +834,7 @@ body.no-shell {
 
   /* Reference image: desktop — chip centered between headline and stats card */
   [data-homepage-hero] img {
-    object-position: 59% 50% !important;
+    object-position: 59.5% 50% !important;
   }
 
   /* Reference image: mobile — dark edge aligns with text zone */
