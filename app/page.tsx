@@ -405,9 +405,8 @@ export default function Home() {
           style={{
             position: 'absolute',
             // Chip center at 857px (midpoint of period at 590px and stats card at 1124px)
-            // 857px / 1440px viewport = 59.5%
-            // Chip ~240px wide — center at 857px → left edge at 737px
-            left: '59.5%',
+            // Debug: test 70% to see where chip goes, then refine
+            left: '70%',
             top: '50%',
             transform: 'translateX(-50%) translateY(-50%)',
             zIndex: 2,
