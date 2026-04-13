@@ -27,8 +27,12 @@ export async function POST(
       return NextResponse.json({ error: 'contractor_id is required' }, { status: 400 })
     }
 
-    // Verify contractor_id matches the authenticated user (or is a founder/admin bypass)
-    if (!access.isFounderEmail && access.userId && access.userId !== contractor_id) {
+    // Verify contractor_id matches the authenticated user's profile.
+    // access.contractorProfileId is the contractor_applications.id for this user.
+    // We compare the passed contractor_id against it (bypasses the Supabase auth UID
+    // which differs from the profile ID in the current data model).
+    const profileId = (access as any).contractorProfileId ?? access.profile?.id ?? null
+    if (!access.isFounderEmail && profileId && String(contractor_id) !== String(profileId)) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
 
