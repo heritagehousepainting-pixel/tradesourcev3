@@ -397,38 +397,8 @@ export default function Home() {
         </div></div>
         <div style={{ maxWidth: 1160, margin: '0 auto', padding: '80px 56px 0' }}>
 
-          {/* Mobile: stats panel ABOVE text as visual anchors */}
-          <div className="mobile-stats-panel" style={{
-            display: 'grid', gridTemplateColumns: '1fr 1fr',
-            gap: 1,
-            marginBottom: 20,
-          }}>
-            {[
-              { n: '4', label: 'Counties' },
-              { n: '5', label: 'Checks' },
-              { n: '0', label: 'Fees' },
-              { n: '100%', label: 'Vetted' },
-            ].map((stat, i) => (
-              <div key={stat.label} style={{
-                background: 'rgba(2, 10, 28, 0.88)',
-                borderRadius: 10,
-                padding: '12px 16px',
-                textAlign: 'center',
-              }}>
-                <div style={{
-                  fontSize: 22, fontWeight: 800, letterSpacing: '-0.5px',
-                  color: 'rgba(195, 225, 255, 0.95)', lineHeight: 1.1,
-                }}>{stat.n}</div>
-                <div style={{
-                  fontSize: 10, color: 'rgba(140, 185, 255, 0.60)',
-                  marginTop: 3, fontWeight: 500, letterSpacing: '0.5px',
-                }}>{stat.label}</div>
-              </div>
-            ))}
-          </div>
-
           {/* Top row: left + stats panel */}
-          <div className="mobile-hero-text" style={{
+          <div style={{
             display: 'grid', gridTemplateColumns: '1fr auto',
             alignItems: 'start', gap: 56,
             paddingBottom: 64,
@@ -568,7 +538,31 @@ export default function Home() {
             </div>
           </div>
 
-          
+          {/* Mobile stats band: full-width dark strip below CTAs */}
+          <div className="mobile-hero-stats-band" style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            paddingTop: 20,
+            marginTop: 4,
+          }}>
+            {[
+              { n: '4', label: 'Counties' },
+              { n: '5', label: 'Checks' },
+              { n: '0', label: 'Lead Fees' },
+              { n: '100%', label: 'Vetted' },
+            ].map((stat) => (
+              <div key={stat.label} style={{ textAlign: 'center' }}>
+                <div style={{
+                  fontSize: 18, fontWeight: 800, letterSpacing: '-0.5px',
+                  color: 'rgba(195, 225, 255, 0.95)', lineHeight: 1.1,
+                }}>{stat.n}</div>
+                <div style={{
+                  fontSize: 9, color: 'rgba(140, 185, 255, 0.55)',
+                  marginTop: 4, fontWeight: 600, letterSpacing: '0.5px',
+                }}>{stat.label}</div>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
