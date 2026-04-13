@@ -183,11 +183,13 @@ export default function Dashboard() {
   useEffect(() => {
     if (!access.checked) return
     const contractorId = access.profile?.id ?? null
+    // contractorProfileId handles cases where access.profile is null but access.contractorProfileId is set
+    const profileId = (access as any).contractorProfileId ?? access.profile?.id ?? null
     Promise.all([
       fetch('/api/users').then(r => r.json()),
       fetch('/api/jobs').then(r => r.json()),
-      contractorId ? fetch(`/api/reviews?contractor_id=${contractorId}`).then(r => r.json()) : Promise.resolve([]),
-      contractorId ? fetch(`/api/messages/threads?contractor_id=${contractorId}`).then(r => r.json()) : Promise.resolve([]),
+      profileId ? fetch(`/api/reviews?contractor_id=${profileId}`).then(r => r.json()) : Promise.resolve([]),
+      profileId ? fetch(`/api/messages/threads?contractor_id=${profileId}`).then(r => r.json()) : Promise.resolve([]),
     ]).then(([users, jobsData, reviewsData, threadsData]) => {
       // Set user from canonical access.profile if available
       if (access.profile) {
@@ -233,7 +235,9 @@ export default function Dashboard() {
     setExpressingId(jobId)
     setDashboardError('')
     try {
-      const res = await fetch(`/api/jobs/${jobId}/interest`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ contractor_id: user?.id ?? null }) })
+      // contractor_id must be the contractor_applications.id (profile ID), not the auth UID.
+      const contractorProfileId = access.profile?.id ?? (access as any).contractorProfileId ?? null
+      const res = await fetch(`/api/jobs/${jobId}/interest`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ contractor_id: contractorProfileId }) })
       if (res.ok) { setExpressedJobs(prev => new Set([...prev, jobId])); showToast('Interest sent! The job poster will review your profile.') }
       else setDashboardError('Failed to express interest.')
     } catch { setDashboardError('Failed to express interest.') } finally { setExpressingId(null) }
@@ -241,19 +245,23 @@ export default function Dashboard() {
 
   const handleOpenThread = async (thread: any) => {
     setActiveThread(thread)
-    const msgs = await fetch(`/api/messages?thread_id=${thread.id}`).then(r => r.json())
+    // Thread stores contractor_applications.id — use the canonical profile ID
+    const profileId = access.profile?.id ?? (access as any).contractorProfileId ?? null
+    const url = `/api/messages?thread_id=${thread.id}${profileId ? `&contractor_id=${profileId}` : ''}`
+    const msgs = await fetch(url).then(r => r.json())
     setThreadMessages(msgs || [])
   }
 
   const handleSendMessage = async (threadId: string) => {
     if (!newMessage.trim() || !user) return
     setSendingMessage(true)
+    const profileId = access.profile?.id ?? (access as any).contractorProfileId ?? null
     try {
-      await fetch('/api/messages', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ thread_id: threadId, sender_email: user.email, sender_name: user.name || user.full_name || user.company || 'Contractor', content: newMessage }) })
+      await fetch('/api/messages', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ thread_id: threadId, sender_email: user.email, sender_name: user.name || user.full_name || user.company || 'Contractor', content: newMessage, contractor_id: profileId }) })
       setNewMessage('')
       const msgs = await fetch(`/api/messages?thread_id=${threadId}`).then(r => r.json())
       setThreadMessages(msgs || [])
-      const threads = await fetch(`/api/messages/threads?contractor_id=${user.id}`).then(r => r.json())
+      const threads = await fetch(`/api/messages/threads?contractor_id=${profileId}`).then(r => r.json())
       setMessageThreads(threads || [])
     } catch {} finally { setSendingMessage(false) }
   }
@@ -280,6 +288,7 @@ export default function Dashboard() {
         setShowReviewForm(null)
         showToast('Review submitted! Thanks.')
         // Refresh reviews to update rating
+        const profileId = (access as any).contractorProfileId ?? access.profile?.id ?? null
         if (user?.id) {
           fetch(`/api/reviews?contractor_id=${user.id}`).then(r => r.json()).then(data => {
             if (data?.reviews) {
