@@ -1192,6 +1192,7 @@ body.no-shell {
 /* Reference image: desktop — chip positioned between headline and stats card */
 [data-homepage-hero] img {
   object-position: 51.0% 50%;
+  transform: translateX(-137px);
 }
 
 /* Tablet polish */
