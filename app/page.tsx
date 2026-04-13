@@ -421,9 +421,14 @@ export default function Home() {
                 lineHeight: 1.0, letterSpacing: '-2.5px',
                 maxWidth: 760, marginBottom: 20, color: 'var(--color-text)',
               }}>
-                The Private Painting Network<br />
-                <em style={{ fontStyle: 'normal', color: 'var(--color-blue)' }}>Built for Painters, Made by Painters.</em>
+                The Private Painting Network
               </h1>
+              <p style={{
+                fontSize: 15, color: 'var(--color-blue)', fontWeight: 600,
+                maxWidth: 420, lineHeight: 1.65, marginBottom: 28, letterSpacing: '-0.2px',
+              }}>
+                Built for Painters, Made by Painters.
+              </p>
               <p style={{
                 fontSize: 15, color: 'var(--color-text-muted)',
                 maxWidth: 420, lineHeight: 1.65, marginBottom: 28,
