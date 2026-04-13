@@ -18,18 +18,24 @@ export default function Login() {
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
       if (!data.session?.user) return
-      const token = data.session.access_token
-      let isFounder = false
+      const userEmail = data.session.user.email || ''
+      const founderEmails = (process.env.NEXT_PUBLIC_FOUNDER_EMAILS || '')
+        .split(',')
+        .map((e: string) => e.trim().toLowerCase())
+        .filter(Boolean)
+      const isFounderEmail = founderEmails.includes(userEmail.toLowerCase())
+      let isJwtAdmin = false
       try {
+        const token = data.session.access_token
         const payload = token.split('.')[1]
         if (payload) {
           const base64 = payload.replace(/-/g, '+').replace(/_/g, '/')
           const padded = base64 + '=='.slice(0, (4 - base64.length % 4) % 4)
           const decoded = JSON.parse(atob(padded))
-          isFounder = (decoded.app_metadata as Record<string, unknown>)?.role === 'admin'
+          isJwtAdmin = (decoded.app_metadata as Record<string, unknown>)?.role === 'admin'
         }
       } catch {}
-      window.location.href = isFounder ? '/admin' : '/dashboard'
+      window.location.href = isFounderEmail || isJwtAdmin ? '/admin' : '/dashboard'
     })
   }, [])
 
@@ -40,7 +46,7 @@ export default function Login() {
     try {
       const { error, data } = await supabase.auth.signInWithPassword({ email, password })
       if (error) { setError(error.message) } else {
-        let isFounder = false
+        let isJwtAdmin = false
         try {
           const token = data?.session?.access_token
           if (token) {
@@ -49,12 +55,17 @@ export default function Login() {
               const base64 = payload.replace(/-/g, '+').replace(/_/g, '/')
               const padded = base64 + '=='.slice(0, (4 - base64.length % 4) % 4)
               const decoded = JSON.parse(atob(padded))
-              isFounder = (decoded.app_metadata as Record<string, unknown>)?.role === 'admin'
+              isJwtAdmin = (decoded.app_metadata as Record<string, unknown>)?.role === 'admin'
             }
           }
         } catch {}
+        const founderEmails = (process.env.NEXT_PUBLIC_FOUNDER_EMAILS || '')
+          .split(',')
+          .map((e: string) => e.trim().toLowerCase())
+          .filter(Boolean)
+        const isFounderEmail = founderEmails.includes(email.toLowerCase())
         await new Promise(r => setTimeout(r, 200))
-        window.location.href = isFounder ? '/admin' : '/dashboard'
+        window.location.href = isFounderEmail || isJwtAdmin ? '/admin' : '/dashboard'
       }
     } catch { setError('Something went wrong. Please try again.') } finally { setLoading(false) }
   }
