@@ -817,9 +817,15 @@ body.no-shell {
 
 @media (max-width: 640px) {
 
-  /* Hero: reduce top padding */
+  /* Hero: tighter padding, better mobile composition */
   [style*="padding:80px 56px 0"] {
-    padding: 36px 20px 0 !important;
+    padding: 48px 20px 0 !important;
+  }
+
+  /* Hero: dark overlay — diagonal dark-to-transparent, covers center (text zone) fully */
+  /* On mobile the text takes full width, so the chip area must be covered */
+  [data-homepage-hero] > [aria-hidden="true"] > div:nth-child(2) {
+    background: linear-gradient(160deg, rgba(1,5,18,0.90) 0%, rgba(1,5,18,0.70) 40%, rgba(1,5,18,0.55) 65%, rgba(1,5,18,0.30) 100%) !important;
   }
 
   /* Hero grid: stack on mobile */
@@ -836,7 +842,7 @@ body.no-shell {
   [style*="minWidth:240"] {
     min-width: unset !important;
     width: 100% !important;
-    margin-top: 20px !important;
+    margin-top: 24px !important;
     padding: 20px !important;
     box-sizing: border-box !important;
     flex-shrink: 0 !important;
