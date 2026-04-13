@@ -817,15 +817,24 @@ body.no-shell {
 
 @media (max-width: 640px) {
 
-  /* Hero: tighter padding, better mobile composition */
+  /* Hero content: tighter top padding — less wasted space below sticky header */
   [style*="padding:80px 56px 0"] {
-    padding: 48px 20px 0 !important;
+    padding: 24px 20px 0 !important;
   }
 
   /* Hero: dark overlay — diagonal dark-to-transparent, covers center (text zone) fully */
-  /* On mobile the text takes full width, so the chip area must be covered */
   [data-homepage-hero] > [aria-hidden="true"] > div:nth-child(2) {
     background: linear-gradient(160deg, rgba(1,5,18,0.90) 0%, rgba(1,5,18,0.70) 40%, rgba(1,5,18,0.55) 65%, rgba(1,5,18,0.30) 100%) !important;
+  }
+
+  /* Hero left column: reduce internal top padding */
+  [data-homepage-hero] > div > div > div > div:first-child {
+    padding-top: 8px !important;
+  }
+
+  /* Phase label row: tighter bottom margin */
+  [data-homepage-hero] [style*="gap: 12"][style*="align-items: center"] {
+    margin-bottom: 12px !important;
   }
 
   /* Hero grid: stack on mobile */
@@ -837,33 +846,55 @@ body.no-shell {
     padding-bottom: 0 !important;
   }
 
-  /* Stats panel: full width below hero text */
+  /* Hero headline: tighter */
+  [style*="clamp(44px"] {
+    font-size: clamp(30px, 10vw, 80px) !important;
+    letter-spacing: -1.5px !important;
+    margin-bottom: 12px !important;
+  }
+
+  /* Hero sub-copy: tighter */
+  [style*="font-size:17px"][style*="max-width:480"] {
+    font-size: 14px !important;
+    margin-bottom: 16px !important;
+    line-height: 1.55 !important;
+  }
+
+  /* Hero CTA row: stack buttons, tighter */
+  [data-homepage-hero] [style*="display: flex"][style*="gap: 10"] {
+    flex-direction: column !important;
+    gap: 10px !important;
+  }
+
+  /* Hero CTA buttons: full width, comfortable tap height */
+  [data-homepage-hero] a[style*="border-radius: 10"] {
+    width: 100% !important;
+    justify-content: center !important;
+    text-align: center !important;
+    padding: 14px 20px !important;
+  }
+
+  /* Badges row: tighter gap, full width */
+  [data-homepage-hero] [style*="display: inline-flex"] {
+    margin-bottom: 8px !important;
+  }
+
+
+  /* Stats panel: full width, tighter top margin */
   [style*="min-width:240px"],
   [style*="minWidth:240"] {
     min-width: unset !important;
     width: 100% !important;
-    margin-top: 24px !important;
+    margin-top: 20px !important;
     padding: 20px !important;
     box-sizing: border-box !important;
     flex-shrink: 0 !important;
   }
 
-  /* Stats panel: remove last stat border */
-  [style*="min-width:240px"] > div:last-child,
-  [style*="minWidth:240"] > div:last-child {
-    border-bottom: none !important;
-  }
-
-  /* Stats panel: hide "Network at a glance" label on mobile — redundant with section */
-  [style*="min-width:240px"] > div:first-child,
-  [style*="minWidth:240"] > div:first-child {
-    display: none !important;
-  }
-
-  /* Stats panel: stat numbers — slightly larger on mobile for readability */
+  /* Stats panel: stat numbers */
   [style*="min-width:240px"] [style*="font-size:28px"],
   [style*="minWidth:240"] [style*="font-size:28px"] {
-    font-size: 24px !important;
+    font-size: 22px !important;
   }
 
   /* Stats panel label: compact */
@@ -871,41 +902,15 @@ body.no-shell {
   [style*="letterSpacing:2px"][style*="textTransform:uppercase"][style*="marginBottom:24"] {
     font-size: 9px !important;
     letter-spacing: 2px !important;
-    margin-bottom: 14px !important;
+    margin-bottom: 10px !important;
   }
 
-  /* Hero headline: tighter clamp */
-  [style*="clamp(44px"] {
-    font-size: clamp(32px, 9vw, 80px) !important;
-    letter-spacing: -1.5px !important;
-    margin-bottom: 14px !important;
-  }
-
-  /* Hero sub-copy: smaller */
-  [style*="font-size:17px"][style*="max-width:480"] {
-    font-size: 14px !important;
-    margin-bottom: 24px !important;
-  }
-
-  /* Hero CTA row: stack buttons vertically */
-  [style*="display:flex"][style*="gap:12"] {
-    flex-direction: column !important;
-    gap: 10px !important;
-  }
-
-  /* Hero CTA buttons: full width */
-  [style*="padding:14px 28px"][style*="border-radius:10"] {
-    width: 100% !important;
-    justify-content: center !important;
-    text-align: center !important;
-  }
-
-  /* Trust strip: tighten */
+  /* Trust strip: tighter */
   [style*="padding:14px 56px"] {
     padding: 10px 16px !important;
   }
 
-  /* Verified label: compact, own line */
+  /* Verified label: compact */
   [style*="white-space:nowrap"][style*="margin-right:32"],
   [style*="whiteSpace:nowrap"][style*="marginRight:32"] {
     display: block !important;
