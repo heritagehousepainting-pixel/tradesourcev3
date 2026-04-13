@@ -860,11 +860,7 @@ body.no-shell {
     line-height: 1.55 !important;
   }
 
-  /* Hero CTA row: stack buttons, tighter */
-  [data-homepage-hero] [style*="display: flex"][style*="gap: 10"] {
-    flex-direction: column !important;
-    gap: 10px !important;
-  }
+  /* Hero CTA row: full width, buttons stacked, 16px gap (from responsive-form-row class) */
 
   /* Hero CTA buttons: full width, comfortable tap height */
   [data-homepage-hero] a[style*="border-radius: 10"] {
