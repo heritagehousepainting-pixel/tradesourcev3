@@ -442,7 +442,7 @@ export default function AdminPage() {
                           Approve
                         </button>
                         <button
-                          onClick={() => { setRejectingId(u.id); setExpandedId(u.id) }}
+                          onClick={e => { e.stopPropagation(); setRejectingId(u.id); setExpandedId(u.id) }}
                           style={{ padding: '7px 14px', borderRadius: 8, fontSize: 12, fontWeight: 700, backgroundColor: 'var(--color-red)', color: '#fff', border: 'none', cursor: 'pointer' }}
                         >
                           Reject
