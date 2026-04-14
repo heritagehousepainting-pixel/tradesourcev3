@@ -412,7 +412,7 @@ export default function Home() {
                 </span>
               </div>
 
-              {/* Main headline */}
+              {/* Main headline — must name the network */}
               <h1 className="hero-headline" style={{
                 fontSize: 'clamp(36px, 5.5vw, 72px)',
                 fontWeight: 900, lineHeight: 1.0,
@@ -420,17 +420,36 @@ export default function Home() {
                 maxWidth: 560, marginBottom: 16,
                 color: '#fff',
               }}>
-                Vetted Overflow Painting Work — No Lead Fees, No Bidding.
+                The Vetted Contractor Network for Overflow Painting Work.
               </h1>
 
-              {/* Subheadline */}
+              {/* Subheadline — defines the network in plain language */}
               <p style={{
                 fontSize: 16, color: 'rgba(255,255,255,0.65)',
                 maxWidth: 520, lineHeight: 1.7,
-                marginBottom: 24, letterSpacing: '-0.1px',
+                marginBottom: 20, letterSpacing: '-0.1px',
               }}>
-                TradeSource is a private network of vetted painting contractors in the four-county Philadelphia area. Post your overflow work at your fixed rate — contractors in the network see it, express interest, and you choose who you work with. No bidding, no lead fees, no algorithm deciding who wins.
+                TradeSource is a closed network of vetted painting contractors. Post your overflow at your fixed rate — contractors in the network express interest, you review them, and you choose who does the work. No bidding, no lead fees.
               </p>
+
+              {/* Feature highlight row — AI scope builder promoted here, in the hero */}
+              <div style={{
+                display: 'inline-flex', alignItems: 'center', gap: 10,
+                background: 'rgba(5,150,105,0.1)',
+                border: '1px solid rgba(5,150,105,0.25)',
+                borderRadius: 100, padding: '6px 14px',
+                marginBottom: 24,
+              }}>
+                <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="2.5" strokeLinecap="round">
+                  <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                </svg>
+                <span style={{
+                  fontSize: 11, fontWeight: 700, letterSpacing: 1,
+                  textTransform: 'uppercase', color: '#10b981',
+                }}>
+                  AI Scope Builder — describe your job, get a complete scope in seconds
+                </span>
+              </div>
 
               {/* Trust badge row */}
               <div style={{
@@ -440,8 +459,8 @@ export default function Home() {
                 {[
                   { label: '5 Vetting Checks', color: 'var(--color-blue)' },
                   { label: '0 Lead Fees', color: '#10b981' },
-                  { label: '100% Vetted Contractors', color: '#10b981' },
                   { label: 'Fixed Price Only', color: 'var(--color-blue)' },
+                  { label: 'Work Stays Private', color: 'rgba(255,255,255,0.5)' },
                 ].map(badge => (
                   <div key={badge.label} style={{
                     display: 'inline-flex', alignItems: 'center', gap: 6,
@@ -599,7 +618,7 @@ export default function Home() {
         </div>
       </div>
 
-      {/* ─── WHY TRADESOURCE / VALUE PROPS ─── */}
+      {/* ─── THE NETWORK — three core claims (collapsed from 4 redundant sections) ─── */}
       <section style={{
         background: 'var(--color-bg-secondary)',
         borderTop: '1px solid var(--color-border)',
@@ -610,39 +629,35 @@ export default function Home() {
             fontSize: 11, fontWeight: 700, letterSpacing: 3,
             textTransform: 'uppercase', color: 'var(--color-blue)', marginBottom: 20,
           }}>
-            How it works
+            The network
           </div>
           <div style={{
             fontSize: 'clamp(28px, 3.5vw, 44px)', fontWeight: 900,
-            letterSpacing: '-1.5px', lineHeight: 1.1, marginBottom: 16,
+            letterSpacing: '-1.5px', lineHeight: 1.1, marginBottom: 56,
             color: 'var(--color-text)', maxWidth: 600,
           }}>
-            The network puts you in control of every job.
+            The three things that make TradeSource work.
           </div>
-          <p style={{
-            fontSize: 16, color: 'var(--color-text-muted)',
-            maxWidth: 520, lineHeight: 1.7, marginBottom: 56,
-          }}>
-            Post your overflow at your fixed rate. Contractors in the network express interest. You choose who you work with. No bidding, no lead fees, no algorithm deciding who wins.
-          </p>
 
-          {/* Value props: three cards */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
             {[
               {
                 icon: <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.75}><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>,
                 title: 'Fixed Price. No Bidding.',
-                desc: 'You set the rate upfront. No one bids below it to undercut your price. The contractor who gets the work is the one you chose — not the one who guessed lowest.',
-              },
-              {
-                icon: <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.75}><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>,
-                title: 'Work Stays Private',
-                desc: 'Every job is private between the contractor who posts and the contractor who accepts. Your clients, your reputation, your relationships — no public directory, no ads.',
+                desc: 'You set the rate. Contractors in the network express interest at your price. You choose who gets the work — not an algorithm, not whoever guessed lowest.',
+                color: 'var(--color-blue)',
               },
               {
                 icon: <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth={1.75}><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>,
-                title: 'Every Contractor Vetted Before Access',
-                desc: 'PA license, insurance, W-9, trade experience, and external review — all verified personally before anyone gets access to the network.',
+                title: 'AI Scope Builder Included',
+                desc: 'Describe your job in plain language — the AI writes a complete, professional scope that contractors can actually use. Fewer missed items, fewer callbacks, faster quotes.',
+                color: '#10b981',
+              },
+              {
+                icon: <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.75}><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>,
+                title: 'Work Stays Private Between Contractors',
+                desc: 'Every job posted and accepted stays between the two contractors involved. Your clients, your reputation, your rates — no public board, no ads, no exposure.',
+                color: 'var(--color-blue)',
               },
             ].map(item => (
               <div key={item.title} style={{
@@ -657,11 +672,11 @@ export default function Home() {
                 onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--color-border)')}>
                 <div style={{
                   width: 48, height: 48,
-                  background: 'var(--color-blue-dim)',
-                  border: '1px solid var(--color-blue-border)',
+                  background: item.color === '#10b981' ? 'rgba(5,150,105,0.1)' : 'var(--color-blue-dim)',
+                  border: `1px solid ${item.color === '#10b981' ? 'rgba(5,150,105,0.25)' : 'var(--color-blue-border)'}`,
                   borderRadius: 10,
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  color: 'var(--color-blue)', flexShrink: 0,
+                  color: item.color, flexShrink: 0,
                 }}>
                   {item.icon}
                 </div>
@@ -669,7 +684,7 @@ export default function Home() {
                   <div style={{ fontSize: 16, fontWeight: 700, marginBottom: 6, color: 'var(--color-text)', letterSpacing: '-0.2px' }}>
                     {item.title}
                   </div>
-                  <div style={{ fontSize: 14, color: 'var(--color-text-muted)', lineHeight: 1.65, maxWidth: 480 }}>
+                  <div style={{ fontSize: 14, color: 'var(--color-text-muted)', lineHeight: 1.65, maxWidth: 560 }}>
                     {item.desc}
                   </div>
                 </div>
@@ -679,65 +694,79 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ─── PROCESS ─── */}
+      {/* ─── HOW IT WORKS — 3 steps (replaced 5-step process section) ─── */}
       <section style={{ padding: '104px 56px', background: 'var(--color-bg-primary)' }}>
         <div style={{ maxWidth: 1160, margin: '0 auto' }}>
           <div style={{
             fontSize: 11, fontWeight: 700, letterSpacing: 3,
             textTransform: 'uppercase', color: 'var(--color-blue)', marginBottom: 20,
           }}>
-            Process
+            How it works
           </div>
           <div style={{
             fontSize: 'clamp(32px, 4vw, 52px)', fontWeight: 800,
-            letterSpacing: '-1.5px', lineHeight: 1.1, marginBottom: 20,
+            letterSpacing: '-1.5px', lineHeight: 1.1, marginBottom: 56,
             color: 'var(--color-text)',
           }}>
-            How TradeSource works.
+            Three steps to your first network job.
           </div>
-          <p style={{
-            fontSize: 16, color: 'var(--color-text-muted)',
-            maxWidth: 540, lineHeight: 1.7, marginBottom: 56,
-          }}>
-            From application to first job in days. No black box, no long wait.
-          </p>
 
-          {[
-            { n: '01', title: 'Apply', body: 'Submit your business information, contractor license, proof of insurance, W-9, trade experience, and at least one external review.' },
-            { n: '02', title: 'We Review Your Application', body: 'Every application is reviewed personally. We verify every document and check that everything is legitimate before you get access.' },
-            { n: '03', title: 'Get Approved and Access the Network', body: 'Once approved, you receive an email and create your password. Full access to the network of vetted painting contractors.' },
-            { n: '04', title: 'Build Your Scope with AI — Then Post at Your Rate', body: 'When you have work that needs a sub, use our AI Scope Builder to write a complete, professional scope. Post it at your fixed rate — contractors in the network see it and respond.' },
-            { n: '05', title: 'Choose Who You Want to Work With', body: "Review profiles, see experience and past work. You decide who gets the job — no algorithm, no bidding, no surprises." },
-          ].map((step, i) => (
-            <div key={step.n} style={{
-              display: 'grid', gridTemplateColumns: '72px 1fr',
-              borderBottom: i < 4 ? '1px solid var(--color-border)' : 'none',
-              padding: '40px 0',
-            }}>
-              <div style={{
-                fontSize: 56, fontWeight: 900, letterSpacing: '-3px',
-                lineHeight: 1, color: 'var(--color-bg-elevated)',
-                WebkitTextStroke: '1px var(--color-blue-border)',
-                paddingTop: 4,
-              }}>
-                {step.n}
-              </div>
-              <div style={{ paddingLeft: 16 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24 }}>
+            {[
+              {
+                num: '01',
+                title: 'Apply for access',
+                desc: 'Submit your PA license, insurance, W-9, trade experience, and at least one external review. Every application is reviewed personally.',
+              },
+              {
+                num: '02',
+                title: 'Post your overflow at your rate',
+                desc: "Once approved, you access the network. Use the AI Scope Builder to write your job description — then post it at your fixed price. Contractors in the network see it and respond.",
+              },
+              {
+                num: '03',
+                title: 'Review and choose who you work with',
+                desc: "Contractors express interest. You see their profiles, their experience, and their history. You decide who gets the job — no algorithm, no bidding, no surprises.",
+              },
+            ].map((step, i) => (
+              <div key={step.num} style={{
+                background: 'var(--color-bg-card)',
+                border: '1px solid var(--color-border)',
+                borderRadius: 16, padding: '40px 36px',
+                position: 'relative', overflow: 'hidden',
+                transition: 'border-color 0.2s',
+              }}
+                onMouseEnter={e => (e.currentTarget.style.borderColor = 'var(--color-blue-border)')}
+                onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--color-border)')}>
                 <div style={{
-                  fontSize: 18, fontWeight: 700, marginBottom: 8,
+                  position: 'absolute', top: -16, right: 20,
+                  fontSize: 120, fontWeight: 900, letterSpacing: '-5px',
+                  color: 'var(--color-bg-elevated)',
+                  WebkitTextStroke: '1px var(--color-blue-border)',
+                  lineHeight: 1, pointerEvents: 'none',
+                }}>
+                  {step.num}
+                </div>
+                <div style={{
+                  fontSize: 16, fontWeight: 700, marginBottom: 12,
                   letterSpacing: '-0.2px', color: 'var(--color-text)',
-                }}>{step.title}</div>
+                  position: 'relative', zIndex: 1,
+                }}>
+                  {step.title}
+                </div>
                 <div style={{
                   fontSize: 14, color: 'var(--color-text-muted)',
-                  lineHeight: 1.7, maxWidth: 520,
-                }}>{step.body}</div>
+                  lineHeight: 1.7, position: 'relative', zIndex: 1,
+                }}>
+                  {step.desc}
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </section>
 
-      {/* ─── VALUE PROPS ─── */}
+      {/* ─── AI SCOPE BUILDER — promoted as a dedicated section ─── */}
       <section style={{
         background: 'var(--color-bg-secondary)',
         borderTop: '1px solid var(--color-border)',
@@ -745,91 +774,122 @@ export default function Home() {
         padding: '104px 56px',
       }}>
         <div style={{ maxWidth: 1160, margin: '0 auto' }}>
-          <div style={{
-            fontSize: 11, fontWeight: 700, letterSpacing: 3,
-            textTransform: 'uppercase', color: 'var(--color-blue)', marginBottom: 20,
-          }}>
-            Why TradeSource is different
-          </div>
-          <div style={{
-            fontSize: 'clamp(32px, 4vw, 52px)', fontWeight: 800,
-            letterSpacing: '-1.5px', lineHeight: 1.1, marginBottom: 20,
-            color: 'var(--color-text)',
-          }}>
-            Built around one idea.
-          </div>
-          <p style={{
-            fontSize: 16, color: 'var(--color-text-muted)',
-            maxWidth: 540, lineHeight: 1.7, marginBottom: 48,
-          }}>
-            Contractors should control their own work. Not another lead-gen directory. A private network.
-          </p>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 80, alignItems: 'center' }}>
+            {/* Left — copy */}
+            <div>
+              <div style={{
+                display: 'inline-flex', alignItems: 'center', gap: 8,
+                background: 'rgba(5,150,105,0.1)',
+                border: '1px solid rgba(5,150,105,0.25)',
+                borderRadius: 100, padding: '6px 14px',
+                marginBottom: 20,
+              }}>
+                <div style={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: '#10b981' }}/>
+                <span style={{
+                  fontSize: 11, fontWeight: 700, letterSpacing: 2,
+                  textTransform: 'uppercase', color: '#10b981',
+                }}>
+                  Built into the platform
+                </span>
+              </div>
+              <div style={{
+                fontSize: 'clamp(28px, 3.5vw, 44px)', fontWeight: 900,
+                letterSpacing: '-1.5px', lineHeight: 1.1, marginBottom: 20,
+                color: 'var(--color-text)',
+              }}>
+                AI Scope Builder — describe the job, get a complete scope.
+              </div>
+              <p style={{
+                fontSize: 15, color: 'var(--color-text-muted)',
+                lineHeight: 1.7, marginBottom: 24,
+              }}>
+                Most contractor-to-contractor communication breaks down at the scope. A few texts back and forth, things get missed, the quote comes in wrong, the job goes sideways.
+              </p>
+              <p style={{
+                fontSize: 15, color: 'var(--color-text-muted)',
+                lineHeight: 1.7, marginBottom: 32,
+              }}>
+                The AI Scope Builder solves that. You answer a few questions about the job — square footage, surface type, prep work, number of coats, trim included or not. The AI writes a complete, professional scope that contractors can actually use to give you an accurate quote.
+              </p>
+              {[
+                'No missed line items in the scope',
+                'Fewer callbacks and change orders',
+                'Contractors respond faster with complete scopes',
+                'Your scope, your terms — edit before posting',
+              ].map(point => (
+                <div key={point} style={{
+                  display: 'flex', alignItems: 'flex-start', gap: 10,
+                  marginBottom: 10,
+                }}>
+                  <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, marginTop: 3 }}>
+                    <path d="M5 13l4 4L19 7"/>
+                  </svg>
+                  <span style={{ fontSize: 14, color: 'var(--color-text-muted)', lineHeight: 1.6 }}>
+                    {point}
+                  </span>
+                </div>
+              ))}
+            </div>
 
-          {[
-            {
-              icon: <svg width={22} height={22} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5}><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>,
-              title: 'Fixed Price. No Bidding.',
-              body: 'You set the rate upfront. No one undercuts your price to get the job. The contractor who gets the work is the one you chose.',
-              tag: 'Core mechanic',
-            },
-            {
-              icon: <svg width={22} height={22} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5}><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>,
-              title: 'Work Stays in Network',
-              body: 'Every job is private between the contractor who posted and the contractor who accepts. Your clients, your reputation, your relationships.',
-              tag: 'Private',
-            },
-            {
-              icon: <svg width={22} height={22} viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth={1.5}><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>,
-              title: 'AI Tools Built for the Work',
-              body: 'Most platforms give you a form. TradeSource gives you an AI Scope Builder that turns a few questions into a complete job description — so you miss less and contractors respond better.',
-              tag: 'Live now',
-              tagColor: '#10b981',
-            },
-          ].map(item => (
-            <div key={item.title} style={{
-              display: 'grid', gridTemplateColumns: '48px 1fr auto', gap: 24,
-              alignItems: 'start',
+            {/* Right — visual mockup placeholder */}
+            <div style={{
               background: 'var(--color-bg-card)',
               border: '1px solid var(--color-border)',
-              padding: '32px 36px', borderRadius: 12, marginBottom: 2,
-              transition: 'border-color 0.2s',
-            }}
-              onMouseEnter={e => (e.currentTarget.style.borderColor = 'var(--color-blue-border)')}
-              onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--color-border)')}>
+              borderRadius: 16, padding: '40px 36px',
+              position: 'relative',
+            }}>
               <div style={{
-                width: 48, height: 48,
-                background: 'var(--color-blue-dim)',
-                border: '1px solid var(--color-blue-border)',
-                borderRadius: 10,
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                color: 'var(--color-blue)',
+                fontSize: 11, fontWeight: 700, letterSpacing: 2,
+                textTransform: 'uppercase', color: 'var(--color-blue)', marginBottom: 16,
               }}>
-                {item.icon}
+                AI Scope Builder — Preview
               </div>
-              <div>
-                <div style={{ fontSize: 16, fontWeight: 700, marginBottom: 6, color: 'var(--color-text)' }}>
-                  {item.title}
+              {/* Simulated scope form */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+                {[
+                  { label: 'Property type', value: 'Single-family home' },
+                  { label: 'Scope', value: 'Interior painting' },
+                  { label: 'Approx. area', value: '2,400 sq ft' },
+                  { label: 'Surfaces', value: 'Walls, ceilings, baseboards' },
+                  { label: 'Prep required', value: 'Patching, sand, prime' },
+                  { label: 'Coats', value: '2 coats throughout' },
+                ].map(field => (
+                  <div key={field.label} style={{
+                    background: 'var(--color-bg-secondary)',
+                    border: '1px solid var(--color-border)',
+                    borderRadius: 8, padding: '10px 14px',
+                  }}>
+                    <div style={{ fontSize: 11, color: 'var(--color-text-muted)', fontWeight: 600, marginBottom: 2 }}>
+                      {field.label}
+                    </div>
+                    <div style={{ fontSize: 14, color: 'var(--color-text)', fontWeight: 500 }}>
+                      {field.value}
+                    </div>
+                  </div>
+                ))}
+                <div style={{
+                  background: 'rgba(5,150,105,0.08)',
+                  border: '1px solid rgba(5,150,105,0.2)',
+                  borderRadius: 8, padding: '14px 16px',
+                  marginTop: 4,
+                }}>
+                  <div style={{
+                    fontSize: 11, color: '#10b981', fontWeight: 700,
+                    textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8,
+                  }}>
+                    Generated Scope
+                  </div>
+                  <div style={{ fontSize: 13, color: 'var(--color-text-muted)', lineHeight: 1.6 }}>
+                    Full interior paint of 2,400 sq ft single-family home. Walls, ceilings, and baseboards. Two coats of premium latex throughout. All surfaces to be prepped — patched, sanded, and primed prior to coating. Trim to be painted in semi-gloss. Owner to select paint color. All paint and materials included in scope.
+                  </div>
                 </div>
-                <div style={{ fontSize: 14, color: 'var(--color-text-muted)', lineHeight: 1.65, maxWidth: 480 }}>
-                  {item.body}
-                </div>
-              </div>
-              <div style={{
-                fontSize: 12, fontWeight: 600,
-                background: item.tagColor ? `${item.tagColor}18` : 'var(--color-blue-soft)',
-                border: item.tagColor ? `1px solid ${item.tagColor}40` : '1px solid var(--color-blue-border)',
-                color: item.tagColor || 'var(--color-blue)',
-                padding: '6px 12px', borderRadius: 100,
-                whiteSpace: 'nowrap', marginTop: 4,
-              }}>
-                {item.tag}
               </div>
             </div>
-          ))}
+          </div>
         </div>
       </section>
 
-      {/* ─── WHO IT'S FOR ─── */}
+      {/* ─── THREE CONTRACTOR TYPES ─── */}
       <section style={{
         padding: '104px 56px', background: 'var(--color-bg-primary)',
         borderTop: '1px solid var(--color-border)',
@@ -846,7 +906,7 @@ export default function Home() {
             letterSpacing: '-1.5px', lineHeight: 1.1, marginBottom: 20,
             color: 'var(--color-text)',
           }}>
-            Built for three types of contractors
+            Three types of contractors use TradeSource
           </div>
           <p style={{
             fontSize: 16, color: 'var(--color-text-muted)',
@@ -1016,38 +1076,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ─── EARLY ACCESS ─── */}
-      <section style={{
-        background: 'var(--color-bg-secondary)',
-        borderTop: '1px solid var(--color-border)',
-        borderBottom: '1px solid var(--color-border)',
-        padding: '104px 56px',
-      }}>
-        <div style={{ maxWidth: 700, margin: '0 auto', textAlign: 'center' }}>
-          <div style={{
-            fontSize: 11, fontWeight: 700, letterSpacing: 3,
-            textTransform: 'uppercase', color: 'var(--color-blue)', marginBottom: 20,
-          }}>
-            Early Access
-          </div>
-          <div style={{
-            fontSize: 'clamp(30px, 4vw, 48px)', fontWeight: 800,
-            letterSpacing: '-1.5px', lineHeight: 1.1, marginBottom: 16,
-            color: 'var(--color-text)',
-          }}>
-            Ready to stop trusting your<br />
-            business to <em style={{ fontStyle: 'normal', color: 'var(--color-blue)' }}>random Google searches?</em>
-          </div>
-          <p style={{
-            fontSize: 16, color: 'var(--color-text-muted)',
-            marginBottom: 48, lineHeight: 1.7,
-          }}>
-            TradeSource is opening to a limited number of contractors in Montgomery County, Bucks County, Delaware County, and Philadelphia, PA.
-          </p>
-          <EarlyAccessForm />
-        </div>
-      </section>
-
       {/* ─── FOOTER ─── */}
       <footer style={{
         background: 'var(--color-bg-primary)',
@@ -1070,7 +1098,7 @@ export default function Home() {
                 fontSize: 13, color: 'var(--color-text-muted)',
                 marginTop: 8, maxWidth: 240, lineHeight: 1.6,
               }}>
-                Private contractor-to-contractor overflow network. Fixed price, no bidding, no lead fees.
+                The vetted contractor network for overflow painting work. Fixed price, no bidding, no lead fees.
               </p>
             </div>
             <div style={{ display: 'flex', gap: 64 }}>
