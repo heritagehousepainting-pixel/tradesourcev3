@@ -753,7 +753,12 @@ body {
   }
   /* Note: stats panel (div:last-child) is preserved on mobile — shown as 2x2 grid below */
 
-  /* Stats panel: show as 2x2 grid on mobile via data attribute */
+  /* Stats panel: show as 2x2 grid on mobile. "unset" breaks the high-specificity
+     [data-homepage-hero]>div>div>div:last-child{display:none!important} rule below; 
+     "grid" then re-applies the 2-col layout. */
+  [data-mobile-grid="stats"] {
+    display: unset !important;
+  }
   [data-mobile-grid="stats"] {
     display: grid !important;
     grid-template-columns: 1fr 1fr !important;
