@@ -540,6 +540,7 @@ export default function Home() {
             <div
               data-mobile-grid="stats"
               data-mobile-panel="true"
+              data-mobile-stats-panel
               style={{
                 display: 'grid',
                 background: 'rgba(255,255,255,0.05)',

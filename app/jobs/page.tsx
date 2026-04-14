@@ -113,19 +113,19 @@ export default function Jobs() {
       </div>
 
       {/* ─── FILTERS ─── */}
-      <div style={{ backgroundColor: 'var(--color-surface)', borderBottom: '1px solid var(--color-border)', position: 'sticky', top: 60, zIndex: 10 }}>
+      <div data-jobs-filter-bar style={{ backgroundColor: 'var(--color-surface)', borderBottom: '1px solid var(--color-border)', position: 'sticky', top: 48, zIndex: 10 }}>
         <div style={{ maxWidth: 1100, margin: '0 auto', padding: '0 32px', display: 'flex', alignItems: 'center', gap: 12, height: 56, flexWrap: 'wrap' }}>
           <select
             value={stateFilter}
             onChange={e => setStateFilter(e.target.value)}
-            style={{ backgroundColor: 'var(--color-input-bg)', border: '1px solid var(--color-input-border)', color: 'var(--color-input-text)', borderRadius: 8, padding: '6px 12px', fontSize: 13, cursor: 'pointer', outline: 'none' }}
+            style={{ backgroundColor: 'var(--color-input-bg)', border: '1px solid var(--color-input-border)', color: 'var(--color-input-text)', borderRadius: 8, padding: '9px 12px', fontSize: 14, cursor: 'pointer', outline: 'none', minHeight: 40 }}
           >
             {US_STATES.map(s => <option key={s} value={s}>{s}</option>)}
           </select>
           <select
             value={tradeFilter}
             onChange={e => setTradeFilter(e.target.value)}
-            style={{ backgroundColor: 'var(--color-input-bg)', border: '1px solid var(--color-input-border)', color: 'var(--color-input-text)', borderRadius: 8, padding: '6px 12px', fontSize: 13, cursor: 'pointer', outline: 'none' }}
+            style={{ backgroundColor: 'var(--color-input-bg)', border: '1px solid var(--color-input-border)', color: 'var(--color-input-text)', borderRadius: 8, padding: '9px 12px', fontSize: 14, cursor: 'pointer', outline: 'none', minHeight: 40 }}
           >
             {TRADES.map(t => <option key={t} value={t}>{t}</option>)}
           </select>
