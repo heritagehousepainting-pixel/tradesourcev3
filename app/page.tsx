@@ -537,11 +537,10 @@ export default function Home() {
             </div>
 
             {/* Right — stats panel — hidden on mobile via inline display:none.
-               CSS shows it on tablet+ via [data-mobile-stats-panel] { display:grid } */}
+               CSS shows it on tablet+ via .hero-stats-row > [data-mobile-panel][data-mobile-grid] */}
             <div
               data-mobile-grid="stats"
               data-mobile-panel="true"
-              data-mobile-stats-panel
               style={{
                 display: 'none',
                 background: 'rgba(255,255,255,0.05)',

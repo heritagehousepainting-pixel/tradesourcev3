@@ -1594,27 +1594,29 @@ body.no-shell {
 }
 
 /* ── Fix 2: Homepage hero compression on mobile ── */
-/* Stats panel: hidden on mobile, grid on tablet+ */
-[data-mobile-stats-panel] {
-  display: none !important;
+/* Stats panel: hidden on mobile, grid on tablet+ via parent-child selector */
+@media (max-width: 640px) {
+  .hero-stats-row > [data-mobile-panel="true"][data-mobile-grid="stats"] {
+    display: none !important;
+  }
 }
 @media (min-width: 641px) {
-  [data-mobile-stats-panel] {
+  .hero-stats-row > [data-mobile-panel="true"][data-mobile-grid="stats"] {
     display: grid !important;
     padding: 16px !important;
     grid-template-columns: 1fr 1fr !important;
   }
-  [data-mobile-stats-panel] > div:first-child {
+  .hero-stats-row > [data-mobile-panel="true"][data-mobile-grid="stats"] > div:first-child {
     grid-column: 1 / -1 !important;
     font-size: 10px !important;
     margin-bottom: 12px !important;
     padding: 0 !important;
   }
-  [data-mobile-stats-panel] > div:not(:first-child) {
+  .hero-stats-row > [data-mobile-panel="true"][data-mobile-grid="stats"] > div:not(:first-child) {
     padding: 10px 0 !important;
     border-bottom: none !important;
   }
-  [data-mobile-stats-panel] > div:not(:first-child) > div:first-child {
+  .hero-stats-row > [data-mobile-panel="true"][data-mobile-grid="stats"] > div:not(:first-child) > div:first-child {
     font-size: 20px !important;
   }
 }
