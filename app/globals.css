@@ -365,19 +365,14 @@ body {
     max-height: 45vh !important;
     overflow-y: auto !important;
     border-radius: 14px 14px 0 0 !important;
-  }
-  /* Message detail: full width below thread list */
-  [style*="border-radius: 14"][style*="border: 1px solid var(--color-border)"][style*="padding: 20"][style*="display: flex"][style*="flex-direction: column"] {
-    width: 100% !important;
-    border-radius: 0 0 14px 14px !important;
-    min-height: 0 !important;
-    flex: 1 !important;
+    flex-shrink: 0 !important;
   }
   /* Main messages layout: stack vertically on mobile */
   [style*="padding: 16px 24px"][style*="gap: 16"][style*="maxWidth: 1100"] {
     flex-direction: column !important;
     padding: 12px 16px !important;
     gap: 12px !important;
+    max-height: none !important;
   }
 
   /* Job detail: 1fr 360px sidebar → stack on mobile */
