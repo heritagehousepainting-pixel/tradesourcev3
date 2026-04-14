@@ -754,8 +754,8 @@ body {
   /* Note: stats panel (div:last-child) is preserved on mobile — shown as 2x2 grid below */
 
   /* Stats panel: show as 2x2 grid on mobile.
-     Selector: parent .hero-stats-row > [data-mobile-panel] (0,2,0) > [data-mobile-grid] (0,3,0)
-     This beats the hiding rule (0,4,1) when both have !important due to higher specificity. */
+     The stats panel is the last child of .hero-stats-row. 
+     Hiding rule removed to allow grid display. */
   .hero-stats-row > [data-mobile-panel="true"][data-mobile-grid="stats"] {
     display: grid !important;
     grid-template-columns: 1fr 1fr !important;
@@ -1199,10 +1199,8 @@ body.no-shell {
     letter-spacing: 0.5px !important;
   }
 
-  /* Desktop stats panel: hidden on mobile */
-  [data-homepage-hero] > div[style*="max-width"] > div > div:last-child {
-    display: none !important;
-  }
+  /* NOTE: removed hiding rule [data-homepage-hero] > div[style*="max-width"] > div > div:last-child { display: none !important }
+     as it conflicts with the stats panel grid display. The stats panel is now controlled by the rules above. */
 
   /* Trust strip: compact */
   [style*="padding:14px 56px"] {
