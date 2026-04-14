@@ -539,6 +539,7 @@ export default function Home() {
             {/* Right — stats panel */}
             <div
               data-mobile-grid="stats"
+              data-mobile-panel="true"
               style={{
                 background: 'rgba(255,255,255,0.05)',
                 backdropFilter: 'blur(12px)',
