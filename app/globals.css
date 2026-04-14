@@ -753,12 +753,27 @@ body {
   }
   /* Note: stats panel (div:last-child) is preserved on mobile — shown as 2x2 grid below */
 
-  /* Stats panel: show as 2x2 grid on mobile. "unset" breaks the high-specificity
-     [data-homepage-hero]>div>div>div:last-child{display:none!important} rule below; 
-     "grid" then re-applies the 2-col layout. */
-  [data-mobile-grid="stats"] {
-    display: unset !important;
+  /* Stats panel: show as 2x2 grid on mobile.
+     Uses .hero-stats-row (higher specificity: 0,1,1) combined with data attr (0,2,1) 
+     to beat the hiding rule > div > div > div:last-child (0,1,1) */
+  .hero-stats-row > div:last-child[data-mobile-grid="stats"] {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 0 20px !important;
   }
+  .hero-stats-row > div:last-child[data-mobile-grid="stats"] > div {
+    padding: 10px 0 !important;
+    border-bottom: 1px solid rgba(255,255,255,0.07) !important;
+  }
+  .hero-stats-row > div:last-child[data-mobile-grid="stats"] > div:nth-child(2),
+  .hero-stats-row > div:last-child[data-mobile-grid="stats"] > div:last-child {
+    border-bottom: none !important;
+  }
+  .hero-stats-row > div:last-child[data-mobile-grid="stats"] > div:nth-child(3) {
+    border-bottom: 1px solid rgba(255,255,255,0.07) !important;
+  }
+
+  /* Also keep the attribute-only selector for non-hero uses */
   [data-mobile-grid="stats"] {
     display: grid !important;
     grid-template-columns: 1fr 1fr !important;
