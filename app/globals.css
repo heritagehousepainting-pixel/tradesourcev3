@@ -751,9 +751,7 @@ body {
     align-items: stretch !important;
     padding-bottom: 48px !important;
   }
-  .hero-stats-row > div:last-child {
-    display: none !important;
-  }
+  /* Note: stats panel (div:last-child) is preserved on mobile — shown as 2x2 grid below */
 
   /* Stats panel: show as 2x2 grid on mobile via data attribute */
   [data-mobile-grid="stats"] {
