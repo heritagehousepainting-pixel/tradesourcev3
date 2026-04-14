@@ -274,7 +274,7 @@ export default function MessagesPage() {
               </div>
 
               {/* Input */}
-              <div style={{ display: 'flex', gap: 8 }}>
+              <div style={{ display: 'flex', gap: 8, paddingTop: 12, flexShrink: 0 }}>
                 <input
                   type="text"
                   value={newMessage}

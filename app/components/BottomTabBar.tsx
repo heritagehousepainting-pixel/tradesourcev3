@@ -21,7 +21,7 @@ export function BottomTabBar() {
     if (typeof document === 'undefined') return
     const applyPadding = () => {
       if (window.innerWidth <= 640 && access.isAuthenticated) {
-        document.body.style.paddingBottom = '70px'
+        document.body.style.paddingBottom = '60px'
       } else {
         document.body.style.paddingBottom = ''
       }
@@ -105,7 +105,7 @@ export function BottomTabBar() {
       <div style={{
         display: 'grid',
         gridTemplateColumns: 'repeat(4, 1fr)',
-        height: 60,
+        height: 50,
         maxWidth: 480,
         margin: '0 auto',
       }}>

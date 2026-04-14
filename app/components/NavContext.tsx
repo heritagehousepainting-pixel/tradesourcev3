@@ -129,23 +129,24 @@ export function LayoutHeader() {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            height: 60,
+            height: 48,
           }}
+          className="mobile-nav-inner"
         >
           {/* ─ Brand ─ */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <div
               style={{
-                width: 28,
-                height: 28,
-                borderRadius: 6,
+                width: 24,
+                height: 24,
+                borderRadius: 5,
                 backgroundColor: 'var(--color-blue)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
               }}
             >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M13 10V3L4 14h7v7l9-11h-7z" />
               </svg>
             </div>

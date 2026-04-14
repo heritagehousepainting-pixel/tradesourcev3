@@ -178,6 +178,33 @@ body {
 
 /* Mobile-first base styles */
 @media (max-width: 640px) {
+  /* ── Mobile nav: tighter header and bottom tab bar ── */
+  header {
+    height: 48px !important;
+  }
+  header [style*="height: 60"] {
+    height: 48px !important;
+  }
+  header .mobile-nav-inner,
+  header > div > div[style*="height: 48"] {
+    height: 48px !important;
+  }
+  /* Reduce top nav logo area */
+  header [style*="gap: 10"] {
+    gap: 8px !important;
+  }
+  /* Bottom tab bar: tighter, more space for content */
+  .bottom-tab-bar {
+    height: 50px !important;
+    padding-bottom: 0 !important;
+  }
+  .bottom-tab-bar [style*="height: 50"] {
+    height: 50px !important;
+  }
+  body[style*="padding-bottom: 70px"] {
+    padding-bottom: 60px !important;
+  }
+
   /* Reduce nav padding */
   header > div,
   header [style*="padding: 0 56px"] {
@@ -208,7 +235,9 @@ body {
     grid-template-columns: 1fr !important;
   }
 
-  /* 3-col grids → 1fr on mobile */
+  /* 3-col grids → 1fr on mobile (no space after colon in React's inline style) */
+  [style*="grid-template-columns:repeat(3, 1fr)"],
+  [style*="gridTemplateColumns:repeat(3, 1fr)"],
   [style*="grid-template-columns: repeat(3, 1fr)"],
   [style*="gridTemplateColumns: repeat(3, 1fr)"] {
     grid-template-columns: 1fr !important;
@@ -664,9 +693,77 @@ body {
     padding: 20px 16px !important;
   }
 
+  /* Apply form: tighter inputs on mobile — phone-native density */
+  .form-card input,
+  .form-card select,
+  .form-card textarea {
+    padding: 9px 12px !important;
+    font-size: 14px !important;
+    min-height: 40px !important;
+  }
+  /* Labels closer to inputs */
+  .form-card label {
+    margin-bottom: 4px !important;
+  }
+
   /* Apply form: 1-column fields on narrow mobile */
   div[style*="gridTemplateColumns: '1fr 1fr'"][style*="gap: 16"] {
     grid-template-columns: 1fr !important;
+  }
+
+  /* ── Messages: sticky compose bar on mobile ── */
+  /* Message detail pane: flex column with messages scrollable, compose always visible */
+  [style*="padding: 20"][style*="border-radius: 14"][style*="display: flex"][style*="flex-direction: column"] {
+    flex-direction: column !important;
+    min-height: 0 !important;
+  }
+  /* Messages scroll area: take remaining space */
+  [style*="padding: 20"][style*="border-radius: 14"][style*="display: flex"][style*="flex-direction: column"] > div:first-child {
+    flex: 1 !important;
+    overflow-y: auto !important;
+    min-height: 0 !important;
+  }
+  /* Compose area: always at bottom, never scroll */
+  [style*="padding: 20"][style*="border-radius: 14"][style*="display: flex"][style*="flex-direction: column"] > div:last-child {
+    flex-shrink: 0 !important;
+    margin-top: auto !important;
+  }
+
+  /* ── Bottom tab bar: tighter icons + labels for more content space ── */
+  .bottom-tab-bar a {
+    padding: 5px 2px !important;
+    gap: 2px !important;
+  }
+  .bottom-tab-bar svg {
+    width: 18px !important;
+    height: 18px !important;
+  }
+  .bottom-tab-bar span {
+    font-size: 9px !important;
+  }
+
+  /* ── Homepage stats panel "Network at a Glance": 2x2 grid on mobile ── */
+  [style*="backdrop-filter: blur(12px)"] {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 0 20px !important;
+  }
+  [style*="backdrop-filter: blur(12px)"] > div {
+    padding: 10px 0 !important;
+  }
+  [style*="backdrop-filter: blur(12px)"] > div:first-child,
+  [style*="backdrop-filter: blur(12px)"] > div:nth-child(3) {
+    border-bottom: 1px solid rgba(255,255,255,0.07) !important;
+  }
+  [style*="backdrop-filter: blur(12px)"] > div:last-child {
+    border-bottom: none !important;
+  }
+
+  /* ── Hero section on mobile: stack left/right content, stats panel below ── */
+  [data-homepage-hero] + section > div[style*="maxWidth"] > div[style*="display: flex"][style*="gap: 48"] {
+    flex-direction: column !important;
+    gap: 24px !important;
+    align-items: stretch !important;
   }
 }
 
