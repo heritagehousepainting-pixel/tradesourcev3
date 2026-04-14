@@ -241,6 +241,7 @@ body {
   [style*="grid-template-columns: repeat(3, 1fr)"],
   [style*="gridTemplateColumns: repeat(3, 1fr)"] {
     grid-template-columns: 1fr !important;
+    gap: 12px !important;
   }
 
   /* Large padding → mobile-friendly */
