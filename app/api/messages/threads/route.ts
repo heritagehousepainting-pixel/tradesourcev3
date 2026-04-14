@@ -25,12 +25,48 @@ export async function GET(request: Request) {
       .order('updated_at', { ascending: false })
 
     if (!access.isFounderEmail && access.userId) {
-      // Non-founders: only threads where they are the contractor.
-      // contractor_id in message_threads stores the contractor_applications.id,
-      // not the Supabase auth UID. Use contractorProfileId to match correctly.
+      // Non-founders see threads where they are either:
+      // (a) the awarded contractor: contractor_id = their profile ID
+      // (b) the job poster: jobs.poster_id = their profile ID (via join)
       const profileId = (access as any).contractorProfileId ?? access.profile?.id ?? null
       if (profileId) {
-        query = query.eq('contractor_id', profileId)
+        // Fetch contractor threads (contractor_id = profileId)
+        const { data: contractorThreads } = await supabase
+          .from('message_threads')
+          .select('*, jobs(title, area, status, poster_id, contractor_id)')
+          .eq('contractor_id', profileId)
+          .order('updated_at', { ascending: false })
+
+        // Fetch poster threads (jobs.poster_id = profileId)
+        const { data: posterThreads } = await supabase
+          .from('message_threads')
+          .select('*, jobs(title, area, status, poster_id, contractor_id)')
+          .eq('jobs.poster_id', profileId)
+          .order('updated_at', { ascending: false })
+
+        // Deduplicate by thread id and merge
+        const seen = new Set<string>()
+        const merged: any[] = []
+        for (const t of [...(contractorThreads || []), ...(posterThreads || [])]) {
+          if (!seen.has(t.id)) { seen.add(t.id); merged.push(t) }
+        }
+        // Sort by updated_at
+        merged.sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime())
+
+        // Attach last message preview
+        const withPreviews = await Promise.all(merged.map(async (thread: any) => {
+          try {
+            const { data: lastMsg } = await supabase
+              .from('messages')
+              .select('content, created_at')
+              .eq('thread_id', thread.id)
+              .order('created_at', { ascending: false })
+              .limit(1)
+              .single()
+            return { ...thread, last_message: lastMsg?.content || null, last_message_at: lastMsg?.created_at || null }
+          } catch { return { ...thread, last_message: null, last_message_at: null } }
+        }))
+        return NextResponse.json(withPreviews)
       }
     }
 
@@ -40,7 +76,6 @@ export async function GET(request: Request) {
     const { data, error } = await query
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
 
-    // Attach latest message preview — wrapped in try/catch to prevent cascading failures
     const threads = data || []
     const withPreviews = await Promise.all(
       threads.map(async (thread: any) => {
@@ -52,14 +87,8 @@ export async function GET(request: Request) {
             .order('created_at', { ascending: false })
             .limit(1)
             .single()
-          return {
-            ...thread,
-            last_message: lastMsg?.content || null,
-            last_message_at: lastMsg?.created_at || null,
-          }
-        } catch {
-          return { ...thread, last_message: null, last_message_at: null }
-        }
+          return { ...thread, last_message: lastMsg?.content || null, last_message_at: lastMsg?.created_at || null }
+        } catch { return { ...thread, last_message: null, last_message_at: null } }
       })
     )
 
