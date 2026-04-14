@@ -112,8 +112,8 @@ export default function Jobs() {
         </div>
       </div>
 
-      {/* ─── FILTERS — sticky at top:60px (below header) ─── */}
-      <div data-jobs-filter-bar style={{ backgroundColor: 'var(--color-surface)', borderBottom: '1px solid var(--color-border)', position: 'sticky', top: 60, zIndex: 10 }}>
+      {/* ─── FILTERS — positioning handled by CSS (fixed on mobile, sticky on tablet+) ─── */}
+      <div data-jobs-filter-bar style={{ backgroundColor: 'var(--color-surface)', borderBottom: '1px solid var(--color-border)' }}>
         <div style={{ maxWidth: 1100, margin: '0 auto', padding: '0 32px', display: 'flex', alignItems: 'center', gap: 12, height: 56, flexWrap: 'wrap' }}>
           <select
             value={stateFilter}
