@@ -606,6 +606,10 @@ body {
   [style*="font-size:120px"] {
     display: none !important;
   }
+  /* FloatingAssistant button: push above the bottom tab bar (60px) */
+  button[aria-label="Open TradeSource Assistant"] {
+    bottom: 88px !important;
+  }
 }
 @media (min-width: 641px) {
   .mobile-only {
