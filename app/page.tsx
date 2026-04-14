@@ -355,134 +355,120 @@ export default function Home() {
         style={{
           background: 'var(--color-bg-primary)',
           borderBottom: '1px solid var(--color-border)',
+          position: 'relative',
+          overflow: 'hidden',
         }}
       >
-        {/* ── Circuit-core hero background ── */}
-        <div
-          aria-hidden="true"
-          style={{
-            position: 'absolute', inset: 0,
-            width: '100%', height: '100%',
-            zIndex: 0,
-            overflow: 'hidden',
-          }}
-        >
-                            {/* ── Hero background — reference image + circuit overlay ── */}
-        <div
-          aria-hidden="true"
-          style={{
-            position: 'absolute', inset: 0,
-            width: '100%', height: '100%',
-            zIndex: 0,
-            overflow: 'hidden',
-          }}
-        >
-          {/* Reference image as base background */}
+        {/* Background: dark navy gradient on left, subtle reference image on right */}
+        <div aria-hidden="true" style={{
+          position: 'absolute', inset: 0, zIndex: 0,
+        }}>
           <img
             src="/hero-bg.png"
             alt=""
             style={{
-              position: 'absolute', inset: 0,
-              width: '100%', height: '100%',
+              position: 'absolute', right: 0, top: 0,
+              width: '55%', height: '100%',
               objectFit: 'cover',
               display: 'block',
             }}
           />
-
-          {/* Dark overlay — darkens left side for text readability */}
-          {/* Right side lets reference image show through (chip area) */}
-          <div className="hero-overlay" style={{
+          <div style={{
             position: 'absolute', inset: 0,
-            /* Desktop: linear gradient darkens left for text readability */
-            /* Mobile: CSS .hero-overlay rule overrides this with radial-gradient */
-            background: 'linear-gradient(90deg, rgba(1,5,18,0.80) 0%, rgba(1,5,18,0.55) 40%, rgba(1,5,18,0.30) 62%, transparent 85%)',
+            background: 'linear-gradient(90deg, rgba(1,5,18,0.92) 0%, rgba(1,5,18,0.72) 40%, rgba(1,5,18,0.35) 62%, transparent 85%)',
           }}/>
-        </div></div>
-        <div style={{ maxWidth: 1160, margin: '0 auto', padding: '80px 56px 0' }}>
+        </div>
 
-          {/* Top row: left + stats panel */}
+        <div style={{ maxWidth: 1160, margin: '0 auto', padding: '80px 56px 0', position: 'relative', zIndex: 1 }}>
+
+          {/* Top row: hero content + stats panel */}
           <div style={{
             display: 'grid', gridTemplateColumns: '1fr auto',
-            alignItems: 'start', gap: 56,
+            alignItems: 'start', gap: 48,
             paddingBottom: 64,
-            borderBottom: '1px solid var(--color-border)',
+            borderBottom: '1px solid rgba(255,255,255,0.08)',
           }}>
-            {/* Left */}
-            <div style={{ paddingTop: 16 }}>
-              <div className="hero-badge-row" style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
-                <div style={{ width: 32, height: 1, backgroundColor: 'var(--color-blue)' }} />
+            {/* Left — hero content */}
+            <div style={{ paddingTop: 8 }}>
+
+              {/* Phase badge */}
+              <div style={{
+                display: 'inline-flex', alignItems: 'center', gap: 10,
+                background: 'rgba(37,99,235,0.12)',
+                border: '1px solid rgba(37,99,235,0.3)',
+                borderRadius: 100, padding: '6px 14px',
+                marginBottom: 20,
+              }}>
+                <div style={{
+                  width: 6, height: 6, borderRadius: '50%',
+                  backgroundColor: 'var(--color-blue)',
+                }}/>
                 <span style={{
-                  fontSize: 11, fontWeight: 700, letterSpacing: 3,
-                  textTransform: 'uppercase', color: 'var(--color-blue)',
+                  fontSize: 11, fontWeight: 700,
+                  letterSpacing: 2, textTransform: 'uppercase',
+                  color: 'var(--color-blue)',
                 }}>
-                  Phase 1 — Philadelphia Region
+                  Phase 1 — Montgomery, Bucks, Delaware & Philadelphia
                 </span>
               </div>
+
+              {/* Main headline */}
               <h1 className="hero-headline" style={{
-                fontSize: 'clamp(44px, 6vw, 80px)', fontWeight: 900,
-                lineHeight: 1.0, letterSpacing: '-2.5px',
-                maxWidth: 520, marginBottom: 16, color: 'var(--color-text)',
+                fontSize: 'clamp(36px, 5.5vw, 72px)',
+                fontWeight: 900, lineHeight: 1.0,
+                letterSpacing: '-2.5px',
+                maxWidth: 560, marginBottom: 16,
+                color: '#fff',
               }}>
-                The Private Painting Network
+                Vetted Overflow Painting Work — No Lead Fees, No Bidding.
               </h1>
-              <p className="hero-blue-sub" style={{
-                fontSize: 15, color: 'var(--color-blue)', fontWeight: 600,
-                maxWidth: 520, lineHeight: 1.65, letterSpacing: '-0.2px',
+
+              {/* Subheadline */}
+              <p style={{
+                fontSize: 16, color: 'rgba(255,255,255,0.65)',
+                maxWidth: 520, lineHeight: 1.7,
+                marginBottom: 24, letterSpacing: '-0.1px',
               }}>
-                Built for Painters, Made by Painters.
+                TradeSource is a private network of vetted painting contractors in the four-county Philadelphia area. Post your overflow work at your fixed rate — contractors in the network see it, express interest, and you choose who you work with. No bidding, no lead fees, no algorithm deciding who wins.
               </p>
-              {/* S3-A: body copy — visible on desktop, hidden on mobile */}
-              <div className="hero-body-copy" style={{ marginBottom: 28 }}>
-                <p style={{
-                  fontSize: 15, color: 'var(--color-text-muted)',
-                  maxWidth: 420, lineHeight: 1.65,
-                }}>
-                  A private network of vetted painting contractors in the four-county Philadelphia area. Post jobs at your rate — no bidding, no commission. And AI tools built specifically for the work.
-                </p>
-              </div>
-              {/* Pills row — wrapped for stable CSS targeting */}
-              <div className="hero-pills-row">
-                {/* "Built for contractors" — bold accent badge below sub-copy */}
-                <div style={{
-                  display: 'inline-flex', alignItems: 'center', gap: 8,
-                  background: 'var(--color-blue-dim)',
-                  border: '1px solid var(--color-blue-border)',
-                  borderRadius: 100, padding: '6px 14px',
-                  marginBottom: 12,
-                }}>
-                  <span style={{
-                    fontSize: 11, fontWeight: 700, letterSpacing: 1.5,
-                    textTransform: 'uppercase', color: 'var(--color-blue)',
+
+              {/* Trust badge row */}
+              <div style={{
+                display: 'flex', flexWrap: 'wrap', gap: 8,
+                marginBottom: 32,
+              }}>
+                {[
+                  { label: '5 Vetting Checks', color: 'var(--color-blue)' },
+                  { label: '0 Lead Fees', color: '#10b981' },
+                  { label: '100% Vetted Contractors', color: '#10b981' },
+                  { label: 'Fixed Price Only', color: 'var(--color-blue)' },
+                ].map(badge => (
+                  <div key={badge.label} style={{
+                    display: 'inline-flex', alignItems: 'center', gap: 6,
+                    background: 'rgba(255,255,255,0.06)',
+                    border: '1px solid rgba(255,255,255,0.12)',
+                    borderRadius: 100, padding: '5px 12px',
                   }}>
-                    Built for contractors
-                  </span>
-                </div>
-                {/* AI tools — power badge */}
-                <div style={{
-                  display: 'inline-flex', alignItems: 'center', gap: 8,
-                  background: 'rgba(5,150,105,0.1)',
-                  border: '1px solid rgba(5,150,105,0.25)',
-                  borderRadius: 100, padding: '6px 14px',
-                  marginBottom: 28,
-                }}>
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="2.5" strokeLinecap="round">
-                    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
-                  </svg>
-                  <span style={{
-                    fontSize: 11, fontWeight: 700, letterSpacing: 1.5,
-                    textTransform: 'uppercase', color: '#10b981',
-                  }}>
-                    AI tools built for contractors
-                  </span>
-                </div>
+                    <div style={{ width: 5, height: 5, borderRadius: '50%', backgroundColor: badge.color }}/>
+                    <span style={{
+                      fontSize: 11, fontWeight: 700,
+                      color: 'rgba(255,255,255,0.75)',
+                      letterSpacing: 0.5,
+                    }}>{badge.label}</span>
+                  </div>
+                ))}
               </div>
-              <div className="hero-cta-row" style={{ display: 'flex', gap: 10 }}>
+
+              {/* CTA row */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+                {/* Primary — dominant */}
                 <a href="/apply"
                   style={{
                     background: 'var(--color-blue)', color: '#fff',
                     padding: '14px 28px', borderRadius: 10,
                     fontWeight: 700, fontSize: 15, textDecoration: 'none',
                     display: 'inline-flex', alignItems: 'center', gap: 8,
+                    boxShadow: '0 4px 16px rgba(37,99,235,0.4)',
                     transition: 'background 0.2s, transform 0.15s',
                   }}
                   onMouseEnter={e => {
@@ -493,67 +479,79 @@ export default function Home() {
                     (e.currentTarget as HTMLElement).style.background = 'var(--color-blue)'
                     ;(e.currentTarget as HTMLElement).style.transform = 'none'
                   }}>
-                  Apply to Join
+                  Apply to Join as a Painter
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                  </svg>
                 </a>
+                {/* Secondary */}
                 <a href="/jobs"
                   style={{
-                    background: 'transparent', color: 'var(--color-text-muted)',
-                    border: '1px solid var(--color-border-md)',
-                    padding: '14px 24px', borderRadius: 10,
-                    fontWeight: 600, fontSize: 15, textDecoration: 'none',
+                    background: 'transparent', color: 'rgba(255,255,255,0.55)',
+                    border: '1px solid rgba(255,255,255,0.15)',
+                    padding: '14px 22px', borderRadius: 10,
+                    fontWeight: 500, fontSize: 14, textDecoration: 'none',
                     display: 'inline-flex', alignItems: 'center', gap: 8,
-                    transition: 'border-color 0.2s, background 0.2s',
+                    transition: 'border-color 0.2s, color 0.2s',
                   }}
                   onMouseEnter={e => {
-                    (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,255,255,0.25)'
-                    ;(e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.04)'
+                    (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,255,255,0.35)'
+                    ;(e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.85)'
                   }}
                   onMouseLeave={e => {
-                    (e.currentTarget as HTMLElement).style.borderColor = 'var(--color-border-md)'
-                    ;(e.currentTarget as HTMLElement).style.background = 'transparent'
+                    (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,255,255,0.15)'
+                    ;(e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.55)'
                   }}>
-                  See Open Jobs
+                  Browse Open Jobs
                 </a>
               </div>
+              <p style={{
+                fontSize: 12, color: 'rgba(255,255,255,0.35)',
+                marginTop: 10, maxWidth: 380,
+                lineHeight: 1.5,
+              }}>
+                Browse open jobs as a guest. Full access — posting, messaging, and application — requires approval to maintain quality across the network.
+              </p>
             </div>
 
             {/* Right — stats panel */}
             <div style={{
-              backgroundColor: 'var(--color-bg-card)',
-              border: '1px solid var(--color-border-md)',
-              borderRadius: 16, padding: 32, minWidth: 240,
+              background: 'rgba(255,255,255,0.05)',
+              backdropFilter: 'blur(12px)',
+              border: '1px solid rgba(255,255,255,0.1)',
+              borderRadius: 16, padding: '32px 28px',
+              minWidth: 220,
             }}>
               <div style={{
                 fontSize: 11, fontWeight: 700, letterSpacing: 2,
-                textTransform: 'uppercase', color: 'var(--color-text-subtle)',
+                textTransform: 'uppercase', color: 'rgba(255,255,255,0.35)',
                 marginBottom: 24,
               }}>
-                Network at a glance
+                Network at a Glance
               </div>
               {[
-                { n: '4', label: 'Counties Covered' },
-                { n: '5', label: 'Vetting Checks' },
-                { n: '0', label: 'Lead Fees' },
-                { n: '100%', label: 'Vetted Contractors' },
+                { n: '4', label: 'Counties Covered', color: '#fff' },
+                { n: '5', label: 'Vetting Checks', color: 'var(--color-blue)' },
+                { n: '0', label: 'Lead Fees', color: '#10b981' },
+                { n: '100%', label: 'Vetted Contractors', color: '#10b981' },
               ].map(stat => (
                 <div key={stat.label} style={{
                   padding: '14px 0',
-                  borderBottom: '1px solid var(--color-border)',
+                  borderBottom: '1px solid rgba(255,255,255,0.07)',
                 }}>
                   <div style={{
-                    fontSize: 28, fontWeight: 800, letterSpacing: '-1px',
-                    color: 'var(--color-text)', lineHeight: 1,
+                    fontSize: 26, fontWeight: 800, letterSpacing: '-1px',
+                    color: stat.color, lineHeight: 1,
                   }}>{stat.n}</div>
                   <div style={{
-                    fontSize: 12, color: 'var(--color-text-muted)',
+                    fontSize: 11, color: 'rgba(255,255,255,0.4)',
                     marginTop: 4, fontWeight: 500,
                   }}>{stat.label}</div>
                 </div>
               ))}
             </div>
           </div>
-
-</div>
+        </div>
       </section>
 
       {/* ─── TICKER ─── */}
@@ -601,7 +599,7 @@ export default function Home() {
         </div>
       </div>
 
-      {/* ─── PROBLEM / SOLUTION ─── */}
+      {/* ─── WHY TRADESOURCE / VALUE PROPS ─── */}
       <section style={{
         background: 'var(--color-bg-secondary)',
         borderTop: '1px solid var(--color-border)',
@@ -612,106 +610,71 @@ export default function Home() {
             fontSize: 11, fontWeight: 700, letterSpacing: 3,
             textTransform: 'uppercase', color: 'var(--color-blue)', marginBottom: 20,
           }}>
-            The Problem
+            How it works
           </div>
           <div style={{
-            fontSize: 'clamp(32px, 4vw, 52px)', fontWeight: 800,
-            letterSpacing: '-1.5px', lineHeight: 1.1, marginBottom: 20,
-            color: 'var(--color-text)',
+            fontSize: 'clamp(28px, 3.5vw, 44px)', fontWeight: 900,
+            letterSpacing: '-1.5px', lineHeight: 1.1, marginBottom: 16,
+            color: 'var(--color-text)', maxWidth: 600,
           }}>
-            The way contractors find<br />subs right now is broken.
+            The network puts you in control of every job.
           </div>
           <p style={{
             fontSize: 16, color: 'var(--color-text-muted)',
-            maxWidth: 540, lineHeight: 1.7, marginBottom: 56,
+            maxWidth: 520, lineHeight: 1.7, marginBottom: 56,
           }}>
-            When your regular crew can&apos;t cover a job, the options haven&apos;t changed in decades. And every one of them is a gamble.
+            Post your overflow at your fixed rate. Contractors in the network express interest. You choose who you work with. No bidding, no lead fees, no algorithm deciding who wins.
           </p>
 
-          {/* Split: two panels side by side */}
-          <div style={{
-            display: 'grid', gridTemplateColumns: '1fr 1fr',
-            background: 'var(--color-border)',
-            border: '1px solid var(--color-border)',
-            borderRadius: 20, overflow: 'hidden',
-          }}>
-            {/* Left — green / TradeSource */}
-            <div style={{
-              background: 'var(--color-bg-card)',
-              padding: '56px 48px',
-            }}>
-              <div style={{
-                fontSize: 11, fontWeight: 700, letterSpacing: 2,
-                textTransform: 'uppercase', color: 'var(--color-green)', marginBottom: 24,
-              }}>
-                How it works on TradeSource
+          {/* Value props: three cards */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            {[
+              {
+                icon: <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.75}><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>,
+                title: 'Fixed Price. No Bidding.',
+                desc: 'You set the rate upfront. No one bids below it to undercut your price. The contractor who gets the work is the one you chose — not the one who guessed lowest.',
+              },
+              {
+                icon: <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.75}><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>,
+                title: 'Work Stays Private',
+                desc: 'Every job is private between the contractor who posts and the contractor who accepts. Your clients, your reputation, your relationships — no public directory, no ads.',
+              },
+              {
+                icon: <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth={1.75}><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>,
+                title: 'Every Contractor Vetted Before Access',
+                desc: 'PA license, insurance, W-9, trade experience, and external review — all verified personally before anyone gets access to the network.',
+              },
+            ].map(item => (
+              <div key={item.title} style={{
+                display: 'grid', gridTemplateColumns: '48px 1fr', gap: 24,
+                alignItems: 'start',
+                background: 'var(--color-bg-card)',
+                border: '1px solid var(--color-border)',
+                padding: '28px 32px', borderRadius: 12,
+                transition: 'border-color 0.2s',
+              }}
+                onMouseEnter={e => (e.currentTarget.style.borderColor = 'rgba(37,99,235,0.3)')}
+                onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--color-border)')}>
+                <div style={{
+                  width: 48, height: 48,
+                  background: 'var(--color-blue-dim)',
+                  border: '1px solid var(--color-blue-border)',
+                  borderRadius: 10,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  color: 'var(--color-blue)', flexShrink: 0,
+                }}>
+                  {item.icon}
+                </div>
+                <div>
+                  <div style={{ fontSize: 16, fontWeight: 700, marginBottom: 6, color: 'var(--color-text)', letterSpacing: '-0.2px' }}>
+                    {item.title}
+                  </div>
+                  <div style={{ fontSize: 14, color: 'var(--color-text-muted)', lineHeight: 1.65, maxWidth: 480 }}>
+                    {item.desc}
+                  </div>
+                </div>
               </div>
-              <ul style={{
-                listStyle: 'none', padding: 0, margin: 0,
-                display: 'flex', flexDirection: 'column', gap: 18,
-              }}>
-                {[
-                  'Every contractor vetted before access — license, insurance, W-9, experience, review',
-                  'Post your job at your fixed rate — no one bids below it',
-                  'You choose who accepts — based on their profile and history',
-                  'Work stays private between the two contractors',
-                  'No lead fees. No ads. No algorithm deciding who wins.',
-                ].map(item => (
-                  <li key={item} style={{
-                    display: 'flex', alignItems: 'flex-start', gap: 14,
-                    fontSize: 15, color: 'var(--color-text-muted)', lineHeight: 1.5,
-                  }}>
-                    <div style={{
-                      width: 18, height: 18, borderRadius: '50%',
-                      backgroundColor: 'var(--color-green-dim)',
-                      border: '1px solid var(--color-green-border)',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      flexShrink: 0, marginTop: 2,
-                    }}>
-                      <svg width={9} height={9} viewBox="0 0 24 24" fill="none" stroke="var(--color-green)" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M5 13l4 4L19 7" />
-                      </svg>
-                    </div>
-                    {item}
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {/* Right — red / "today" */}
-            <div style={{
-              background: 'var(--color-bg-card)',
-              padding: '56px 48px',
-            }}>
-              <div style={{
-                fontSize: 11, fontWeight: 700, letterSpacing: 2,
-                textTransform: 'uppercase', color: 'var(--color-red)', marginBottom: 24,
-              }}>
-                How it works today
-              </div>
-              <ul style={{
-                listStyle: 'none', padding: 0, margin: 0,
-                display: 'flex', flexDirection: 'column', gap: 18,
-              }}>
-                {[
-                  "Facebook Marketplace — you don't know who you're calling",
-                  'Craigslist — no vetting, no accountability',
-                  'Google search — pure luck, no verification',
-                  'Paint store cards — someone who knows someone',
-                  'Word of mouth — limited reach, inconsistent quality',
-                ].map(item => (
-                  <li key={item} style={{
-                    display: 'flex', alignItems: 'flex-start', gap: 14,
-                    fontSize: 15, color: 'var(--color-text-muted)', lineHeight: 1.5,
-                  }}>
-                    <span style={{ fontWeight: 700, fontSize: 16, color: 'var(--color-red)', flexShrink: 0 }}>
-                      —
-                    </span>
-                    {item}
-                  </li>
-                ))}
-              </ul>
-            </div>
+            ))}
           </div>
         </div>
       </section>
