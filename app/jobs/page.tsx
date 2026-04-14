@@ -113,7 +113,7 @@ export default function Jobs() {
       </div>
 
       {/* ─── FILTERS ─── */}
-      <div data-jobs-filter-bar style={{ backgroundColor: 'var(--color-surface)', borderBottom: '1px solid var(--color-border)', position: 'sticky', top: 48, zIndex: 10 }}>
+      <div data-jobs-filter-bar style={{ backgroundColor: 'var(--color-surface)', borderBottom: '1px solid var(--color-border)', position: 'sticky', zIndex: 10 }}>
         <div style={{ maxWidth: 1100, margin: '0 auto', padding: '0 32px', display: 'flex', alignItems: 'center', gap: 12, height: 56, flexWrap: 'wrap' }}>
           <select
             value={stateFilter}

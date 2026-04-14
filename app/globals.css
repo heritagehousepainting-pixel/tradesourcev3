@@ -1594,25 +1594,29 @@ body.no-shell {
 }
 
 /* ── Fix 2: Homepage hero compression on mobile ── */
-/* Stats panel: compact 2×2 grid on mobile — full-width, tight padding */
+/* Stats panel: hidden on mobile, grid on tablet+ */
 [data-mobile-stats-panel] {
-  display: grid !important;
-  grid-template-columns: 1fr 1fr !important;
-  padding: 16px !important;
-  gap: 0 !important;
+  display: none !important;
 }
-[data-mobile-stats-panel] > div:first-child {
-  grid-column: 1 / -1 !important;
-  font-size: 10px !important;
-  margin-bottom: 12px !important;
-  padding: 0 !important;
-}
-[data-mobile-stats-panel] > div:not(:first-child) {
-  padding: 10px 0 !important;
-  border-bottom: none !important;
-}
-[data-mobile-stats-panel] > div:not(:first-child) > div:first-child {
-  font-size: 20px !important;
+@media (min-width: 641px) {
+  [data-mobile-stats-panel] {
+    display: grid !important;
+    padding: 16px !important;
+    grid-template-columns: 1fr 1fr !important;
+  }
+  [data-mobile-stats-panel] > div:first-child {
+    grid-column: 1 / -1 !important;
+    font-size: 10px !important;
+    margin-bottom: 12px !important;
+    padding: 0 !important;
+  }
+  [data-mobile-stats-panel] > div:not(:first-child) {
+    padding: 10px 0 !important;
+    border-bottom: none !important;
+  }
+  [data-mobile-stats-panel] > div:not(:first-child) > div:first-child {
+    font-size: 20px !important;
+  }
 }
 
 /* Hero headline: tighter on mobile — clamp to avoid 3-line wrapping */
