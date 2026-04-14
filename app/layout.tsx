@@ -4,6 +4,7 @@ import './globals.css'
 import { ThemeProvider } from './theme-context'
 import { NavProvider, LayoutHeader } from './components/NavContext'
 import { ShellProvider } from './components/ShellProvider'
+import { BottomTabBar } from './components/BottomTabBar'
 import FooterNav from './components/FooterNav'
 
 export const metadata: Metadata = {
@@ -37,6 +38,7 @@ export default function RootLayout({
           <NavProvider>
             <LayoutHeader />
             <div className="flex-grow"><ShellProvider>{children}</ShellProvider></div>
+            <BottomTabBar />
           </NavProvider>
         </ThemeProvider>
 

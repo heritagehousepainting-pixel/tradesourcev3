@@ -623,6 +623,11 @@ body {
 
 /* Mobile scroll fix: prevent horizontal overflow */
 @media (max-width: 640px) {
+  /* ── Bottom tab bar: show on mobile ── */
+  .bottom-tab-bar {
+    display: flex !important;
+  }
+
   body {
     overflow-x: hidden;
   }
@@ -644,6 +649,25 @@ body {
   p, span, li, td, th {
     word-break: break-word;
     overflow-wrap: break-word;
+  }
+
+  /* ── Apply form: step nav buttons full width on mobile ── */
+  [style*="Continue →"] {
+    width: 100% !important;
+    flex: none !important;
+  }
+
+  /* Apply form card: compact padding on mobile */
+  .form-card {
+    border-radius: 12px !important;
+  }
+  .form-card > div:last-child {
+    padding: 20px 16px !important;
+  }
+
+  /* Apply form: 1-column fields on narrow mobile */
+  div[style*="gridTemplateColumns: '1fr 1fr'"][style*="gap: 16"] {
+    grid-template-columns: 1fr !important;
   }
 }
 
