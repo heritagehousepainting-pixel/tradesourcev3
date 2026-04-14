@@ -88,7 +88,7 @@ export async function POST(request: Request) {
       homeowner_email: homeownerEmail || body.homeowner_email || null,
       homeowner_name: body.homeowner_name || null,
       is_verified_homeowner: isVerifiedHomeowner,
-      poster_id: body.poster_id || null,
+      poster_id: body.poster_id || (access.contractorProfileId ?? null),
       // ── Structured scope fields (from AI Scope Builder) ─────────────
       included_areas: body.included_areas || null,
       surfaces: body.surfaces || null,
