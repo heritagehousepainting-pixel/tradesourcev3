@@ -536,7 +536,8 @@ export default function Home() {
               </p>
             </div>
 
-            {/* Right — stats panel — hidden on mobile via inline style, shown on tablet+ via CSS */}
+            {/* Right — stats panel — hidden on mobile via inline display:none.
+               CSS shows it on tablet+ via [data-mobile-stats-panel] { display:grid } */}
             <div
               data-mobile-grid="stats"
               data-mobile-panel="true"
@@ -548,7 +549,6 @@ export default function Home() {
                 border: '1px solid rgba(255,255,255,0.1)',
                 borderRadius: 16, padding: '32px 28px',
                 minWidth: 220,
-                gridTemplateColumns: '1fr 1fr',
               }}
             >
               <div style={{
