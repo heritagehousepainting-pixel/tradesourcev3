@@ -1580,10 +1580,9 @@ body.no-shell {
    MOBILE 8.5 → 9.0 PASS: Three targeted fixes
    ═══════════════════════════════════════════════════════════════════════ */
 
-/* ── Fix 1: Jobs filter bar — sticky offset 60→48px for mobile header ── */
+/* ── Fix 1: Jobs filter bar — sticky wrapper handles positioning,
+   filter bar itself has no sticky/conflicting positioning ── */
 [data-jobs-filter-bar] {
-  position: sticky !important;
-  top: 48px !important;
   z-index: 10 !important;
 }
 /* Desktop: restore 60px offset */
