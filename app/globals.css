@@ -517,9 +517,71 @@ body {
   .desktop-only {
     display: none !important;
   }
+
+  /* ── Mobile nav drawer: backdrop overlay ── */
+  /* When mobile drawer opens, dim the page behind it */
+  header > div > div[style*="border-top"][style*="background-color: var(--color-nav)"] {
+    position: relative;
+  }
+  header > div > div[style*="border-top"][style*="background-color: var(--color-nav)"]::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    z-index: 28;
+    top: 60px; /* below the sticky header */
+  }
+
+  /* ── Filter tabs on /jobs: horizontal scroll with fade hint ── */
+  [data-jobs-hero] + div[style*="sticky"] > div {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    flex-wrap: nowrap !important;
+    justify-content: flex-start !important;
+    gap: 6px !important;
+    padding-left: 20px !important;
+    padding-right: 32px !important;
+  }
+  [data-jobs-hero] + div[style*="sticky"] > div::-webkit-scrollbar {
+    display: none;
+  }
+  /* Fade gradient hint on right edge to indicate scrollability */
+  [data-jobs-hero] + div[style*="sticky"] {
+    position: sticky;
+    top: 60px;
+    z-index: 10;
+    background: linear-gradient(to right, var(--color-surface) 80%, transparent 100%);
+  }
 }
 
-/* Mobile: show mobile-only elements */
+/* ── Jobs page hero: lightweight CSS gradient on all sizes ── */
+/* Desktop: gradient background */
+@media (min-width: 641px) {
+  [data-jobs-hero] {
+    background: linear-gradient(180deg, rgba(13,27,42,0.6) 0%, transparent 100%) !important;
+  }
+  [data-jobs-hero] > div {
+    padding: 48px 32px 32px !important;
+  }
+}
+/* Mobile: already handled by global padding rules — hero content compact */
+
+/* ── Dashboard stats grid: 4 cols → 2 cols on narrow mobile ── */
+@media (max-width: 480px) {
+  div[style*="repeat(4, 1fr)"][style*="gap: 14"] {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+/* ── Three contractor types: 3 cols → stacked on mobile (already handled)
+   but ensure ghost numbers are hidden on all mobile widths ── */
+@media (max-width: 640px) {
+  [style*="font-size: 120px"],
+  [style*="font-size:120px"] {
+    display: none !important;
+  }
+}
 @media (min-width: 641px) {
   .mobile-only {
     display: none !important;
