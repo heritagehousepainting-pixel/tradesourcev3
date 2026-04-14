@@ -576,7 +576,7 @@ body {
     position: sticky;
     top: 60px;
     z-index: 10;
-    background: linear-gradient(to right, var(--color-surface) 80%, transparent 100%);
+    background: linear-gradient(to right, var(--color-surface) 70%, transparent 100%) !important;
   }
 }
 
