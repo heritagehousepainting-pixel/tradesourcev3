@@ -124,9 +124,12 @@ export function BottomTabBar() {
                 gap: 3,
                 textDecoration: 'none',
                 color: active ? 'var(--color-blue)' : 'var(--color-text-muted)',
-                transition: 'color 0.15s',
+                fontWeight: active ? 700 : 500,
+                transition: 'color 0.15s, background-color 0.15s',
                 padding: '8px 4px',
                 borderTop: active ? '2.5px solid var(--color-blue)' : '2.5px solid transparent',
+                backgroundColor: active ? 'var(--color-blue-soft)' : 'transparent',
+                borderRadius: '10px 10px 0 0',
                 marginTop: '-1px',
               }}
             >

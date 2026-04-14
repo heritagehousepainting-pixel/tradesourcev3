@@ -743,28 +743,55 @@ body {
     font-size: 9px !important;
   }
 
-  /* ── Homepage stats panel "Network at a Glance": 2x2 grid on mobile ── */
-  [style*="backdrop-filter: blur(12px)"] {
+  /* ── Homepage mobile: stable class-based layout controls ── */
+  /* Hero stats row: stack on mobile — class-based, no brittle style selectors */
+  .hero-stats-row {
+    grid-template-columns: 1fr !important;
+    gap: 24px !important;
+    align-items: stretch !important;
+    padding-bottom: 48px !important;
+  }
+  .hero-stats-row > div:last-child {
+    display: none !important;
+  }
+
+  /* Stats panel: show as 2x2 grid on mobile via data attribute */
+  [data-mobile-grid="stats"] {
     display: grid !important;
     grid-template-columns: 1fr 1fr !important;
     gap: 0 20px !important;
   }
-  [style*="backdrop-filter: blur(12px)"] > div {
+  [data-mobile-grid="stats"] > div {
     padding: 10px 0 !important;
-  }
-  [style*="backdrop-filter: blur(12px)"] > div:first-child,
-  [style*="backdrop-filter: blur(12px)"] > div:nth-child(3) {
     border-bottom: 1px solid rgba(255,255,255,0.07) !important;
   }
-  [style*="backdrop-filter: blur(12px)"] > div:last-child {
+  [data-mobile-grid="stats"] > div:nth-child(2),
+  [data-mobile-grid="stats"] > div:last-child {
     border-bottom: none !important;
   }
+  [data-mobile-grid="stats"] > div:nth-child(3) {
+    border-bottom: 1px solid rgba(255,255,255,0.07) !important;
+  }
 
-  /* ── Hero section on mobile: stack left/right content, stats panel below ── */
-  [data-homepage-hero] + section > div[style*="maxWidth"] > div[style*="display: flex"][style*="gap: 48"] {
-    flex-direction: column !important;
-    gap: 24px !important;
-    align-items: stretch !important;
+  /* ── Homepage mobile section card grids: stack vertically ── */
+  /* "How it works" 3-step cards — stack on mobile */
+  .homepage-steps-grid {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+  .homepage-steps-grid > div {
+    border-radius: 14px !important;
+    padding: 20px !important;
+  }
+
+  /* "Three contractor types" 3 cards — stack on mobile */
+  .homepage-contractors-grid {
+    grid-template-columns: 1fr !important;
+    gap: 14px !important;
+  }
+  .homepage-contractors-grid > div {
+    border-radius: 14px !important;
+    padding: 20px !important;
   }
 }
 
@@ -1536,6 +1563,16 @@ body.no-shell {
 /* Light mode: soft overlay over image */
 [data-theme="light"] [data-homepage-hero] .hero-overlay {
   background: linear-gradient(160deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.15) 45%, rgba(255,255,255,0.50) 100%) !important;
+}
+
+/* ── Post-job page: hide left info panel on mobile ── */
+[data-postjob-left-panel] {
+  display: none !important;
+}
+/* Post-job: full-width form on mobile */
+[data-postjob-form-panel] {
+  width: 100% !important;
+  padding: 24px 16px 80px !important;
 }
 
 /* Reference image base — the TradeSource reference image is the primary visual */

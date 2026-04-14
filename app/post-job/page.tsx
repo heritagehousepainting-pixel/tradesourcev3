@@ -189,6 +189,8 @@ export default function PostJob() {
   const [photos, setPhotos] = useState<File[]>([])
   const [scopeSource, setScopeSource] = useState<'assistant' | 'manual' | null>(null)
   const [scopeFields, setScopeFields] = useState<Partial<ScopeFields>>({})
+  const [draftStatus, setDraftStatus] = useState<'unsaved' | 'saving' | 'saved'>('unsaved')
+  const [lastSaved, setLastSaved] = useState<Date | null>(null)
 
   const [form, setForm] = useState({
     title: '',
@@ -202,6 +204,52 @@ export default function PostJob() {
     homeowner_email: '',
     homeowner_phone: '',
   })
+
+  // ── Local draft preservation ──────────────────────────────────────────────
+  const DRAFT_KEY = 'tradesource_postjob_draft'
+
+  // Load draft from localStorage on mount
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(DRAFT_KEY)
+      if (saved) {
+        const parsed = JSON.parse(saved)
+        if (parsed.form && typeof parsed.form === 'object') {
+          setForm(parsed.form)
+          if (parsed.savedAt) {
+            const d = new Date(parsed.savedAt)
+            setLastSaved(d)
+            setDraftStatus('saved')
+          }
+        }
+      }
+    } catch {}
+  }, [])
+
+  // Save draft to localStorage whenever form changes (debounced 1.5s)
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDraftStatus('saving')
+      try {
+        localStorage.setItem(DRAFT_KEY, JSON.stringify({
+          form,
+          savedAt: new Date().toISOString(),
+        }))
+        setLastSaved(new Date())
+        setDraftStatus('saved')
+      } catch {
+        setDraftStatus('unsaved')
+      }
+    }, 1500)
+    return () => clearTimeout(timer)
+  }, [form])
+
+  // Clear draft on successful submit
+  const clearDraft = () => {
+    try { localStorage.removeItem(DRAFT_KEY) } catch {}
+    setDraftStatus('unsaved')
+    setLastSaved(null)
+  }
 
   // Load contractor profile once canonical access is established.
   useEffect(() => {
@@ -295,6 +343,7 @@ export default function PostJob() {
         throw new Error(data?.error || `Failed to post job (HTTP ${res.status}).`)
       }
       setSubmitted(true)
+      clearDraft()
     } catch (err: any) {
       setError(err.message || 'Something went wrong.')
       setLoading(false)
@@ -358,6 +407,7 @@ export default function PostJob() {
 
       {/* ─── Left Panel ─── */}
       <div
+        data-postjob-left-panel
         style={{
           display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
           width: '42%', padding: '48px 56px',
@@ -376,6 +426,38 @@ export default function PostJob() {
             </svg>
           </div>
           <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--color-text)' }}>TradeSource</span>
+        </div>
+
+        <div>
+          {/* Draft save indicator */}
+          <div style={{
+            display: 'inline-flex', alignItems: 'center', gap: 6,
+            fontSize: 12, fontWeight: 600, color: draftStatus === 'saved' ? 'var(--color-green)' : draftStatus === 'saving' ? 'var(--color-text-muted)' : 'var(--color-text-subtle)',
+            marginBottom: lastSaved ? 4 : 0,
+          }}>
+            {draftStatus === 'saved' && (
+              <>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M5 13l4 4L19 7" />
+                </svg>
+                Draft saved
+              </>)
+            }
+            {draftStatus === 'saving' && (
+              <>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ animation: 'spin 1s linear infinite' }}>
+                  <circle cx="12" cy="12" r="10" strokeDasharray="32" strokeDashoffset="8" />
+                </svg>
+                Saving…
+              </>)
+            }
+            {draftStatus === 'unsaved' && 'Unsaved draft'}
+          </div>
+          {lastSaved && (
+            <div style={{ fontSize: 11, color: 'var(--color-text-subtle)', marginBottom: 24 }}>
+              Last saved {lastSaved.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}
+            </div>
+          )}
         </div>
 
         <div>
@@ -415,7 +497,7 @@ export default function PostJob() {
       </div>
 
       {/* ─── Right Panel — Form ─── */}
-      <div style={{ flex: 1, display: 'flex', alignItems: 'flex-start', justifyContent: 'center', padding: '56px 48px', overflowY: 'auto' }}>
+      <div data-postjob-form-panel style={{ flex: 1, display: 'flex', alignItems: 'flex-start', justifyContent: 'center', padding: '56px 48px', overflowY: 'auto' }}>
         <div style={{ width: '100%', maxWidth: 560 }}>
 
           <div style={{ marginBottom: 28 }}>

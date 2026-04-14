@@ -382,12 +382,15 @@ export default function Home() {
         <div style={{ maxWidth: 1160, margin: '0 auto', padding: '80px 56px 0', position: 'relative', zIndex: 1 }}>
 
           {/* Top row: hero content + stats panel */}
-          <div style={{
-            display: 'grid', gridTemplateColumns: '1fr auto',
-            alignItems: 'start', gap: 48,
-            paddingBottom: 64,
-            borderBottom: '1px solid rgba(255,255,255,0.08)',
-          }}>
+          <div
+            className="hero-stats-row"
+            style={{
+              display: 'grid', gridTemplateColumns: '1fr auto',
+              alignItems: 'start', gap: 48,
+              paddingBottom: 64,
+              borderBottom: '1px solid rgba(255,255,255,0.08)',
+            }}
+          >
             {/* Left — hero content */}
             <div style={{ paddingTop: 8 }}>
 
@@ -534,13 +537,16 @@ export default function Home() {
             </div>
 
             {/* Right — stats panel */}
-            <div style={{
-              background: 'rgba(255,255,255,0.05)',
-              backdropFilter: 'blur(12px)',
-              border: '1px solid rgba(255,255,255,0.1)',
-              borderRadius: 16, padding: '32px 28px',
-              minWidth: 220,
-            }}>
+            <div
+              data-mobile-grid="stats"
+              style={{
+                background: 'rgba(255,255,255,0.05)',
+                backdropFilter: 'blur(12px)',
+                border: '1px solid rgba(255,255,255,0.1)',
+                borderRadius: 16, padding: '32px 28px',
+                minWidth: 220,
+              }}
+            >
               <div style={{
                 fontSize: 11, fontWeight: 700, letterSpacing: 2,
                 textTransform: 'uppercase', color: 'rgba(255,255,255,0.35)',
@@ -711,7 +717,7 @@ export default function Home() {
             Three steps to your first network job.
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24 }}>
+          <div className="homepage-steps-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24 }}>
             {[
               {
                 num: '01',
@@ -915,7 +921,7 @@ export default function Home() {
             The network works because everyone in it has something to offer and something they need.
           </p>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20 }}>
+          <div className="homepage-contractors-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20 }}>
             {[
               {
                 num: '01', tag: 'Overflow',
