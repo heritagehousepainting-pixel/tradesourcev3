@@ -335,24 +335,49 @@ body {
     padding: 24px 16px 40px !important;
   }
 
-  /* Apply & Post-job: right panel flex → full width on mobile */
+  /* Apply page: hide left panel on all mobile — form is self-contained */
+  [style*="border-right:1px solid var(--color-border)"][style*="width:42%"] {
+    display: none !important;
+  }
+
+  /* Apply page: right form panel — full width on mobile with compact header */
   [style*="overflow-y"] {
     flex: none !important;
     width: 100% !important;
-    padding: 32px 20px !important;
+    padding: 0 0 64px !important;
+  }
+  /* Form content area: tighter mobile padding */
+  [style*="overflow-y"] > div[style*="maxWidth"] {
+    max-width: 100% !important;
+    padding: 20px 20px !important;
+  }
+  /* Form card: tighter mobile padding */
+  [style*="overflow-y"] > div[style*="maxWidth"] .form-card > div:last-child {
+    padding: 20px 20px !important;
   }
 
-  /* Apply & Post-job: left panel (42%) → full width on mobile */
-  [style*="width:42%"][style*="padding:48px 56px"] {
+  /* Messages page: thread list + detail — full-width stacked on mobile */
+  /* Thread list: full width on mobile, compact height */
+  [style*="width: 280"] {
     width: 100% !important;
-    padding: 32px 20px !important;
+    min-width: 0 !important;
+    height: auto !important;
+    max-height: 45vh !important;
+    overflow-y: auto !important;
+    border-radius: 14px 14px 0 0 !important;
   }
-
-  /* Apply page: hide left panel on very small screens (≤480px) — show only the form */
-  @media (max-width: 480px) {
-    [style*="border-right:1px solid var(--color-border)"][style*="width:42%"] {
-      display: none !important;
-    }
+  /* Message detail: full width below thread list */
+  [style*="border-radius: 14"][style*="border: 1px solid var(--color-border)"][style*="padding: 20"][style*="display: flex"][style*="flex-direction: column"] {
+    width: 100% !important;
+    border-radius: 0 0 14px 14px !important;
+    min-height: 0 !important;
+    flex: 1 !important;
+  }
+  /* Main messages layout: stack vertically on mobile */
+  [style*="padding: 16px 24px"][style*="gap: 16"][style*="maxWidth: 1100"] {
+    flex-direction: column !important;
+    padding: 12px 16px !important;
+    gap: 12px !important;
   }
 
   /* Job detail: 1fr 360px sidebar → stack on mobile */
