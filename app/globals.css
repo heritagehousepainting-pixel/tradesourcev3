@@ -1672,4 +1672,26 @@ body.no-shell {
     font-size: 9px !important;
     letter-spacing: 1.5px !important;
   }
+
+  /* ── AI Scope Builder section: stack vertically on mobile ── */
+  /* Stack: copy on top, preview below. Full width, good spacing. */
+  .ai-section-grid {
+    grid-template-columns: 1fr !important;
+    gap: 24px !important;
+    align-items: start !important;
+  }
+  .ai-section-grid > .ai-scope-preview,
+  .ai-section-grid > div > .ai-scope-preview {
+    width: 100% !important;
+    min-width: unset !important;
+    padding: 20px !important;
+    border-radius: 12px !important;
+  }
+  .ai-section-grid > .ai-scope-preview > div > div {
+    padding: 10px 12px !important;
+    font-size: 13px !important;
+  }
+  .ai-section-grid > .ai-scope-preview > div > div > div:last-child {
+    font-size: 12px !important;
+  }
 }

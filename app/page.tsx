@@ -783,7 +783,7 @@ export default function Home() {
         padding: '104px 56px',
       }}>
         <div style={{ maxWidth: 1160, margin: '0 auto' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 80, alignItems: 'center' }}>
+          <div className="ai-section-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 80, alignItems: 'center' }}>
             {/* Left — copy */}
             <div>
               <div style={{
@@ -841,7 +841,7 @@ export default function Home() {
             </div>
 
             {/* Right — visual mockup placeholder */}
-            <div style={{
+            <div className="ai-scope-preview" style={{
               background: 'var(--color-bg-card)',
               border: '1px solid var(--color-border)',
               borderRadius: 16, padding: '40px 36px',
