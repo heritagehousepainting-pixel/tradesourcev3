@@ -187,48 +187,6 @@ export default function Dashboard() {
   // The useNavContext provider already handles Supabase session → profile fetch.
   useEffect(() => {
     if (!access.checked) return
-    const contractorId = access.profile?.id ?? null
-    // contractorProfileId handles cases where access.profile is null but access.contractorProfileId is set
-    const profileId = (access as any).contractorProfileId ?? access.profile?.id ?? null
-    Promise.all([
-      fetch('/api/users').then(r => r.json()),
-      fetch('/api/jobs').then(r => r.json()),
-      profileId ? fetch(`/api/reviews?contractor_id=${profileId}`).then(r => r.json()) : Promise.resolve([]),
-      profileId ? fetch(`/api/messages/threads?contractor_id=${profileId}`).then(r => r.json()) : Promise.resolve([]),
-    ]).then(([users, jobsData, reviewsData, threadsData]) => {
-      // Set user from canonical access.profile if available
-      if (access.profile) {
-        setUser(access.profile)
-      } else if (contractorId) {
-        // Fallback: find by contractorId in fetched users
-        const found = users.find((u: any) => String(u.id) === String(contractorId))
-        if (found) setUser(found)
-      } else if (access.email && !user) {
-        // Authenticated but no contractor profile row — verify via email match.
-        // This covers edge cases where the profile row exists but auth lookup missed it.
-        const byEmail = users.find((u: any) =>
-          u.email?.toLowerCase() === access.email?.toLowerCase()
-        )
-        if (byEmail) setUser(byEmail)
-      }
-      // Do NOT add a 'last resort: first approved user' fallback — it would
-      // display a random contractor's data to the wrong person on auth edge cases.
-      setJobs(jobsData || [])
-      setMessageThreads(threadsData || [])
-      if (reviewsData?.reviews) {
-        setMyReviews(reviewsData.reviews)
-        const r = reviewsData.reviews
-        if (r.length > 0) setMyRating(Math.round((r.reduce((s: number, x: any) => s + x.rating, 0) / r.length * 10) / 10))
-      }
-      // Show welcome banner once: approved contractor + no job history yet.
-      // user is set to access.profile inside this same effect, so check user.status
-      // (avoids timing issues where access.profile lags behind user state).
-      const _isApproved = (user?.status ?? access.profile?.status) === 'approved'
-      const _hasJobHistory = myPostedJobs.length > 0 || jobsInProgress.length > 0
-      if (_isApproved && !_hasJobHistory) setShowWelcomeBanner(true)
-      setLoading(false)
-    }).catch(() => setLoading(false))
-  }, [access.checked, access.profile])
 
   useEffect(() => {
     if (!user?.id || myPostedJobs.length === 0) return
@@ -417,6 +375,10 @@ export default function Dashboard() {
       </div>
 
       {/* ── Onboarding banners — show one at a time, highest priority first ── */}
+      {/* DEV DEBUG: */}
+      <div style={{ background: 'yellow', padding: '4px 32px', fontSize: 11, fontFamily: 'monospace' }}>
+        DEBUG: {JSON.stringify({ approved: (user?.status ?? access.profile?.status) === 'approved', mpj: myPostedJobs.length, jip: jobsInProgress.length, welcome: showWelcomeBanner })}
+      </div>
       {isPendingVetting && !showWelcomeBanner && (
         <div style={{ backgroundColor: 'rgba(245,158,11,0.08)', borderBottom: '1px solid rgba(245,158,11,0.2)', padding: '12px 32px' }}>
           <div style={{ maxWidth: 1100, margin: '0 auto', display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
