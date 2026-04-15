@@ -187,6 +187,39 @@ export default function Dashboard() {
   // The useNavContext provider already handles Supabase session → profile fetch.
   useEffect(() => {
     if (!access.checked) return
+    const contractorId = access.profile?.id ?? null
+    const profileId = (access as any).contractorProfileId ?? access.profile?.id ?? null
+    Promise.all([
+      fetch('/api/users').then(r => r.json()),
+      fetch('/api/jobs').then(r => r.json()),
+      profileId ? fetch(`/api/reviews?contractor_id=${profileId}`).then(r => r.json()) : Promise.resolve([]),
+      profileId ? fetch(`/api/messages/threads?contractor_id=${profileId}`).then(r => r.json()) : Promise.resolve([]),
+    ]).then(([users, jobsData, reviewsData, threadsData]) => {
+      if (access.profile) {
+        setUser(access.profile)
+      } else if (contractorId) {
+        const found = users.find((u: any) => String(u.id) === String(contractorId))
+        if (found) setUser(found)
+      } else if (access.email && !user) {
+        const byEmail = users.find((u: any) =>
+          u.email?.toLowerCase() === access.email?.toLowerCase()
+        )
+        if (byEmail) setUser(byEmail)
+      }
+      setJobs(jobsData || [])
+      setMessageThreads(threadsData || [])
+      if (reviewsData?.reviews) {
+        setMyReviews(reviewsData.reviews)
+        const r = reviewsData.reviews
+        if (r.length > 0) setMyRating(Math.round((r.reduce((s: number, x: any) => s + x.rating, 0) / r.length * 10) / 10))
+      }
+      // Show welcome banner once: approved contractor + no job history yet.
+      const _isApproved = (user?.status ?? access.profile?.status) === 'approved'
+      const _hasJobHistory = myPostedJobs.length > 0 || jobsInProgress.length > 0
+      if (_isApproved && !_hasJobHistory) setShowWelcomeBanner(true)
+      setLoading(false)
+    }).catch(() => setLoading(false))
+  }, [access.checked, access.profile])
 
   useEffect(() => {
     if (!user?.id || myPostedJobs.length === 0) return
@@ -375,58 +408,61 @@ export default function Dashboard() {
       </div>
 
       {/* ── Onboarding banners — show one at a time, highest priority first ── */}
-      {/* DEV DEBUG: */}
-      <div style={{ background: 'yellow', padding: '4px 32px', fontSize: 11, fontFamily: 'monospace' }}>
-        DEBUG: {JSON.stringify({ approved: (user?.status ?? access.profile?.status) === 'approved', mpj: myPostedJobs.length, jip: jobsInProgress.length, welcome: showWelcomeBanner })}
-      </div>
-      {isPendingVetting && !showWelcomeBanner && (
-        <div style={{ backgroundColor: 'rgba(245,158,11,0.08)', borderBottom: '1px solid rgba(245,158,11,0.2)', padding: '12px 32px' }}>
-          <div style={{ maxWidth: 1100, margin: '0 auto', display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
-              <circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" />
-            </svg>
-            <p style={{ flex: 1, fontSize: 13, color: 'var(--color-text-muted)', lineHeight: 1.5 }}>
-              <strong style={{ color: 'var(--color-text)', fontWeight: 600 }}>Application in review</strong> — our team is reviewing your application personally. You'll receive an email within 1–2 business days.
-            </p>
+      {(() => {
+        const hasPending = access.vettingStatus === 'pending'
+        const hasJobHistory = myPostedJobs.length > 0 || jobsInProgress.length > 0
+        const isApproved = (user?.status ?? access.profile?.status) === 'approved'
+        const hasCompany = !!(user?.company || user?.business_name)
+        if (hasPending) return (
+          <div style={{ backgroundColor: 'rgba(245,158,11,0.08)', borderBottom: '1px solid rgba(245,158,11,0.2)', padding: '12px 32px' }}>
+            <div style={{ maxWidth: 1100, margin: '0 auto', display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+                <circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" />
+              </svg>
+              <p style={{ flex: 1, fontSize: 13, color: 'var(--color-text-muted)', lineHeight: 1.5 }}>
+                <strong style={{ color: 'var(--color-text)', fontWeight: 600 }}>Application in review</strong> — our team is reviewing your application personally. You will receive an email within 1-2 business days.
+              </p>
+            </div>
           </div>
-        </div>
-      )}
-      {showWelcomeBanner && !isPendingVetting && (
-        <div style={{ backgroundColor: 'rgba(16,185,129,0.07)', borderBottom: '1px solid rgba(16,185,129,0.15)', padding: '12px 32px' }}>
-          <div style={{ maxWidth: 1100, margin: '0 auto', display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--color-green)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
-              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" />
-            </svg>
-            <p style={{ flex: 1, fontSize: 13, color: 'var(--color-text-muted)', lineHeight: 1.5 }}>
-              <strong style={{ color: 'var(--color-text)', fontWeight: 600 }}>Welcome to TradeSource!</strong> Here's what to do first: <strong>Browse open jobs</strong> → Express interest → Post overflow work → Build your rating.
-            </p>
-            <button
-              onClick={() => setShowWelcomeBanner(false)}
-              style={{ padding: '6px 12px', borderRadius: 8, fontSize: 11, fontWeight: 600, backgroundColor: 'transparent', color: 'var(--color-text-muted)', border: '1px solid var(--color-border)', cursor: 'pointer', flexShrink: 0 }}
-            >
-              Got it ×
-            </button>
+        )
+        if (isApproved && !hasJobHistory) return (
+          <div style={{ backgroundColor: 'rgba(16,185,129,0.07)', borderBottom: '1px solid rgba(16,185,129,0.15)', padding: '12px 32px' }}>
+            <div style={{ maxWidth: 1100, margin: '0 auto', display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--color-green)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" />
+              </svg>
+              <p style={{ flex: 1, fontSize: 13, color: 'var(--color-text-muted)', lineHeight: 1.5 }}>
+                <strong style={{ color: 'var(--color-text)', fontWeight: 600 }}>Welcome to TradeSource!</strong> Here is what to do first: browse open jobs to express interest, then post overflow work, and build your rating.
+              </p>
+              <button
+                onClick={() => setShowWelcomeBanner(false)}
+                style={{ padding: '6px 12px', borderRadius: 8, fontSize: 11, fontWeight: 600, backgroundColor: 'transparent', color: 'var(--color-text-muted)', border: '1px solid var(--color-border)', cursor: 'pointer', flexShrink: 0 }}
+              >
+                Got it
+              </button>
+            </div>
           </div>
-        </div>
-      )}
-      {!user.company && !user.business_name && !showWelcomeBanner && !isPendingVetting && (
-        <div style={{ backgroundColor: 'rgba(37,99,235,0.08)', borderBottom: '1px solid rgba(37,99,235,0.15)', padding: '12px 32px' }}>
-          <div style={{ maxWidth: 1100, margin: '0 auto', display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--color-blue)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
-              <circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" />
-            </svg>
-            <p style={{ flex: 1, fontSize: 13, color: 'var(--color-text-muted)', lineHeight: 1.5 }}>
-              <strong style={{ color: 'var(--color-text)', fontWeight: 600 }}>Complete your profile</strong> to show contractors your business details and get rated.
-            </p>
-            <button
-              onClick={() => setView('profile')}
-              style={{ padding: '7px 14px', borderRadius: 8, fontSize: 12, fontWeight: 600, backgroundColor: 'var(--color-blue)', color: '#fff', border: 'none', cursor: 'pointer', flexShrink: 0 }}
-            >
-              Complete Profile →
-            </button>
+        )
+        if (!hasCompany) return (
+          <div style={{ backgroundColor: 'rgba(37,99,235,0.08)', borderBottom: '1px solid rgba(37,99,235,0.15)', padding: '12px 32px' }}>
+            <div style={{ maxWidth: 1100, margin: '0 auto', display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--color-blue)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+                <circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" />
+              </svg>
+              <p style={{ flex: 1, fontSize: 13, color: 'var(--color-text-muted)', lineHeight: 1.5 }}>
+                <strong style={{ color: 'var(--color-text)', fontWeight: 600 }}>Complete your profile</strong> to show contractors your business details and get rated.
+              </p>
+              <button
+                onClick={() => setView('profile')}
+                style={{ padding: '7px 14px', borderRadius: 8, fontSize: 12, fontWeight: 600, backgroundColor: 'var(--color-blue)', color: '#fff', border: 'none', cursor: 'pointer', flexShrink: 0 }}
+              >
+                Complete Profile
+              </button>
+            </div>
           </div>
-        </div>
-      )}
+        )
+        return null
+      })()}
 
       {/* Tab nav */}
       <div style={{ backgroundColor: 'var(--color-surface)', borderBottom: '1px solid var(--color-border)', position: 'sticky', top: 60, zIndex: 20 }}>
