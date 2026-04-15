@@ -265,7 +265,7 @@ export default function Apply() {
         body: formData,
       })
       if (res.ok) {
-        router.push('/apply/success')
+        router.push('/pending?submitted=true')
       } else {
         const body = await res.json().catch(() => ({}))
         setError(body?.error || 'Something went wrong. Please try again.')

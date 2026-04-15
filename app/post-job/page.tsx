@@ -689,6 +689,16 @@ export default function PostJob() {
                       </div>
                     )}
                   </div>
+                  {!form.description && form.scope && (
+                    <div style={{ backgroundColor: 'rgba(16,185,105,0.06)', border: '1px solid rgba(16,185,105,0.15)', borderRadius: 8, padding: '8px 12px', marginBottom: 10, display: 'flex', alignItems: 'flex-start', gap: 8 }}>
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, marginTop: 2 }}>
+                      <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                    </svg>
+                    <p style={{ fontSize: 11, color: 'var(--color-text-muted)', lineHeight: 1.5, margin: 0 }}>
+                      <strong style={{ color: 'var(--color-green)', fontWeight: 600 }}>Tip:</strong> Use the AI Scope Builder below to write a complete, professional scope — contractors respond faster to detailed scopes.
+                    </p>
+                  </div>
+                  )}
 
                   {/* Scope assistant: activates when service type is selected */}
                   {form.scope ? (

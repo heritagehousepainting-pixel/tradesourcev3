@@ -470,26 +470,26 @@ export default function MyJobs() {
               </section>
             )}
 
-            {/* Empty state */}
+            {/* Empty state for authenticated contractors */}
             {myPostedJobs.length === 0 && contractorJobsInProgress.length === 0 && completedJobs.length === 0 && (
               <div style={{ textAlign: 'center', padding: '64px 32px', backgroundColor: 'var(--color-surface-raised)', border: '1px solid var(--color-border)', borderRadius: 16 }}>
-                <div style={{ width: 56, height: 56, borderRadius: 16, backgroundColor: 'var(--color-surface)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-subtle)" strokeWidth="1.5">
+                <div style={{ width: 56, height: 56, borderRadius: 16, backgroundColor: 'rgba(37,99,235,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--color-blue)" strokeWidth="1.5">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                   </svg>
                 </div>
                 <p style={{ fontSize: 16, fontWeight: 600, color: 'var(--color-text)', marginBottom: 8 }}>
-                  No jobs yet
+                  No posted jobs yet
                 </p>
                 <p style={{ fontSize: 13, color: 'var(--color-text-muted)', maxWidth: 380, margin: '0 auto 24px', lineHeight: 1.65 }}>
-                  TradeSource is a new private network — jobs are posted by contractors who have joined. Apply to get early access and be notified when work matching your trades goes live.
+                  Post your overflow at your fixed rate. Contractors in the network will see it and respond if they&apos;re available. No bidding, no ads, no lead fees.
                 </p>
                 <div style={{ display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap' }}>
-                  <a href="/apply" style={{ display: 'inline-flex', alignItems: 'center', padding: '10px 20px', borderRadius: 10, backgroundColor: 'var(--color-blue)', color: '#fff', fontSize: 13, fontWeight: 600, textDecoration: 'none', boxShadow: '0 2px 8px rgba(37,99,235,0.25)' }}>
-                    Apply to Join
+                  <a href="/post-job" style={{ display: 'inline-flex', alignItems: 'center', padding: '10px 20px', borderRadius: 10, backgroundColor: 'var(--color-blue)', color: '#fff', fontSize: 13, fontWeight: 600, textDecoration: 'none', boxShadow: '0 2px 8px rgba(37,99,235,0.25)' }}>
+                    Post your first job
                   </a>
-                  <a href="/" style={{ display: 'inline-flex', alignItems: 'center', padding: '10px 20px', borderRadius: 10, backgroundColor: 'var(--color-surface)', color: 'var(--color-text-muted)', fontSize: 13, fontWeight: 500, textDecoration: 'none', border: '1px solid var(--color-border)' }}>
-                    Back to Home
+                  <a href="/jobs" style={{ display: 'inline-flex', alignItems: 'center', padding: '10px 20px', borderRadius: 10, backgroundColor: 'var(--color-surface)', color: 'var(--color-text-muted)', fontSize: 13, fontWeight: 500, textDecoration: 'none', border: '1px solid var(--color-border)' }}>
+                    Browse open jobs
                   </a>
                 </div>
               </div>
