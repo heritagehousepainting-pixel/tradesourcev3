@@ -220,14 +220,19 @@ export default function Dashboard() {
         const r = reviewsData.reviews
         if (r.length > 0) setMyRating(Math.round((r.reduce((s: number, x: any) => s + x.rating, 0) / r.length * 10) / 10))
       }
-      // Show welcome banner once: approved contractor + no prior job activity
-      if (access.vettingStatus === 'approved') {
-        const hasActivity = myPostedJobs.length > 0 || messageThreads.length > 0 || jobsInProgress.length > 0
+      // Show welcome banner once: approved contractor + no posted jobs + no messages + no jobs in progress.
+      // Use user.status (set from access.profile) instead of access.vettingStatus because
+      // access.profile may update after this effect fires on its first run.
+      if (user?.status === 'approved') {
+        const hasActivity =
+          myPostedJobs.length > 0 ||
+          messageThreads.length > 0 ||
+          jobsInProgress.length > 0
         if (!hasActivity) setShowWelcomeBanner(true)
       }
       setLoading(false)
     }).catch(() => setLoading(false))
-  }, [access.checked, access.profile, access.vettingStatus])
+  }, [access.checked, access.profile, user?.status])
 
   useEffect(() => {
     if (!user?.id || myPostedJobs.length === 0) return
