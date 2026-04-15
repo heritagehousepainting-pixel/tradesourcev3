@@ -214,9 +214,10 @@ export default function Dashboard() {
         if (r.length > 0) setMyRating(Math.round((r.reduce((s: number, x: any) => s + x.rating, 0) / r.length * 10) / 10))
       }
       // Show welcome banner once: approved contractor + no job history yet.
+      // Only set the flag if it hasn't already been dismissed.
       const _isApproved = (user?.status ?? access.profile?.status) === 'approved'
       const _hasJobHistory = myPostedJobs.length > 0 || jobsInProgress.length > 0
-      if (_isApproved && !_hasJobHistory) setShowWelcomeBanner(true)
+      if (_isApproved && !_hasJobHistory && !showWelcomeBanner) setShowWelcomeBanner(true)
       setLoading(false)
     }).catch(() => setLoading(false))
   }, [access.checked, access.profile])
@@ -425,7 +426,7 @@ export default function Dashboard() {
             </div>
           </div>
         )
-        if (isApproved && !hasJobHistory) return (
+        if (showWelcomeBanner && isApproved && !hasJobHistory) return (
           <div style={{ backgroundColor: 'rgba(16,185,129,0.07)', borderBottom: '1px solid rgba(16,185,129,0.15)', padding: '12px 32px' }}>
             <div style={{ maxWidth: 1100, margin: '0 auto', display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--color-green)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
