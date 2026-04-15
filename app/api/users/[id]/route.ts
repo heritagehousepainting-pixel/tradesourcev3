@@ -4,7 +4,8 @@ import { getSupabaseAdminClient } from '@/lib/supabase/server'
 import { Resend } from 'resend'
 import type { NextRequest } from 'next/server'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
+const RESEND_API_KEY = process.env.RESEND_API_KEY
+const resend = RESEND_API_KEY ? new Resend(RESEND_API_KEY) : null
 const FROM = process.env.FROM_EMAIL || 'TradeSource <onboarding@tradesource.app>'
 
 type RouteParams = { params: Promise<{ id: string }> }
@@ -147,6 +148,10 @@ export async function PUT(request: Request, { params }: RouteParams) {
 // ── Email helpers (non-blocking — failures logged, not surfaced to caller) ──
 
 async function sendApprovalEmail(email: string, mode: 'setup' | 'pending') {
+  if (!resend) {
+    console.log('[email/approval] No RESEND_API_KEY — email skipped (dev mode)')
+    return
+  }
   try {
     await resend.emails.send({
       from: FROM,
