@@ -162,6 +162,11 @@ export default function Dashboard() {
   const [reviewForm, setReviewForm] = useState<Record<string, { rating: number; comment: string }>>({})
   const [showReviewForm, setShowReviewForm] = useState<string | null>(null)
   const [reviewSubmitted, setReviewSubmitted] = useState<Set<string>>(new Set())
+  // One-time welcome banner for newly approved contractors (dismissed per session)
+  const [showWelcomeBanner, setShowWelcomeBanner] = useState(false)
+
+  const isPendingVetting = access.vettingStatus === 'pending'
+  const isApproved = access.vettingStatus === 'approved'
 
   const myPostedJobs = jobs.filter(j => j.poster_id === user?.id)
   const availableJobs = jobs.filter(j => j.status === 'open' && j.contractor_id !== user?.id && !(j.homeowner_email && j.homeowner_email === user?.email) && j.poster_id !== user?.id)
@@ -215,9 +220,14 @@ export default function Dashboard() {
         const r = reviewsData.reviews
         if (r.length > 0) setMyRating(Math.round((r.reduce((s: number, x: any) => s + x.rating, 0) / r.length * 10) / 10))
       }
+      // Show welcome banner once: approved contractor + no prior job activity
+      if (access.vettingStatus === 'approved') {
+        const hasActivity = myPostedJobs.length > 0 || messageThreads.length > 0 || jobsInProgress.length > 0
+        if (!hasActivity) setShowWelcomeBanner(true)
+      }
       setLoading(false)
     }).catch(() => setLoading(false))
-  }, [access.checked, access.profile])
+  }, [access.checked, access.profile, access.vettingStatus])
 
   useEffect(() => {
     if (!user?.id || myPostedJobs.length === 0) return
@@ -405,8 +415,38 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* ── Onboarding banner: show when profile is incomplete ── */}
-      {(!user.company && !user.business_name) && (
+      {/* ── Onboarding banners — show one at a time, highest priority first ── */}
+      {isPendingVetting && !showWelcomeBanner && (
+        <div style={{ backgroundColor: 'rgba(245,158,11,0.08)', borderBottom: '1px solid rgba(245,158,11,0.2)', padding: '12px 32px' }}>
+          <div style={{ maxWidth: 1100, margin: '0 auto', display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+              <circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" />
+            </svg>
+            <p style={{ flex: 1, fontSize: 13, color: 'var(--color-text-muted)', lineHeight: 1.5 }}>
+              <strong style={{ color: 'var(--color-text)', fontWeight: 600 }}>Application in review</strong> — our team is reviewing your application personally. You'll receive an email within 1–2 business days.
+            </p>
+          </div>
+        </div>
+      )}
+      {showWelcomeBanner && !isPendingVetting && (
+        <div style={{ backgroundColor: 'rgba(16,185,129,0.07)', borderBottom: '1px solid rgba(16,185,129,0.15)', padding: '12px 32px' }}>
+          <div style={{ maxWidth: 1100, margin: '0 auto', display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--color-green)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" />
+            </svg>
+            <p style={{ flex: 1, fontSize: 13, color: 'var(--color-text-muted)', lineHeight: 1.5 }}>
+              <strong style={{ color: 'var(--color-text)', fontWeight: 600 }}>Welcome to TradeSource!</strong> Here's what to do first: <strong>Browse open jobs</strong> → Express interest → Post overflow work → Build your rating.
+            </p>
+            <button
+              onClick={() => setShowWelcomeBanner(false)}
+              style={{ padding: '6px 12px', borderRadius: 8, fontSize: 11, fontWeight: 600, backgroundColor: 'transparent', color: 'var(--color-text-muted)', border: '1px solid var(--color-border)', cursor: 'pointer', flexShrink: 0 }}
+            >
+              Got it ×
+            </button>
+          </div>
+        </div>
+      )}
+      {!user.company && !user.business_name && !showWelcomeBanner && !isPendingVetting && (
         <div style={{ backgroundColor: 'rgba(37,99,235,0.08)', borderBottom: '1px solid rgba(37,99,235,0.15)', padding: '12px 32px' }}>
           <div style={{ maxWidth: 1100, margin: '0 auto', display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--color-blue)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>

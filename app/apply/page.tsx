@@ -265,6 +265,12 @@ export default function Apply() {
         body: formData,
       })
       if (res.ok) {
+        // Send confirmation email (non-blocking — redirect regardless of email outcome)
+        fetch('/api/email/apply-confirmation', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name: form.full_name || '', email: form.email || '' }),
+        }).catch(() => {}) // swallow errors — email failure must not block the UX
         router.push('/pending?submitted=true')
       } else {
         const body = await res.json().catch(() => ({}))
