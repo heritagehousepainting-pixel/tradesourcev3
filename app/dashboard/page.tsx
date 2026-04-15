@@ -223,11 +223,10 @@ export default function Dashboard() {
       // Show welcome banner once: approved contractor + no job history yet.
       // access.profile is set by NavContext before this effect fires.
       // myPostedJobs and jobsInProgress are computed from the user state set in this same effect.
-      if (access.profile?.status === 'approved') {
-        const hasJobHistory =
-          myPostedJobs.length > 0 || jobsInProgress.length > 0
-        if (!hasJobHistory) setShowWelcomeBanner(true)
-      }
+      const _isApproved = access.profile?.status === 'approved'
+      const _hasJobHistory = myPostedJobs.length > 0 || jobsInProgress.length > 0
+      if (_isApproved && !_hasJobHistory) setShowWelcomeBanner(true)
+      console.log('[TS] welcome check:', { _isApproved, _hasJobHistory, profileStatus: access.profile?.status, mpj: myPostedJobs.length, jip: jobsInProgress.length, vetStatus: access.vettingStatus })
       setLoading(false)
     }).catch(() => setLoading(false))
   }, [access.checked, access.profile])
