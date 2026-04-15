@@ -221,17 +221,16 @@ export default function Dashboard() {
         if (r.length > 0) setMyRating(Math.round((r.reduce((s: number, x: any) => s + x.rating, 0) / r.length * 10) / 10))
       }
       // Show welcome banner once: approved contractor + no job history yet.
-      // Message threads don't count as "activity" for this purpose — a new contractor
-      // should see the welcome banner even if they have messages from a prior account
-      // or admin communication.
-      if (user?.status === 'approved') {
+      // Message threads don't count as "activity" for this purpose.
+      // access.vettingStatus is in the dep array so this fires when NavContext resolves it.
+      if (access.vettingStatus === 'approved') {
         const hasJobHistory =
           myPostedJobs.length > 0 || jobsInProgress.length > 0
         if (!hasJobHistory) setShowWelcomeBanner(true)
       }
       setLoading(false)
     }).catch(() => setLoading(false))
-  }, [access.checked, access.profile, user?.status])
+  }, [access.checked, access.profile, access.vettingStatus])
 
   useEffect(() => {
     if (!user?.id || myPostedJobs.length === 0) return
