@@ -47,6 +47,5 @@ pnpm-lock.yaml
 # Local scripts (contain secrets)
 scripts/
 founder_inputs/
-features/
 supabase/
 
