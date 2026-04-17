@@ -366,7 +366,7 @@ export default function PostJob() {
             Contractors in your area will see it and can express interest. You&apos;ll hear from matched contractors directly.
           </p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10, maxWidth: 280, margin: '0 auto' }}>
-            <a href="/jobs" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '12px 24px', borderRadius: 10, fontSize: 14, fontWeight: 600, backgroundColor: 'var(--color-blue)', color: '#fff', textDecoration: 'none', boxShadow: '0 4px 14px rgba(37,99,235,0.3)' }}>
+            <a href="/jobs" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '12px 24px', borderRadius: 10, fontSize: 14, fontWeight: 600, backgroundColor: 'var(--color-blue)', color: '#fff', textDecoration: 'none', boxShadow: '0 4px 14px rgba(37,99,235,0.25)' }}>
               Browse All Jobs
             </a>
             {access.isAuthenticated ? (
@@ -384,19 +384,102 @@ export default function PostJob() {
     )
   }
 
-  if (!access.checked || !access.canPostJobs) {
+  // ── Unauthenticated / unapproved state ─────────────────────────────────────
+  const isUnauthenticated = !access.checked || (!access.isAuthenticated && !access.checked === false)
+  const needsApproval = access.checked && access.isAuthenticated && !access.canPostJobs
+
+  if (isUnauthenticated || needsApproval) {
     return (
-      <div style={{ backgroundColor: 'var(--color-bg)', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <div style={{ maxWidth: 400, width: '100%', backgroundColor: 'var(--color-surface-raised)', border: '1px solid var(--color-border)', borderRadius: 16, padding: '40px 32px', boxShadow: '0 8px 40px var(--color-shadow-lg)', textAlign: 'center' }}>
-          <div style={{ width: 52, height: 52, borderRadius: 14, backgroundColor: 'var(--color-blue-soft)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--color-blue)" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+      <div style={{ backgroundColor: 'var(--color-bg)', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '40px 24px' }}>
+        <div style={{
+          maxWidth: 480, width: '100%',
+          backgroundColor: 'var(--color-bg-alt)',
+          border: '1px solid rgba(255,255,255,0.1)',
+          borderRadius: 20,
+          padding: '48px 40px',
+          boxShadow: 'var(--ts-shadow-card-hover)',
+          textAlign: 'center',
+          overflow: 'hidden',
+        }}>
+          {/* Orange accent bar */}
+          <div style={{ height: 4, backgroundColor: 'var(--color-orange)', borderRadius: '2px 2px 0 0', margin: '-48px -40px 36px' }} />
+
+          {/* Lock icon */}
+          <div style={{
+            width: 64, height: 64, borderRadius: 18,
+            backgroundColor: 'rgba(245,158,11,0.1)',
+            border: '1px solid rgba(245,158,11,0.2)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            margin: '0 auto 28px',
+          }}>
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/>
             </svg>
           </div>
-          <h2 style={{ fontSize: 18, fontWeight: 800, color: 'var(--color-text)', marginBottom: 8, letterSpacing: '-0.02em' }}>Sign in to post a job</h2>
-          <p style={{ fontSize: 13, color: 'var(--color-text-muted)', marginBottom: 24, lineHeight: 1.65 }}>Posting jobs requires a TradeSource contractor account.</p>
-          <a href="/founder-login" style={{ display: 'block', padding: '12px 16px', borderRadius: 10, backgroundColor: 'var(--color-blue)', color: '#fff', fontSize: 14, fontWeight: 700, textDecoration: 'none', marginBottom: 10, boxShadow: '0 4px 14px rgba(37,99,235,0.3)' }}>Sign In</a>
-          <a href="/jobs" style={{ display: 'block', padding: '12px 16px', borderRadius: 10, backgroundColor: 'var(--color-surface)', color: 'var(--color-text)', fontSize: 14, fontWeight: 600, textDecoration: 'none', border: '1px solid var(--color-border-strong)' }}>Browse Jobs</a>
+
+          <h2 style={{ fontSize: 22, fontWeight: 800, color: 'var(--color-text)', marginBottom: 10, letterSpacing: '-0.03em' }}>
+            {needsApproval ? 'Application Under Review' : 'Sign In to Post a Job'}
+          </h2>
+          <p style={{ fontSize: 14, color: 'var(--color-text-muted)', lineHeight: 1.7, marginBottom: 32 }}>
+            {needsApproval
+              ? "You're almost there. Your TradeSource application is currently being reviewed. Once approved, you'll be able to post overflow work and connect with vetted contractors."
+              : 'Posting jobs requires an approved TradeSource contractor account. Browse open jobs while you wait for approval, or apply if you haven\'t yet.'}
+          </p>
+
+          {/* What is this page for */}
+          <div style={{
+            backgroundColor: 'var(--color-surface)',
+            border: '1px solid rgba(255,255,255,0.07)',
+            borderRadius: 12,
+            padding: '16px 20px',
+            marginBottom: 28,
+            textAlign: 'left',
+          }}>
+            <p style={{ fontSize: 11, fontWeight: 700, color: 'var(--color-text-subtle)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 10 }}>What this page does</p>
+            {[
+              'Post overflow work that doesn\'t fit your capacity',
+              'Contractors in your area express interest',
+              'You approve the contractor and award the job',
+            ].map((item, i) => (
+              <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, marginBottom: 7 }}>
+                <div style={{ width: 20, height: 20, borderRadius: 6, backgroundColor: 'var(--color-green-soft)', border: '1px solid rgba(16,185,129,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--color-green)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 13l4 4L19 7"/></svg>
+                </div>
+                <span style={{ fontSize: 12, color: 'var(--color-text-muted)', lineHeight: 1.55 }}>{item}</span>
+              </div>
+            ))}
+          </div>
+
+          {/* CTAs */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+            {needsApproval ? (
+              <>
+                <a href="/jobs" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '13px 24px', borderRadius: 10, fontSize: 14, fontWeight: 700, backgroundColor: 'var(--color-blue)', color: '#fff', textDecoration: 'none', boxShadow: '0 4px 14px rgba(37,99,235,0.25)' }}>
+                  Browse Open Jobs While You Wait
+                </a>
+                <a href="/dashboard" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '12px 24px', borderRadius: 10, fontSize: 13, fontWeight: 500, backgroundColor: 'var(--color-surface)', color: 'var(--color-text)', border: '1px solid rgba(255,255,255,0.1)', textDecoration: 'none' }}>
+                  Back to Dashboard
+                </a>
+              </>
+            ) : (
+              <>
+                <a href="/founder-login" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '13px 24px', borderRadius: 10, fontSize: 14, fontWeight: 700, backgroundColor: 'var(--color-blue)', color: '#fff', textDecoration: 'none', boxShadow: '0 4px 14px rgba(37,99,235,0.25)' }}>
+                  Sign In
+                </a>
+                <a href="/apply" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '12px 24px', borderRadius: 10, fontSize: 13, fontWeight: 600, backgroundColor: 'var(--color-surface)', color: 'var(--color-text)', border: '1px solid rgba(255,255,255,0.1)', textDecoration: 'none' }}>
+                  Apply for Access
+                </a>
+                <a href="/jobs" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '11px 24px', borderRadius: 10, fontSize: 13, fontWeight: 400, color: 'var(--color-text-muted)', textDecoration: 'none' }}>
+                  Browse jobs first
+                </a>
+              </>
+            )}
+          </div>
+
+          <p style={{ fontSize: 11, color: 'var(--color-text-subtle)', marginTop: 24 }}>
+            Not yet a member?{' '}
+            <a href="/apply" style={{ color: 'var(--color-blue)', textDecoration: 'none', fontWeight: 600 }}>Apply for access</a>
+          </p>
         </div>
       </div>
     )
@@ -410,7 +493,7 @@ export default function PostJob() {
         data-postjob-left-panel
         style={{
           display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
-          width: '42%', padding: '48px 56px',
+          width: '48%', padding: '48px 56px',
           backgroundColor: 'var(--color-bg-alt)',
           backgroundImage: 'repeating-linear-gradient(-45deg, transparent, transparent 8px, rgba(255,255,255,0.012) 8px, rgba(255,255,255,0.012) 9px)',
           borderRight: '1px solid rgba(255,255,255,0.07)',
@@ -428,35 +511,55 @@ export default function PostJob() {
           <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--color-text)' }}>TradeSource</span>
         </div>
 
-        <div>
-          {/* Draft save indicator */}
-          <div style={{
-            display: 'inline-flex', alignItems: 'center', gap: 6,
-            fontSize: 12, fontWeight: 600, color: draftStatus === 'saved' ? 'var(--color-green)' : draftStatus === 'saving' ? 'var(--color-text-muted)' : 'var(--color-text-subtle)',
-            marginBottom: lastSaved ? 4 : 0,
-          }}>
-            {draftStatus === 'saved' && (
-              <>
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M5 13l4 4L19 7" />
-                </svg>
-                Draft saved
-              </>)
-            }
-            {draftStatus === 'saving' && (
-              <>
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ animation: 'spin 1s linear infinite' }}>
-                  <circle cx="12" cy="12" r="10" strokeDasharray="32" strokeDashoffset="8" />
-                </svg>
-                Saving…
-              </>)
-            }
-            {draftStatus === 'unsaved' && 'Unsaved draft'}
-          </div>
-          {lastSaved && (
-            <div style={{ fontSize: 11, color: 'var(--color-text-subtle)', marginBottom: 24 }}>
-              Last saved {lastSaved.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}
-            </div>
+        {/* Draft save — prominent badge at top of form card */}
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: 6,
+          padding: '7px 14px', borderRadius: 20,
+          fontSize: 12, fontWeight: 700,
+          transition: 'all 0.3s',
+          marginBottom: 20,
+          ...(draftStatus === 'saved' ? {
+            backgroundColor: 'rgba(16,185,129,0.1)',
+            color: 'var(--color-green)',
+            border: '1px solid rgba(16,185,129,0.2)',
+          } : draftStatus === 'saving' ? {
+            backgroundColor: 'rgba(37,99,235,0.08)',
+            color: 'var(--color-text-muted)',
+            border: '1px solid rgba(37,99,235,0.12)',
+          } : {
+            backgroundColor: 'rgba(255,255,255,0.04)',
+            color: 'var(--color-text-subtle)',
+            border: '1px solid rgba(255,255,255,0.08)',
+          }),
+        }}>
+          {draftStatus === 'saved' && (
+            <>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M5 13l4 4L19 7"/>
+              </svg>
+              Draft saved
+              {lastSaved && (
+                <span style={{ fontSize: 11, fontWeight: 400, opacity: 0.75, marginLeft: 2 }}>
+                  · {lastSaved.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}
+                </span>
+              )}
+            </>
+          )}
+          {draftStatus === 'saving' && (
+            <>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ animation: 'spin 1s linear infinite' }}>
+                <circle cx="12" cy="12" r="10" strokeDasharray="32" strokeDashoffset="8"/>
+              </svg>
+              Saving…
+            </>
+          )}
+          {draftStatus === 'unsaved' && (
+            <>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+              </svg>
+              Draft not saved
+            </>
           )}
         </div>
 
@@ -509,7 +612,7 @@ export default function PostJob() {
             </p>
           </div>
 
-          <div className="form-card" style={{ borderRadius: 16, overflow: 'hidden', boxShadow: '0 8px 40px var(--color-shadow-lg)' }}>
+          <div className="form-card" style={{ borderRadius: 14, overflow: 'hidden', boxShadow: 'var(--ts-shadow-card)' }}>
             <div style={{ height: 4, backgroundColor: 'var(--color-blue)' }} />
 
             <div style={{ padding: '28px 32px' }}>
@@ -847,11 +950,13 @@ export default function PostJob() {
                   style={{
                     width: '100%', padding: '14px', borderRadius: 10,
                     fontSize: 14, fontWeight: 700, color: '#fff',
-                    backgroundColor: loading ? 'var(--color-blue)' : 'var(--color-blue)',
+                    backgroundColor: 'var(--color-blue)',
                     border: 'none', cursor: loading ? 'default' : 'pointer',
-                    boxShadow: loading ? 'none' : '0 4px 14px var(--color-shadow)',
-                    letterSpacing: '0.01em', transition: 'all 0.15s', marginTop: 4,
+                    boxShadow: loading ? 'none' : '0 4px 14px rgba(37,99,235,0.25)',
+                    letterSpacing: '0.01em', transition: 'background 0.2s, box-shadow 0.2s', marginTop: 4,
                   }}
+                  onMouseEnter={e => { if (!loading) { const el = e.currentTarget as HTMLElement; el.style.background = 'var(--color-blue-hover)'; el.style.boxShadow = '0 6px 18px rgba(37,99,235,0.35)' }}}
+                  onMouseLeave={e => { if (!loading) { const el = e.currentTarget as HTMLElement; el.style.background = 'var(--color-blue)'; el.style.boxShadow = '0 4px 14px rgba(37,99,235,0.25)' }}}
                 >
                   {loading ? (
                     <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>

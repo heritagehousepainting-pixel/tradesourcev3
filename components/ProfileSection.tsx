@@ -358,31 +358,31 @@ export function ProfileSection({ user, onBack }: ProfileSectionProps) {
               onClick={() => { setView('overview'); setHasEdits(false) }}
               style={{ padding: '10px 18px', borderRadius: 9, backgroundColor: 'var(--color-surface)', color: 'var(--color-text-muted)', border: '1px solid var(--color-border)', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
             >
-              Discard Changes
+              Discard
             </button>
             <button
               onClick={handleSubmitEdits}
               disabled={saving}
               style={{
                 padding: '10px 22px', borderRadius: 9,
-                backgroundColor: 'var(--color-blue)', color: '#fff',
+                backgroundColor: saving ? 'var(--color-blue-soft)' : 'var(--color-blue)', color: saving ? 'var(--color-blue)' : '#fff',
                 border: 'none', fontSize: 13, fontWeight: 700, cursor: saving ? 'default' : 'pointer',
                 opacity: saving ? 0.7 : 1,
-                boxShadow: '0 4px 14px rgba(37,99,235,0.3)',
+                boxShadow: saving ? 'none' : '0 4px 14px rgba(37,99,235,0.3)',
                 display: 'flex', alignItems: 'center', gap: 8,
               }}
             >
               {saving ? (
                 <>
-                  <span style={{ display: 'block', width: 13, height: 13, borderRadius: '50%', border: '2px solid rgba(255,255,255,0.4)', borderTopColor: '#fff', animation: 'spin 1s linear infinite' }} />
-                  Submitting…
+                  <span style={{ display: 'block', width: 13, height: 13, borderRadius: '50%', border: '2px solid rgba(59,130,246,0.4)', borderTopColor: 'var(--color-blue)', animation: 'spin 1s linear infinite' }} />
+                  Saving…
                 </>
               ) : (
                 <>
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M5 13l4 4L19 7"/>
                   </svg>
-                  Submit for Approval
+                  Save Changes
                 </>
               )}
             </button>

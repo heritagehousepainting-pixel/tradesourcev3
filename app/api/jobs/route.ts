@@ -78,7 +78,7 @@ export async function POST(request: Request) {
     const insertBody: any = {
       title: body.title,
       description: body.description,
-      area: body.location,
+      area: body.area || body.location || null,
       budget_min: body.budget_min,
       budget_max: body.budget_max,
       property_type: body.property_type,

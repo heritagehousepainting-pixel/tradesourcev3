@@ -91,28 +91,56 @@ export async function POST(request: Request) {
 
     // Map form fields (both camelCase and snake_case) to DB columns.
     // Browser form sends snake_case: full_name, business_name.
+    // Map form fields (both camelCase and snake_case) to DB columns.
+    // Browser form sends snake_case: full_name, business_name, service_areas, trade_types.
     const g = (key: string) => (fields[key] as string | undefined) ?? ''
     const gNum = (k1: string, k2: string) => (fields[k1] ?? fields[k2] ?? 0) as number
     const nameVal = g('fullName') || g('name') || g('full_name') || ''
 
-    // ── Insert application record only. NO auth account is created here. ─────────
-    // Auth account creation happens ONLY when a founder/admin explicitly approves
-    // the application via PUT /api/users/[id] with status: 'approved'.
-    // The contractor will receive a password-setup email via inviteUserByEmail.
+    // Parse comma-joined arrays into Supabase-compatible text[] arrays.
+    // The form sends service_areas as 'Philadelphia,Montgomery County,...' (single string).
+    const parseArray = (key: string): string[] => {
+      const raw = fields[key]
+      if (Array.isArray(raw)) return raw.map(String).filter(Boolean)
+      if (typeof raw === 'string' && raw.trim()) return raw.split(',').map(s => s.trim()).filter(Boolean)
+      return []
+    }
+
+    // ── Email uniqueness check ──────────────────────────────────────────────────
+    const { data: existingByEmail } = await supabaseAdmin
+      .from('contractor_applications')
+      .select('id')
+      .eq('email', email.toLowerCase().trim())
+      .limit(1)
+      .single()
+
+    if (existingByEmail) {
+      return NextResponse.json(
+        { error: 'An application has already been submitted with this email address. Check your inbox for a confirmation email, or contact us if you need help.', field: 'email' },
+        { status: 409 }
+      )
+    }
 
     const contractorData: Record<string, unknown> = {
       name: nameVal,
       full_name: nameVal,
       company: g('businessName') || g('company') || g('business_name') || '',
-      email,
-      phone: g('phone'),
-      license_number: g('licenseNumber') || g('license_number'),
-      license_state: g('license_state') || '',
+      email: email.toLowerCase().trim(),
+      phone: g('phone') || null,
+      license_number: g('licenseNumber') || g('license_number') || '',
+      license_state: g('license_state') || 'PA',
       years_in_trade: gNum('yearsInTrade', 'years_in_trade'),
       trade_specialization: 'painting',
       external_link: g('external_link') || null,
       w9_url,
       insurance_url,
+      // New fields that were missing:
+      service_areas: parseArray('service_areas'),
+      trade_types: parseArray('trade_types'),
+      bio: g('bio') || null,
+      website_url: g('website_url') || null,
+      years_experience: gNum('years_experience', 'yearsExperience'),
+      status: 'pending_review',
     }
 
     const { data: contractor, error: contractorError } = await supabaseAdmin

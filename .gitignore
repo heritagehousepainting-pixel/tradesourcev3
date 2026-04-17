@@ -39,3 +39,14 @@ package-lock.json
 yarn.lock
 pnpm-lock.yaml
 .env*.local
+
+# Screenshots and audit files
+*.png
+*.mjs
+
+# Local scripts (contain secrets)
+scripts/
+founder_inputs/
+features/
+supabase/
+

@@ -104,6 +104,79 @@ export async function POST(request: Request) {
       .single()
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+
+    // ── Persist computed rating back to contractor_applications ──────────────
+    // so the average survives page refreshes and is available without re-querying
+    // the reviews table on every render.
+    if (contractor_id) {
+      const { data: allReviews } = await supabase
+        .from('reviews')
+        .select('rating')
+        .eq('contractor_id', contractor_id)
+
+      if (allReviews && allReviews.length > 0) {
+        const avg = Math.round((allReviews.reduce((s, r) => s + r.rating, 0) / allReviews.length) * 10) / 10
+        await supabase
+          .from('contractor_applications')
+          .update({ reviews_avg_rating: avg, reviews_count: allReviews.length })
+          .eq('id', contractor_id)
+      }
+    }
+
+    return NextResponse.json(data)
+  } catch (error: any) {
+    return NextResponse.json({ error: error.message || 'Server error' }, { status: 500 })
+  }
+}
+
+// PATCH /api/reviews — submit or update a contractor's public reply to a review they received.
+// Body: { review_id, poster_reply }
+export async function PATCH(request: Request) {
+  try {
+    const access = await getServerUserAccess(request as unknown as any)
+    if (!access.isAuthenticated) {
+      return NextResponse.json({ error: 'Authentication required' }, { status: 401 })
+    }
+
+    const body = await request.json()
+    const { review_id, poster_reply } = body
+
+    if (!review_id) {
+      return NextResponse.json({ error: 'review_id is required' }, { status: 400 })
+    }
+
+    const supabase = await getSupabaseAdminClient()
+
+    // Verify the authenticated user is the subject of this review
+    // (the contractor who received the review, not the reviewer).
+    const { data: review } = await supabase
+      .from('reviews')
+      .select('contractor_id, poster_reply')
+      .eq('id', review_id)
+      .single()
+
+    if (!review) {
+      return NextResponse.json({ error: 'Review not found' }, { status: 404 })
+    }
+
+    // Authorization: must be the contractor who received this review.
+    const profileId = (access as any).contractorProfileId ?? access.profile?.id ?? null
+    if (!access.isFounderEmail && profileId && review.contractor_id !== profileId) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+    }
+
+    const { data, error } = await supabase
+      .from('reviews')
+      .update({
+        poster_reply: poster_reply?.trim() || null,
+        poster_reply_at: poster_reply?.trim() ? new Date().toISOString() : null,
+      })
+      .eq('id', review_id)
+      .select()
+      .single()
+
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+
     return NextResponse.json(data)
   } catch (error: any) {
     return NextResponse.json({ error: error.message || 'Server error' }, { status: 500 })

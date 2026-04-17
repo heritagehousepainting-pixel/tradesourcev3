@@ -1,5 +1,31 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
+/* ─── Keyframe animations ── */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+@keyframes pageFadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+@keyframes shimmer {
+  0% { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+
 /* ─── Global resets ─── */
 * { box-sizing: border-box; }
 
@@ -77,10 +103,10 @@ body {
 
 /* ─── Theme: Dark (override) ─── */
 [data-theme="dark"] {
-  --color-bg: #0D1B2A;
-  --color-bg-alt: #0B1628;
-  --color-bg-primary: #0D1B2A;
-  --color-bg-secondary: #0B1628;
+  --color-bg: #0C1830;
+  --color-bg-alt: #0D1B2A;
+  --color-bg-primary: #0C1830;
+  --color-bg-secondary: #0D1B2A;
   --color-bg-card: #0F2035;
   --color-bg-elevated: #142038;
   --color-surface: rgba(255,255,255,0.05);
@@ -470,6 +496,71 @@ body {
 /* Desktop: full desktop layout (default) */
 @media (min-width: 1025px) {
   /* Keep existing desktop styles */
+
+  /* ── Jobs filter bar: let chips breathe on desktop — no forced scroll ── */
+  .jobs-filter-scroll-container {
+    overflow-x: visible !important;
+    flex-wrap: wrap !important;
+    height: auto !important;
+    padding: '12px 32px' !important;
+    align-items: center;
+    gap: 10px;
+  }
+
+  /* ── Homepage hero stats panel: show "how it works" path on desktop only ── */
+  .desktop-stats-path {
+    display: block !important;
+  }
+
+  /* ── Post-job left panel: slightly wider on desktop ── */
+  [data-postjob-left-panel] {
+    width: 48% !important;
+  }
+
+  /* ── Jobs content area: wider on desktop — fill the available space ── */
+  .jobs-content-area {
+    max-width: 1400px !important;
+    padding: 32px 40px 64px !important;
+  }
+
+  /* ── Jobs desktop grid: 2-column layout, cards breathe ── */
+  .jobs-desktop-grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 16px !important;
+    align-items: start;
+  }
+
+  /* Job cards in the grid: slightly tighter on desktop but still readable */
+  .jobs-desktop-grid .job-card {
+    padding: 24px !important;
+  }
+
+  /* ── Post-job: ensure the form panel also widens proportionally ── */
+  [data-postjob-form-panel] {
+    padding: 56px 48px !important;
+  }
+
+  /* ── Job detail page: wider on desktop ── */
+  .job-detail-content {
+    max-width: 1400px !important;
+    padding: 40px 48px 80px !important;
+  }
+  .job-detail-grid {
+    grid-template-columns: 1fr 420px !important;
+    gap: 40px !important;
+  }
+
+  /* ── Apply page: left panel wider on desktop ── */
+  [data-apply-left-panel] {
+    width: 50% !important;
+  }
+
+  /* ── Dashboard messages: wider on desktop ── */
+  .dashboard-messages-grid {
+    grid-template-columns: 340px 1fr !important;
+    gap: 20px !important;
+  }
 }
 
 /* ═══════════════════════════════════════════════════
@@ -1447,12 +1538,16 @@ body.no-shell {
 
 }
 
-/* Reference image: desktop — chip centered in hero background */
+/* Reference image: desktop — centered on the horizontal axis, no translate offset.
+   The translateX(-137px) has been removed — it was pulling the image left and shifting
+   the painter's face into the stats panel area. Centered positioning (50%) moves the
+   focal content (painter, bright interior) toward the right half of the hero, reducing
+   competition with the text on the left. */
 /* Desktop-only media query — mobile CSS inside @media(max-width:640px) cannot override */
 @media (min-width: 641px) {
   [data-homepage-hero] img {
-    object-position: 57.5% 50% !important;
-    transform: translateX(-137px) !important;
+    object-position: 50% 50% !important;
+    transform: none !important;
   }
 }
 
@@ -1525,24 +1620,27 @@ body.no-shell {
 
 /* Dark mode hero: deep midnight navy — matches reference image base */
 [data-theme="dark"] [data-homepage-hero] {
-  background-color: #020812;
+  background-color: #030C1A;
 }
 
-/* Light mode hero: soft slate */
+/* Light mode hero: dark navy — provides solid dark base so white hero text stays readable
+   regardless of how bright the background image is. The dark overlay gradient on top ensures
+   the image is visible from the left edge (image bleeds through naturally), while the right
+   side darkens to support the image's own dark tones. */
 [data-theme="light"] [data-homepage-hero] {
-  background-color: #E8EDF3;
+  background-color: #060C1A;
 }
 
 /* Dark mode: electric blue circuit lines — #0091FF closer to reference */
 [data-homepage-hero] .hero-circuit-svg line,
 [data-homepage-hero] .hero-circuit-svg path {
-  stroke: #0091FF;
-  stroke-opacity: 0.50;
+  stroke: #2563EB;
+  stroke-opacity: 0.40;
 }
 [data-theme="light"] [data-homepage-hero] .hero-circuit-svg line,
 [data-theme="light"] [data-homepage-hero] .hero-circuit-svg path {
   stroke: #60A5FA;
-  stroke-opacity: 0.35;
+  stroke-opacity: 0.25;
 }
 
 /* Primary routes: slightly brighter */
@@ -1560,22 +1658,192 @@ body.no-shell {
 
 /* Light mode: soft overlay over image */
 [data-theme="light"] [data-homepage-hero] .hero-overlay {
-  background: linear-gradient(160deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.15) 45%, rgba(255,255,255,0.50) 100%) !important;
+  background: linear-gradient(160deg, rgba(255,255,255,0.28) 0%, rgba(255,255,255,0.10) 40%, rgba(255,255,255,0.40) 100%) !important;
+}
+
+/* ── Closing CTA section: premium glow treatment ── */
+.closing-cta-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 600px;
+  height: 200px;
+  background: radial-gradient(ellipse, rgba(37,99,235,0.06) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* ── Section transition fade bars — create visual breathing room between sections ── */
+/* Adds a subtle gradient fade at the top of key sections */
+[data-section-transition] {
+  position: relative;
+}
+[data-section-transition]::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.06) 20%, rgba(255,255,255,0.06) 80%, transparent);
+}
+
+/* ── Premium card shadow system — used across homepage sections ── */
+:root {
+  --ts-shadow-card: 0 2px 8px rgba(0,0,0,0.18);
+  --ts-shadow-card-hover: 0 6px 24px rgba(0,0,0,0.28), 0 0 0 1px rgba(37,99,235,0.15);
+  --ts-shadow-elevated: 0 0 40px rgba(37,99,235,0.08), 0 16px 40px rgba(0,0,0,0.35);
+}
+
+/* ── AI section unique atmosphere ── */
+.ai-section-atmosphere {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(37,99,235,0.04) 0%, transparent 40%, rgba(16,185,129,0.02) 100%);
+  pointerEvents: none;
+}
+
+/* ── AI preview card — dark mode (default) ── */
+.ai-preview-field {
+  background: rgba(12,24,48,0.80);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 8;
+  padding: 9px 12px;
+}
+.ai-preview-label {
+  font-size: 10px;
+  color: rgba(255,255,255,0.30);
+  font-weight: 600;
+  margin-bottom: 1px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.ai-preview-value {
+  font-size: 14px;
+  color: rgba(255,255,255,0.85);
+  font-weight: 600;
+  letter-spacing: -0.1px;
+}
+.ai-scope-output {
+  background: rgba(5,150,105,0.10);
+  border: 1px solid rgba(5,150,105,0.25);
+  border-radius: 10;
+  padding: 16px 18px;
+  margin-top: 6px;
+}
+.ai-scope-output-label {
+  font-size: 10px;
+  color: #10b981;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.ai-scope-output-text {
+  font-size: 13px;
+  color: rgba(255,255,255,0.80);
+  line-height: 1.7;
+  font-weight: 500;
+}
+
+/* ── AI preview card — light mode ── */
+[data-theme="light"] .ai-preview-field {
+  background: rgba(0,0,0,0.04);
+  border-color: rgba(0,0,0,0.08);
+}
+[data-theme="light"] .ai-preview-label {
+  color: rgba(15,23,42,0.40);
+}
+[data-theme="light"] .ai-preview-value {
+  color: #0F172A;
+}
+[data-theme="light"] .ai-scope-output {
+  background: rgba(5,150,105,0.07);
+  border-color: rgba(5,150,105,0.20);
+}
+[data-theme="light"] .ai-scope-output-label {
+  color: #059669;
+}
+[data-theme="light"] .ai-scope-output-text {
+  color: rgba(15,23,42,0.75);
+}
+
+/* ── Light mode: AI section atmosphere — subtle warm tint ── */
+[data-theme="light"] .ai-section-atmo {
+  background: linear-gradient(135deg, rgba(37,99,235,0.02) 0%, transparent 50%, rgba(5,150,105,0.015) 100%);
+}
+
+/* ── Light mode: closing CTA ambient glow needs to be subtle on light bg ── */
+[data-theme="light"] .closing-cta-section::before {
+  background: radial-gradient(ellipse, rgba(37,99,235,0.04) 0%, transparent 70%);
 }
 
 /* ── Post-job page: hide left info panel on mobile ── */
-[data-postjob-left-panel] {
-  display: none !important;
+/* ── Post-job: hide left info panel on mobile ── */
+@media (max-width: 1024px) {
+  [data-postjob-left-panel] {
+    display: none !important;
+  }
+  [data-postjob-form-panel] {
+    width: 100% !important;
+    padding: 24px 16px 80px !important;
+  }
 }
-/* Post-job: full-width form on mobile */
-[data-postjob-form-panel] {
-  width: 100% !important;
-  padding: 24px 16px 80px !important;
+
+/* ── Post-job: two-panel layout on desktop ── */
+@media (min-width: 1025px) {
+  [data-postjob-left-panel] {
+    display: flex !important;
+    width: 42% !important;
+    padding: 56px 48px !important;
+  }
+  [data-postjob-form-panel] {
+    width: 58% !important;
+    padding: 56px 48px !important;
+  }
 }
 
 /* Reference image base — the TradeSource reference image is the primary visual */
 /* Hero overlay: now handled by inline style (left-weighted gradient) */
 
+/* ── Jobs page: 3-column grid on desktop ── */
+@media (min-width: 1025px) {
+  [data-jobs-grid] {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 16px !important;
+    align-items: start;
+  }
+  [data-jobs-grid] > div {
+    animation: none !important;
+    animationDelay: 0s !important;
+    min-width: 0;
+  }
+}
+
+/* ── Reviews page: show reputation sidebar on desktop ── */
+@media (min-width: 1025px) {
+  [data-reviews-sidebar] {
+    display: block !important;
+  }
+  [data-reviews-main] {
+    max-width: 860px !important;
+  }
+}
+
+/* ── Messages page: wider desktop layout ── */
+@media (min-width: 1025px) {
+  [data-messages-container] {
+    max-width: 1400px !important;
+  }
+  [data-messages-thread-list] {
+    width: 320px !important;
+  }
+}
 /* ═══════════════════════════════════════════════════════════════════════
    MOBILE 8.5 → 9.0 PASS: Three targeted fixes
    ═══════════════════════════════════════════════════════════════════════ */
@@ -1601,7 +1869,7 @@ body.no-shell {
 }
 
 /* ── Fix 2: Homepage hero compression on mobile ── */
-/* Stats panel: hidden on mobile, grid on tablet+ via parent-child selector */
+/* Stats panel: hidden on mobile, flex column on tablet+ via parent-child selector */
 @media (max-width: 640px) {
   .hero-stats-row > [data-mobile-panel="true"][data-mobile-grid="stats"] {
     display: none !important;
@@ -1609,22 +1877,24 @@ body.no-shell {
 }
 @media (min-width: 641px) {
   .hero-stats-row > [data-mobile-panel="true"][data-mobile-grid="stats"] {
-    display: grid !important;
-    padding: 16px !important;
-    grid-template-columns: 1fr 1fr !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    align-items: stretch !important;
+    padding: 28px 24px !important;
   }
   .hero-stats-row > [data-mobile-panel="true"][data-mobile-grid="stats"] > div:first-child {
-    grid-column: 1 / -1 !important;
     font-size: 10px !important;
-    margin-bottom: 12px !important;
+    margin-bottom: 16px !important;
     padding: 0 !important;
+    letter-spacing: 2px !important;
   }
   .hero-stats-row > [data-mobile-panel="true"][data-mobile-grid="stats"] > div:not(:first-child) {
     padding: 10px 0 !important;
-    border-bottom: none !important;
+    border-bottom: 1px solid rgba(59,130,246,0.08) !important;
   }
   .hero-stats-row > [data-mobile-panel="true"][data-mobile-grid="stats"] > div:not(:first-child) > div:first-child {
-    font-size: 20px !important;
+    font-size: 26px !important;
   }
 }
 
@@ -1694,4 +1964,285 @@ body.no-shell {
   .ai-section-grid > .ai-scope-preview > div > div > div:last-child {
     font-size: 12px !important;
   }
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   DESIGN TOKENS + GLOBAL POLISH
+   Consistent spacing, radius, shadow, typography, and input styles
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ── Spacing scale ── */
+:root {
+  --ts-space-1: 4px;
+  --ts-space-2: 8px;
+  --ts-space-3: 12px;
+  --ts-space-4: 16px;
+  --ts-space-5: 20px;
+  --ts-space-6: 24px;
+  --ts-space-8: 32px;
+  --ts-space-10: 40px;
+  --ts-space-12: 48px;
+  --ts-space-16: 64px;
+}
+
+/* ── Border-radius scale ── */
+:root {
+  --ts-radius-sm: 6px;
+  --ts-radius-md: 10px;
+  --ts-radius-lg: 14px;
+  --ts-radius-xl: 18px;
+  --ts-radius-full: 9999px;
+}
+
+/* ── Shadow tokens ── */
+:root {
+  --ts-shadow-card: 0 1px 4px rgba(0, 0, 0, 0.08), 0 0 1px rgba(0, 0, 0, 0.06);
+  --ts-shadow-card-hover: 0 4px 16px rgba(0, 0, 0, 0.10), 0 1px 4px rgba(0, 0, 0, 0.06);
+  --ts-shadow-focus: 0 0 0 3px rgba(37, 99, 235, 0.25);
+  --ts-shadow-dropdown: 0 8px 24px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* ── Typography tokens ── */
+:root {
+  --ts-font-xs: 11px;
+  --ts-font-sm: 13px;
+  --ts-font-base: 15px;
+  --ts-font-md: 16px;
+  --ts-font-lg: 18px;
+  --ts-font-xl: 22px;
+  --ts-font-2xl: 28px;
+  --ts-font-3xl: 36px;
+}
+
+/* ── Form input: consistent style across all pages ── */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+input[type="tel"],
+input[type="url"],
+textarea,
+select {
+  border-radius: var(--ts-radius-md) !important;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease !important;
+}
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+input[type="number"]:focus,
+input[type="tel"]:focus,
+input[type="url"]:focus,
+textarea:focus,
+select:focus {
+  box-shadow: var(--ts-shadow-focus) !important;
+  outline: none !important;
+}
+
+/* ── Button base: consistent padding + radius ── */
+button,
+.btn,
+[role="button"] {
+  border-radius: var(--ts-radius-md) !important;
+}
+
+/* ── Cards: consistent shadow + radius ── */
+.form-card,
+.card,
+.job-card,
+.contractor-card {
+  border-radius: var(--ts-radius-lg) !important;
+  box-shadow: var(--ts-shadow-card) !important;
+  transition: box-shadow 0.2s ease !important;
+}
+.form-card:hover,
+.card:hover,
+.job-card:hover {
+  box-shadow: var(--ts-shadow-card-hover) !important;
+}
+
+/* ── Badge/pill: consistent radius ── */
+.badge,
+.pill,
+.trade-badge {
+  border-radius: var(--ts-radius-full) !important;
+}
+
+/* ── Empty state: centered, muted, with breathing room ── */
+.empty-state,
+.empty-state-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: var(--ts-space-12) var(--ts-space-6);
+  color: var(--color-text-muted);
+  gap: var(--ts-space-3);
+}
+.empty-state h3 {
+  font-size: var(--ts-font-md);
+  font-weight: 600;
+  color: var(--color-text);
+  margin: 0;
+}
+.empty-state p {
+  font-size: var(--ts-font-sm);
+  color: var(--color-text-muted);
+  margin: 0;
+  max-width: 360px;
+  line-height: 1.6;
+}
+
+/* ── Global text selection: TradeSource blue ── */
+::selection {
+  background-color: rgba(37, 99, 235, 0.2) !important;
+  color: var(--color-text) !important;
+}
+::-moz-selection {
+  background-color: rgba(37, 99, 235, 0.2) !important;
+  color: var(--color-text) !important;
+}
+
+/* ── Webkit scrollbar: thin, minimal ── */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.25);
+}
+
+/* ── Smooth page transitions ── */
+body {
+  scroll-behavior: smooth;
+}
+
+/* ── Focus-visible: clear ring, no blue browser ring ── */
+:focus-visible {
+  outline: 2px solid var(--color-blue) !important;
+  outline-offset: 2px !important;
+  border-radius: var(--ts-radius-sm) !important;
+}
+
+/* ── Loading skeleton shimmer ── */
+@keyframes skeleton-shimmer {
+  0% { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--color-surface) 25%,
+    rgba(0, 0, 0, 0.06) 50%,
+    var(--color-surface) 75%
+  );
+  background-size: 800px 100%;
+  animation: skeleton-shimmer 1.5s ease-in-out infinite;
+  border-radius: var(--ts-radius-sm);
+}
+
+/* ── Footer: consistent full-width styling ── */
+footer {
+  border-top: 1px solid var(--color-footer-border);
+  background-color: var(--color-footer-bg);
+  color: var(--color-footer-text);
+}
+
+/* ── Bottom tab bar: iOS safe area padding ── */
+.bottom-tab-bar {
+  padding-bottom: env(safe-area-inset-bottom, 0px) !important;
+}
+
+/* ── Horizontal chip rows: smooth momentum scroll ── */
+.filter-chips-row,
+.chip-scroll,
+[class*="chip"] {
+  -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+}
+.filter-chips-row::-webkit-scrollbar,
+.chip-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+/* ── Primary CTA button: consistent blue shadow ── */
+.btn-primary,
+.btn-primary-blue,
+a[style*="background-color: var(--color-blue)"],
+button[style*="background-color: var(--color-blue)"] {
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.25) !important;
+}
+
+/* ── Links: remove default underline, add on hover ── */
+a:not([style*="underline"]) {
+  text-decoration: none !important;
+}
+a:not([style*="underline"]):hover {
+  text-decoration: underline !important;
+}
+
+/* ── Page content: fade-in on load for polished feel ── */
+main,
+[data-page-content],
+.page-content {
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* ── Stat cards: number font styling ── */
+.stat-number,
+.stat-value {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+
+/* ── Trust badge pills: consistent pill styling ── */
+.trust-badge,
+.network-badge {
+  font-size: var(--ts-font-xs);
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: var(--ts-radius-full);
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* ── Modal overlay: backdrop blur ── */
+.modal-overlay,
+[data-modal-overlay] {
+  backdrop-filter: blur(4px);
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+/* ── Loading spinner: consistent blue spinner ── */
+.loading-spinner,
+.spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-top-color: #fff;
+  animation: spin 0.8s linear infinite;
+}
+.loading-spinner.dark,
+.spinner-dark {
+  border-color: rgba(37, 99, 235, 0.2);
+  border-top-color: var(--color-blue);
+}
+
+/* ── Consistent section divider ── */
+.section-divider {
+  height: 1px;
+  background-color: var(--color-divider);
+  margin: var(--ts-space-6) 0;
 }

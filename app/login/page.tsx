@@ -144,7 +144,7 @@ export default function Login() {
             </p>
           </div>
 
-          <div style={{ borderRadius: 16, overflow: 'hidden', boxShadow: '0 8px 40px var(--color-shadow-lg)' }}>
+          <div style={{ borderRadius: 14, overflow: 'hidden', boxShadow: 'var(--ts-shadow-card)' }}>
             <div style={{ height: 4, backgroundColor: 'var(--color-blue)' }} />
             <div style={{ padding: '28px 32px' }}>
 
@@ -184,7 +184,7 @@ export default function Login() {
                     />
                   </div>
                   <button type="submit" disabled={resetLoading}
-                    style={{ width: '100%', padding: '14px', borderRadius: 10, fontSize: 14, fontWeight: 700, color: '#fff', backgroundColor: 'var(--color-blue)', border: 'none', cursor: resetLoading ? 'default' : 'pointer', boxShadow: '0 4px 14px var(--color-shadow)', letterSpacing: '0.01em' }}>
+                    style={{ width: '100%', padding: '14px', borderRadius: 10, fontSize: 14, fontWeight: 700, color: '#fff', backgroundColor: 'var(--color-blue)', border: 'none', cursor: resetLoading ? 'default' : 'pointer', boxShadow: 'var(--ts-shadow-card)', letterSpacing: '0.01em' }}>
                     {resetLoading ? 'Sending…' : 'Send Reset Link'}
                   </button>
                   <div style={{ textAlign: 'center' }}>
@@ -221,7 +221,9 @@ export default function Login() {
                     />
                   </div>
                   <button type="submit" disabled={loading}
-                    style={{ width: '100%', padding: '14px', borderRadius: 10, fontSize: 14, fontWeight: 700, color: '#fff', backgroundColor: 'var(--color-blue)', border: 'none', cursor: loading ? 'default' : 'pointer', boxShadow: loading ? 'none' : '0 4px 14px var(--color-shadow)', letterSpacing: '0.01em', transition: 'all 0.15s', marginTop: 4 }}>
+                    style={{ width: '100%', padding: '14px', borderRadius: 10, fontSize: 14, fontWeight: 700, color: '#fff', backgroundColor: 'var(--color-blue)', border: 'none', cursor: loading ? 'default' : 'pointer', boxShadow: loading ? 'none' : '0 4px 14px rgba(37,99,235,0.25)', transition: 'background 0.2s, box-shadow 0.2s', letterSpacing: '0.01em', marginTop: 4 }}
+                    onMouseEnter={e => { if (!loading) { const el = e.currentTarget as HTMLElement; el.style.background = 'var(--color-blue-hover)'; el.style.boxShadow = '0 6px 18px rgba(37,99,235,0.35)' }}}
+                    onMouseLeave={e => { if (!loading) { const el = e.currentTarget as HTMLElement; el.style.background = 'var(--color-blue)'; el.style.boxShadow = '0 4px 14px rgba(37,99,235,0.25)' }}}>
                     {loading ? (
                       <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
                         <span style={{ width: 14, height: 14, borderRadius: '50%', border: '2px solid rgba(255,255,255,0.4)', borderTopColor: '#fff', display: 'block', animation: 'spin 1s linear infinite' }} />

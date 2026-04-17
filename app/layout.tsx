@@ -6,6 +6,7 @@ import { NavProvider, LayoutHeader } from './components/NavContext'
 import { ShellProvider } from './components/ShellProvider'
 import { BottomTabBar } from './components/BottomTabBar'
 import FooterNav from './components/FooterNav'
+import PageTransition from '../components/ui/PageTransition'
 
 export const metadata: Metadata = {
   title: 'TradeSource — Contractor-to-Contractor Overflow Network',
@@ -37,7 +38,7 @@ export default function RootLayout({
         <ThemeProvider>
           <NavProvider>
             <LayoutHeader />
-            <div className="flex-grow"><ShellProvider>{children}</ShellProvider></div>
+            <div className="flex-grow"><ShellProvider><PageTransition>{children}</PageTransition></ShellProvider></div>
             <BottomTabBar />
           </NavProvider>
         </ThemeProvider>

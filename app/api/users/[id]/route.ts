@@ -62,6 +62,24 @@ export async function PUT(request: Request, { params }: RouteParams) {
       return NextResponse.json({ error: 'Invalid status value' }, { status: 400 })
     }
 
+    // ── Resend invite for approved contractor ─────────────────────────────────────
+    if (body.resend_invite === true) {
+      const supabase = await getSupabaseAdminClient()
+      const { data: existing } = await supabase
+        .from('contractor_applications')
+        .select('email')
+        .eq('id', id)
+        .single()
+      if (!existing?.email) {
+        return NextResponse.json({ error: 'No email on application' }, { status: 400 })
+      }
+      const { error: inviteErr } = await supabase.auth.admin.inviteUserByEmail(existing.email)
+      if (inviteErr) {
+        return NextResponse.json({ error: 'Failed to resend invite' }, { status: 500 })
+      }
+      return NextResponse.json({ ok: true, message: 'Invite resent' })
+    }
+
     const allowedFields = [
       'status',
       'verified_license',
@@ -108,9 +126,12 @@ export async function PUT(request: Request, { params }: RouteParams) {
         const { data: inviteData, error: inviteErr } = await supabase.auth.admin.inviteUserByEmail(existing.email)
         if (inviteErr) {
           console.error('Failed to send invite on approval:', inviteErr.message)
-          // Non-fatal: approval still succeeds; admin can manually resend invite
+          // Non-fatal: approval still succeeds, but flag the contractor so founder knows
+          updateData.invite_failed = true
+          updateData.notes = (updateData.notes || '') + `\n[System] Invite email failed: ${inviteErr.message}. Contractor approved but may not be able to log in. Use Resend Invite to retry.`
+          // Log the approval + failure to the activity log
+          try { supabase.from('admin_activity_log').insert({ action: 'invite_failed', contractor_id: id, contractor_name: existing.email, details: inviteErr.message }) } catch {}
         } else if (inviteData?.user?.id) {
-          // Auth account created — link it to contractor_applications immediately
           updateData.auth_user_id = inviteData.user.id
         }
       }
@@ -169,11 +190,11 @@ async function sendApprovalEmail(email: string, mode: 'setup' | 'pending') {
 
 function buildApprovalEmail(mode: 'setup' | 'pending') {
   const ctaLabel =
-    mode === 'setup' ? 'Set Up Account →' : 'Browse Open Jobs →'
+    mode === 'setup' ? 'Set Up Account →' : 'Post Your First Job →'
   const ctaUrl =
     mode === 'setup'
       ? 'https://project-bdhbf.vercel.app/login'
-      : 'https://project-bdhbf.vercel.app/jobs'
+      : 'https://project-bdhbf.vercel.app/post-job'
 
   return `<!DOCTYPE html>
 <html>
@@ -191,8 +212,11 @@ function buildApprovalEmail(mode: 'setup' | 'pending') {
           </tr>
           <tr>
             <td style="padding:36px 32px 28px;">
-              <p style="font-size:26px;font-weight:800;color:#111827;letter-spacing:-0.03em;margin:0 0 8px;">
-                You're approved! 🎉
+              <p style="font-size:26px;font-weight:800;color:#111827;letter-spacing:-0.03em;margin:0 0 6px;">
+                You're in — welcome to TradeSource
+              </p>
+              <p style="font-size:14px;color:#10b981;font-weight:600;margin:0 0 24px;letter-spacing:0.02em;">
+                Application approved · Access activated
               </p>
               <p style="font-size:15px;color:#374151;line-height:1.6;margin:0 0 24px;">
                 Welcome to TradeSource. You're now part of a curated network of trusted
@@ -201,32 +225,35 @@ function buildApprovalEmail(mode: 'setup' | 'pending') {
               <table cellpadding="0" cellspacing="0" style="width:100%;margin-bottom:28px;">
                 ${[
                   {
-                    icon: '✓',
-                    title: 'Browse open jobs',
-                    desc: 'Find work that matches your trade and service area — homeowners post jobs every day.',
+                    num: '1',
+                    title: 'Post your first overflow job',
+                    desc: "Got work you can't take? Post it to the network and let other vetted contractors express interest — no leads, no ads.",
+                    href: 'https://project-bdhbf.vercel.app/post-job',
                   },
                   {
-                    icon: '✓',
-                    title: 'Express your interest',
-                    desc: "When you see a job you want, tap Express Interest — the homeowner reviews all responses and awards the job.",
+                    num: '2',
+                    title: 'Browse and express interest in open work',
+                    desc: 'Find jobs in your trade and service area. Express interest — homeowners award jobs directly.',
+                    href: 'https://project-bdhbf.vercel.app/jobs',
                   },
                   {
-                    icon: '✓',
-                    title: 'Post overflow work',
-                    desc: "Have a job that's too big or too far? Post it on TradeSource and let other contractors bid.",
+                    num: '3',
+                    title: 'Build your rating',
+                    desc: 'Complete jobs, leave reviews, and earn ratings — the higher your rating, the more homeowners trust your profile.',
+                    href: 'https://project-bdhbf.vercel.app/dashboard',
                   },
                 ]
                   .map(
                     s => `
                 <tr>
-                  <td style="padding:0 0 16px;">
+                  <td style="padding:0 0 18px;">
                     <table cellpadding="0" cellspacing="0">
                       <tr>
                         <td style="vertical-align:top;padding-right:14px;">
-                          <div style="width:28px;height:28px;border-radius:50%;background:#ECFDF5;border:1.5px solid #A7F3D0;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#059669;">${s.icon}</div>
+                          <div style="width:28px;height:28px;border-radius:50%;background:#EFF6FF;border:1.5px solid #BFDBFE;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#2563eb;">${s.num}</div>
                         </td>
                         <td>
-                          <div style="font-size:14px;font-weight:700;color:#111827;margin:0 0 2px;">${s.title}</div>
+                          <a href="${s.href}" style="font-size:14px;font-weight:700;color:#111827;margin:0 0 2px;text-decoration:none;display:block;">${s.title}</a>
                           <div style="font-size:13px;color:#6B7280;line-height:1.5;margin:0;">${s.desc}</div>
                         </td>
                       </tr>

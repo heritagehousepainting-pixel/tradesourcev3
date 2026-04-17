@@ -32,7 +32,9 @@ export async function GET(
           is_pro,
           status,
           created_at,
-          years_in_trade
+          years_in_trade,
+          reviews_avg_rating,
+          reviews_count
         )
       `)
       .eq('job_id', jobId)

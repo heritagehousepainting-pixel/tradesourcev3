@@ -34,6 +34,7 @@ export default function JobDetail() {
   const [reviewSubmitted, setReviewSubmitted] = useState(false)
   const [reviewError, setReviewError] = useState('')
   const [localJob, setLocalJob] = useState<any>(null)
+  const [lightboxUrl, setLightboxUrl] = useState<string | null>(null)
 
   // Fetch job data (uses canonical auth via useNavContext)
   useEffect(() => {
@@ -297,8 +298,8 @@ export default function JobDetail() {
         </div>
       </header>
 
-      <div style={{ maxWidth: 1100, margin: '0 auto', padding: '40px 32px 80px' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 360px', gap: 32, alignItems: 'start' }}>
+      <div className="job-detail-content" style={{ maxWidth: 1100, margin: '0 auto', padding: '40px 32px 80px' }}>
+        <div className="job-detail-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 360px', gap: 32, alignItems: 'start' }}>
 
           {/* ─── LEFT COLUMN ─── */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
@@ -407,17 +408,28 @@ export default function JobDetail() {
             {/* Job Photos */}
             {((job.job_photos && job.job_photos.length > 0) || (job.photos && job.photos.length > 0)) && (
               <div style={{ backgroundColor: 'var(--color-surface-raised)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 14, padding: '24px' }}>
-                <h2 style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--color-text-subtle)', marginBottom: 14 }}>Photos</h2>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: 10 }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
+                  <h2 style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--color-text-subtle)' }}>Photos</h2>
+                  <span style={{ fontSize: 11, color: 'var(--color-text-subtle)' }}>
+                    {((job.job_photos || []).length + (job.photos || []).length)} photo{((job.job_photos || []).length + (job.photos || []).length) !== 1 ? 's' : ''}
+                  </span>
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: 12 }}>
                   {(job.job_photos || []).concat(job.photos || []).map((photo: any, i: number) => {
                     const url = typeof photo === 'string' ? photo : photo.url
                     return (
-                      <a
+                      <button
                         key={i}
-                        href={url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        style={{ display: 'block', borderRadius: 10, overflow: 'hidden', aspectRatio: '4/3', border: '1px solid rgba(255,255,255,0.08)' }}
+                        onClick={() => setLightboxUrl(url)}
+                        title="Click to enlarge"
+                        style={{
+                          display: 'block', borderRadius: 10, overflow: 'hidden',
+                          aspectRatio: '4/3', border: '1px solid rgba(255,255,255,0.08)',
+                          background: 'none', padding: 0, cursor: 'zoom-in',
+                          transition: 'transform 0.15s, border-color 0.15s',
+                        }}
+                        onMouseEnter={e => { const el = e.currentTarget as HTMLElement; el.style.transform = 'scale(1.02)'; el.style.borderColor = 'rgba(37,99,235,0.3)' }}
+                        onMouseLeave={e => { const el = e.currentTarget as HTMLElement; el.style.transform = 'none'; el.style.borderColor = 'rgba(255,255,255,0.08)' }}
                       >
                         <img
                           src={url}
@@ -425,9 +437,70 @@ export default function JobDetail() {
                           style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
                           onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
                         />
-                      </a>
+                      </button>
                     )
                   })}
+                </div>
+              </div>
+            )}
+
+            {/* ── Lightbox overlay ── */}
+            {lightboxUrl && (
+              <div
+                onClick={() => setLightboxUrl(null)}
+                style={{
+                  position: 'fixed', inset: 0, zIndex: 9999,
+                  backgroundColor: 'rgba(0,0,0,0.92)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  cursor: 'zoom-out', padding: 24,
+                  backdropFilter: 'blur(8px)',
+                }}
+              >
+                {/* Close button */}
+                <button
+                  onClick={() => setLightboxUrl(null)}
+                  aria-label="Close photo"
+                  style={{
+                    position: 'absolute', top: 20, right: 20,
+                    width: 40, height: 40, borderRadius: '50%',
+                    backgroundColor: 'rgba(255,255,255,0.1)',
+                    border: '1px solid rgba(255,255,255,0.15)',
+                    color: '#fff', cursor: 'pointer', fontSize: 18,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    transition: 'background 0.15s',
+                  }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.backgroundColor = 'rgba(255,255,255,0.2)' }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.backgroundColor = 'rgba(255,255,255,0.1)' }}
+                >
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                    <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                  </svg>
+                </button>
+
+                {/* Photo */}
+                <img
+                  src={lightboxUrl}
+                  alt="Job photo enlarged"
+                  onClick={e => e.stopPropagation()}
+                  style={{
+                    maxWidth: '90vw', maxHeight: '85vh',
+                    objectFit: 'contain', borderRadius: 12,
+                    boxShadow: '0 20px 80px rgba(0,0,0,0.6)',
+                    cursor: 'default',
+                  }}
+                  onError={(e) => {
+                    setLightboxUrl(null)
+                    ;(e.target as HTMLImageElement).style.display = 'none'
+                  }}
+                />
+
+                {/* Hint */}
+                <div style={{
+                  position: 'absolute', bottom: 24,
+                  fontSize: 12, color: 'rgba(255,255,255,0.4)',
+                  textAlign: 'center', width: '100%', pointerEvents: 'none',
+                }}>
+                  Click anywhere to close
                 </div>
               </div>
             )}

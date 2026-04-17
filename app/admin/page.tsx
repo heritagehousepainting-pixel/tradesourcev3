@@ -91,7 +91,7 @@ function LoginForm() {
 
   return (
     <div style={{ backgroundColor: 'var(--color-bg)', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <div style={{ width: '100%', maxWidth: 400, backgroundColor: 'var(--color-surface-raised)', border: '1px solid var(--color-border)', borderRadius: 16, padding: '40px 32px', boxShadow: '0 8px 40px var(--color-shadow-lg)' }}>
+      <div style={{ width: '100%', maxWidth: 400, backgroundColor: 'var(--color-surface-raised)', border: '1px solid var(--color-border)', borderRadius: 14, padding: '40px 32px', boxShadow: 'var(--ts-shadow-card)' }}>
         {/* Logo */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 28 }}>
           <div style={{ width: 32, height: 32, borderRadius: 8, backgroundColor: 'var(--color-blue)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -161,8 +161,9 @@ function LoginForm() {
           <button
             type="submit"
             disabled={loading || !email.trim() || !password}
-            style={{ width: '100%', padding: '12px', borderRadius: 10, fontSize: 14, fontWeight: 700, backgroundColor: 'var(--color-blue)', color: '#fff', border: 'none', cursor: loading || !email.trim() || !password ? 'not-allowed' : 'pointer', opacity: loading || !email.trim() || !password ? 0.6 : 1, transition: 'opacity 0.15s', boxShadow: '0 4px 14px rgba(37,99,235,0.3)' }}
-          >
+            style={{ width: '100%', padding: '12px', borderRadius: 10, fontSize: 14, fontWeight: 700, backgroundColor: 'var(--color-blue)', color: '#fff', border: 'none', cursor: loading || !email.trim() || !password ? 'not-allowed' : 'pointer', opacity: loading || !email.trim() || !password ? 0.6 : 1, boxShadow: '0 4px 14px rgba(37,99,235,0.25)', transition: 'background 0.2s, box-shadow 0.2s' }}
+          onMouseEnter={e => { if (!(loading || !email.trim() || !password)) { const el = e.currentTarget as HTMLElement; el.style.background = 'var(--color-blue-hover)'; el.style.boxShadow = '0 6px 18px rgba(37,99,235,0.35)' }}}
+          onMouseLeave={e => { const el = e.currentTarget as HTMLElement; el.style.background = 'var(--color-blue)'; el.style.boxShadow = '0 4px 14px rgba(37,99,235,0.25)' }}>
             {loading ? 'Signing in…' : 'Sign In'}
           </button>
         </form>
@@ -307,7 +308,7 @@ export default function AdminPage() {
 
       {/* Header */}
       <header style={{ backgroundColor: 'var(--color-nav)', borderBottom: '1px solid var(--color-nav-border)', position: 'sticky', top: 0, zIndex: 30 }}>
-        <div style={{ maxWidth: 1100, margin: '0 auto', padding: '0 32px' }}>
+        <div style={{ maxWidth: 1400, margin: '0 auto', padding: '0 32px' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 60 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
               <div style={{ width: 28, height: 28, borderRadius: 6, backgroundColor: 'var(--color-blue)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -330,7 +331,7 @@ export default function AdminPage() {
       </header>
 
       {/* Page content */}
-      <div style={{ maxWidth: 1100, margin: '0 auto', padding: '40px 32px' }}>
+      <div style={{ maxWidth: 1400, margin: '0 auto', padding: '40px 32px' }}>
 
         {/* Page heading */}
         <div style={{ marginBottom: 32 }}>
@@ -437,14 +438,16 @@ export default function AdminPage() {
                         <button
                           onClick={() => handleApprove(u.id, !!u.license_number, false)}
                           disabled={processing === u.id}
-                          style={{ padding: '7px 14px', borderRadius: 8, fontSize: 12, fontWeight: 700, backgroundColor: 'var(--color-green)', color: '#fff', border: 'none', cursor: processing === u.id ? 'not-allowed' : 'pointer', opacity: processing === u.id ? 0.6 : 1 }}
-                        >
+                          style={{ padding: '7px 14px', borderRadius: 8, fontSize: 12, fontWeight: 700, backgroundColor: 'var(--color-green)', color: '#fff', border: 'none', cursor: processing === u.id ? 'not-allowed' : 'pointer', opacity: processing === u.id ? 0.6 : 1, boxShadow: '0 4px 14px rgba(16,185,129,0.25)', transition: 'background 0.2s, box-shadow 0.2s' }}
+                          onMouseEnter={e => { if (processing !== u.id) { const el = e.currentTarget as HTMLElement; el.style.background = '#047857'; el.style.boxShadow = '0 6px 18px rgba(16,185,129,0.35)' }}}
+                          onMouseLeave={e => { const el = e.currentTarget as HTMLElement; el.style.background = 'var(--color-green)'; el.style.boxShadow = '0 4px 14px rgba(16,185,129,0.25)' }}>
                           Approve
                         </button>
                         <button
                           onClick={e => { e.stopPropagation(); setRejectingId(u.id); setExpandedId(u.id) }}
-                          style={{ padding: '7px 14px', borderRadius: 8, fontSize: 12, fontWeight: 700, backgroundColor: 'var(--color-red)', color: '#fff', border: 'none', cursor: 'pointer' }}
-                        >
+                          style={{ padding: '7px 14px', borderRadius: 8, fontSize: 12, fontWeight: 700, backgroundColor: 'var(--color-red)', color: '#fff', border: 'none', cursor: 'pointer', boxShadow: '0 4px 14px rgba(239,68,68,0.25)', transition: 'background 0.2s, box-shadow 0.2s' }}
+                          onMouseEnter={e => { const el = e.currentTarget as HTMLElement; el.style.background = '#DC2626'; el.style.boxShadow = '0 6px 18px rgba(239,68,68,0.35)' }}
+                          onMouseLeave={e => { const el = e.currentTarget as HTMLElement; el.style.background = 'var(--color-red)'; el.style.boxShadow = '0 4px 14px rgba(239,68,68,0.25)' }}>
                           Reject
                         </button>
                       </div>
@@ -455,15 +458,17 @@ export default function AdminPage() {
                         <button
                           onClick={() => handleSuspend(u.id)}
                           disabled={processing === u.id}
-                          style={{ padding: '10px 20px', borderRadius: 10, fontSize: 13, fontWeight: 700, backgroundColor: 'var(--color-orange)', color: '#fff', border: 'none', cursor: processing === u.id ? 'not-allowed' : 'pointer', opacity: processing === u.id ? 0.6 : 1 }}
-                        >
+                          style={{ padding: '10px 20px', borderRadius: 10, fontSize: 13, fontWeight: 700, backgroundColor: 'var(--color-orange)', color: '#fff', border: 'none', cursor: processing === u.id ? 'not-allowed' : 'pointer', opacity: processing === u.id ? 0.6 : 1, boxShadow: '0 4px 14px rgba(245,158,11,0.25)', transition: 'background 0.2s, box-shadow 0.2s' }}
+                          onMouseEnter={e => { if (processing !== u.id) { const el = e.currentTarget as HTMLElement; el.style.background = '#D97706'; el.style.boxShadow = '0 6px 18px rgba(245,158,11,0.35)' }}}
+                          onMouseLeave={e => { const el = e.currentTarget as HTMLElement; el.style.background = 'var(--color-orange)'; el.style.boxShadow = '0 4px 14px rgba(245,158,11,0.25)' }}>
                           {processing === u.id ? 'Processing…' : 'Suspend Contractor'}
                         </button>
                         <button
                           onClick={() => handleRemove(u.id)}
                           disabled={processing === u.id}
-                          style={{ padding: '10px 20px', borderRadius: 10, fontSize: 13, fontWeight: 700, backgroundColor: 'var(--color-red)', color: '#fff', border: 'none', cursor: processing === u.id ? 'not-allowed' : 'pointer', opacity: processing === u.id ? 0.6 : 1 }}
-                        >
+                          style={{ padding: '10px 20px', borderRadius: 10, fontSize: 13, fontWeight: 700, backgroundColor: 'var(--color-red)', color: '#fff', border: 'none', cursor: processing === u.id ? 'not-allowed' : 'pointer', opacity: processing === u.id ? 0.6 : 1, boxShadow: '0 4px 14px rgba(239,68,68,0.25)', transition: 'background 0.2s, box-shadow 0.2s' }}
+                          onMouseEnter={e => { const el = e.currentTarget as HTMLElement; el.style.background = '#DC2626'; el.style.boxShadow = '0 6px 18px rgba(239,68,68,0.35)' }}
+                          onMouseLeave={e => { const el = e.currentTarget as HTMLElement; el.style.background = 'var(--color-red)'; el.style.boxShadow = '0 4px 14px rgba(239,68,68,0.25)' }}>
                           {processing === u.id ? 'Processing…' : 'Remove from Network'}
                         </button>
                       </div>
@@ -492,14 +497,16 @@ export default function AdminPage() {
                           <button
                             onClick={() => { setRejectingId(null); handleReject(u.id) }}
                             disabled={processing === u.id}
-                            style={{ padding: '6px 14px', borderRadius: 7, fontSize: 12, fontWeight: 700, backgroundColor: 'var(--color-red)', color: '#fff', border: 'none', cursor: processing === u.id ? 'not-allowed' : 'pointer', opacity: processing === u.id ? 0.6 : 1 }}
-                          >
+                            style={{ padding: '6px 14px', borderRadius: 8, fontSize: 12, fontWeight: 700, backgroundColor: 'var(--color-red)', color: '#fff', border: 'none', cursor: processing === u.id ? 'not-allowed' : 'pointer', opacity: processing === u.id ? 0.6 : 1, boxShadow: '0 4px 14px rgba(239,68,68,0.25)', transition: 'background 0.2s, box-shadow 0.2s' }}
+                          onMouseEnter={e => { if (processing !== u.id) { const el = e.currentTarget as HTMLElement; el.style.background = '#DC2626'; el.style.boxShadow = '0 6px 18px rgba(239,68,68,0.35)' }}}
+                          onMouseLeave={e => { const el = e.currentTarget as HTMLElement; el.style.background = 'var(--color-red)'; el.style.boxShadow = '0 4px 14px rgba(239,68,68,0.25)' }}>
                             Confirm Reject
                           </button>
                           <button
                             onClick={() => setRejectingId(null)}
-                            style={{ padding: '6px 14px', borderRadius: 7, fontSize: 12, fontWeight: 600, backgroundColor: 'var(--color-surface)', color: 'var(--color-text)', border: '1px solid var(--color-border)', cursor: 'pointer' }}
-                          >
+                            style={{ padding: '6px 14px', borderRadius: 8, fontSize: 12, fontWeight: 600, backgroundColor: 'var(--color-surface)', color: 'var(--color-text)', border: '1px solid var(--color-border)', cursor: 'pointer', boxShadow: '0 4px 14px rgba(0,0,0,0.08)', transition: 'background 0.2s, box-shadow 0.2s' }}
+                          onMouseEnter={e => { const el = e.currentTarget as HTMLElement; el.style.background = 'var(--color-border)'; el.style.boxShadow = '0 6px 18px rgba(0,0,0,0.12)' }}
+                          onMouseLeave={e => { const el = e.currentTarget as HTMLElement; el.style.background = 'var(--color-surface)'; el.style.boxShadow = '0 4px 14px rgba(0,0,0,0.08)' }}>
                             Cancel
                           </button>
                         </div>
@@ -611,8 +618,9 @@ export default function AdminPage() {
                                 else showToast('Failed to save notes.')
                               } catch { showToast('Failed to save notes.') }
                             }}
-                            style={{ marginTop: 8, padding: '6px 14px', borderRadius: 7, fontSize: 12, fontWeight: 700, backgroundColor: 'var(--color-blue)', color: '#fff', border: 'none', cursor: 'pointer' }}
-                          >
+                            style={{ marginTop: 8, padding: '6px 14px', borderRadius: 8, fontSize: 12, fontWeight: 700, backgroundColor: 'var(--color-blue)', color: '#fff', border: 'none', cursor: 'pointer', boxShadow: '0 4px 14px rgba(37,99,235,0.25)', transition: 'background 0.2s, box-shadow 0.2s' }}
+                          onMouseEnter={e => { const el = e.currentTarget as HTMLElement; el.style.background = 'var(--color-blue-hover)'; el.style.boxShadow = '0 6px 18px rgba(37,99,235,0.35)' }}
+                          onMouseLeave={e => { const el = e.currentTarget as HTMLElement; el.style.background = 'var(--color-blue)'; el.style.boxShadow = '0 4px 14px rgba(37,99,235,0.25)' }}>
                             Save Notes
                           </button>
                         </div>
@@ -626,14 +634,16 @@ export default function AdminPage() {
                         <button
                           onClick={() => handleApprove(u.id, !!u.license_number, false)}
                           disabled={processing === u.id}
-                          style={{ padding: '10px 20px', borderRadius: 10, fontSize: 13, fontWeight: 700, backgroundColor: 'var(--color-green)', color: '#fff', border: 'none', cursor: processing === u.id ? 'not-allowed' : 'pointer', opacity: processing === u.id ? 0.6 : 1, boxShadow: '0 4px 12px rgba(16,185,129,0.3)' }}
-                        >
+                          style={{ padding: '10px 20px', borderRadius: 10, fontSize: 13, fontWeight: 700, backgroundColor: 'var(--color-green)', color: '#fff', border: 'none', cursor: processing === u.id ? 'not-allowed' : 'pointer', opacity: processing === u.id ? 0.6 : 1, boxShadow: '0 4px 14px rgba(16,185,129,0.25)', transition: 'background 0.2s, box-shadow 0.2s' }}
+                          onMouseEnter={e => { if (processing !== u.id) { const el = e.currentTarget as HTMLElement; el.style.background = '#047857'; el.style.boxShadow = '0 6px 18px rgba(16,185,129,0.35)' }}}
+                          onMouseLeave={e => { const el = e.currentTarget as HTMLElement; el.style.background = 'var(--color-green)'; el.style.boxShadow = '0 4px 14px rgba(16,185,129,0.25)' }}>
                           {processing === u.id ? 'Processing…' : 'Approve Application'}
                         </button>
                         <button
                           onClick={() => { setRejectingId(u.id) }}
-                          style={{ padding: '10px 20px', borderRadius: 10, fontSize: 13, fontWeight: 700, backgroundColor: 'var(--color-surface)', color: 'var(--color-red)', border: '1px solid var(--color-red)', cursor: 'pointer' }}
-                        >
+                          style={{ padding: '10px 20px', borderRadius: 10, fontSize: 13, fontWeight: 700, backgroundColor: 'var(--color-surface)', color: 'var(--color-red)', border: '1px solid var(--color-red)', cursor: 'pointer', boxShadow: '0 4px 14px rgba(239,68,68,0.15)', transition: 'background 0.2s, box-shadow 0.2s' }}
+                          onMouseEnter={e => { const el = e.currentTarget as HTMLElement; el.style.background = 'rgba(239,68,68,0.08)'; el.style.boxShadow = '0 6px 18px rgba(239,68,68,0.25)' }}
+                          onMouseLeave={e => { const el = e.currentTarget as HTMLElement; el.style.background = 'var(--color-surface)'; el.style.boxShadow = '0 4px 14px rgba(239,68,68,0.15)' }}>
                           Reject Application
                         </button>
                       </div>

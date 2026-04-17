@@ -6,6 +6,7 @@ import { useNavContext } from '@/app/components/NavContext'
 import QuickAvailabilityModal from '@/components/QuickAvailabilityModal'
 import FloatingAssistant from '@/features/assistant/ui/FloatingAssistant'
 import { ProfileSection } from '@/components/ProfileSection'
+import ReviewJobModal from '@/components/ReviewJobModal'
 
 function timeAgo(dateStr: string): string {
   const diff = Date.now() - new Date(dateStr).getTime()
@@ -57,7 +58,10 @@ function JobCard({ job, onExpress, expressingId, expressed }: {
       )}
       <div style={{ display: 'flex', gap: 8, paddingTop: 14, borderTop: '1px solid var(--color-divider)' }}>
         <a href={`/jobs/${job.id}`} style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '10px 16px', borderRadius: 10, fontSize: 12, fontWeight: 600, backgroundColor: 'var(--color-surface)', color: 'var(--color-text)', border: '1px solid var(--color-border-strong)', textDecoration: 'none', minHeight: 40 }}>View Details</a>
-        <button onClick={() => onExpress(job.id)} disabled={expressingId === job.id || expressed} style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '10px 16px', borderRadius: 10, fontSize: 12, fontWeight: 700, minHeight: 40, cursor: expressed || expressingId === job.id ? 'default' : 'pointer', backgroundColor: expressed ? 'var(--color-green-soft)' : 'var(--color-blue)', color: expressed ? 'var(--color-green)' : '#fff', border: '1px solid transparent', boxShadow: expressed ? 'none' : '0 2px 8px rgba(37,99,235,0.25)' }}>
+        <button onClick={() => onExpress(job.id)} disabled={expressingId === job.id || expressed} style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '10px 16px', borderRadius: 10, fontSize: 12, fontWeight: 700, minHeight: 40, cursor: expressed || expressingId === job.id ? 'default' : 'pointer', backgroundColor: expressed ? 'var(--color-green-soft)' : 'var(--color-blue)', color: expressed ? 'var(--color-green)' : '#fff', border: '1px solid transparent', boxShadow: expressed ? 'none' : '0 4px 14px rgba(37,99,235,0.25)',
+                        transition: 'background 0.2s, box-shadow 0.2s' }}
+          onMouseEnter={e => { if (!expressed && expressingId !== job.id) { const el = e.currentTarget as HTMLElement; el.style.background = 'var(--color-blue-hover)'; el.style.boxShadow = '0 6px 18px rgba(37,99,235,0.35)' }}}
+          onMouseLeave={e => { if (!expressed && expressingId !== job.id) { const el = e.currentTarget as HTMLElement; el.style.background = 'var(--color-blue)'; el.style.boxShadow = '0 4px 14px rgba(37,99,235,0.25)' }}}>
           {expressed ? '✓ Sent' : expressingId === job.id ? '…' : "I'm Interested"}
         </button>
       </div>
@@ -115,7 +119,15 @@ function PostedJobCard({ job, interests, onAward, awardingId }: { job: any; inte
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 3, flexWrap: 'wrap' }}>
                       {interest.contractors?.verified_license && <span style={{ fontSize: 10, fontWeight: 600, padding: '1px 7px', borderRadius: 20, backgroundColor: 'var(--color-green-soft)', color: 'var(--color-green)' }}>License ✓</span>}
                       {interest.contractors?.verified_insurance && <span style={{ fontSize: 10, fontWeight: 600, padding: '1px 7px', borderRadius: 20, backgroundColor: 'var(--color-green-soft)', color: 'var(--color-green)' }}>Insurance ✓</span>}
-                      {interest.contractors?.rating && <span style={{ fontSize: 11, fontWeight: 700, color: '#F59E0B' }}>★ {interest.contractors.rating}/5</span>}
+                      {interest.contractors?.reviews_avg_rating && (
+                        <span style={{ fontSize: 11, fontWeight: 700, color: '#F59E0B', display: 'flex', alignItems: 'center', gap: 4 }}>
+                          <span style={{ color: '#F59E0B' }}>★</span>
+                          <span>{interest.contractors.reviews_avg_rating}/5</span>
+                          {interest.contractors?.reviews_count > 0 && (
+                            <span style={{ fontSize: 10, color: 'var(--color-text-subtle)', fontWeight: 500 }}>({interest.contractors.reviews_count})</span>
+                          )}
+                        </span>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -123,7 +135,9 @@ function PostedJobCard({ job, interests, onAward, awardingId }: { job: any; inte
                   {interest.awarded ? (
                     <span style={{ padding: '6px 12px', borderRadius: 8, fontSize: 11, fontWeight: 700, backgroundColor: 'var(--color-green-soft)', color: 'var(--color-green)' }}>✓ Awarded</span>
                   ) : (
-                    <button onClick={() => onAward(job.id, interest.contractor_id, interest.contractors?.name || interest.contractors?.company || 'this contractor')} disabled={awardingId === job.id} style={{ padding: '6px 12px', borderRadius: 8, fontSize: 11, fontWeight: 700, backgroundColor: 'var(--color-blue)', color: '#fff', border: 'none', cursor: awardingId === job.id ? 'default' : 'pointer', boxShadow: '0 2px 8px rgba(37,99,235,0.25)' }}>
+                    <button onClick={() => onAward(job.id, interest.contractor_id, interest.contractors?.name || interest.contractors?.company || 'this contractor')} disabled={awardingId === job.id} style={{ padding: '6px 12px', borderRadius: 8, fontSize: 11, fontWeight: 700, backgroundColor: 'var(--color-blue)', color: '#fff', border: 'none', cursor: awardingId === job.id ? 'default' : 'pointer', boxShadow: '0 4px 14px rgba(37,99,235,0.25)', transition: 'background 0.2s, box-shadow 0.2s' }}
+                    onMouseEnter={e => { if (awardingId !== job.id) { const el = e.currentTarget as HTMLElement; el.style.background = 'var(--color-blue-hover)'; el.style.boxShadow = '0 6px 18px rgba(37,99,235,0.35)' }}}
+                    onMouseLeave={e => { const el = e.currentTarget as HTMLElement; el.style.background = 'var(--color-blue)'; el.style.boxShadow = '0 4px 14px rgba(37,99,235,0.25)' }}>
                       {awardingId === job.id ? 'Awarding…' : 'Award Job'}
                     </button>
                   )}
@@ -162,8 +176,23 @@ export default function Dashboard() {
   const [reviewForm, setReviewForm] = useState<Record<string, { rating: number; comment: string }>>({})
   const [showReviewForm, setShowReviewForm] = useState<string | null>(null)
   const [reviewSubmitted, setReviewSubmitted] = useState<Set<string>>(new Set())
-  // One-time welcome banner for newly approved contractors (dismissed per session)
+  const [jobToReview, setJobToReview] = useState<any>(null) // job being marked complete with optional review
+  // First-job welcome banner — persisted in localStorage so it only shows once per device
   const [showWelcomeBanner, setShowWelcomeBanner] = useState(false)
+  useEffect(() => {
+    const dismissed = localStorage.getItem('ts_firstjob_dismissed')
+    if (!dismissed) setShowWelcomeBanner(true)
+  }, [])
+  const dismissWelcomeBanner = () => {
+    setShowWelcomeBanner(false)
+    try { localStorage.setItem('ts_firstjob_dismissed', 'true') } catch {}
+  }
+
+  // Poster-side post-award dismissal
+  const dismissPosterAwardCard = () => {
+    try { localStorage.setItem('ts_poster_awarded_dismissed', newlyAwardedToPoster?.id ?? '1') } catch {}
+    setView('posted')
+  }
 
   const isPendingVetting = access.vettingStatus === 'pending'
   const isApproved = access.vettingStatus === 'approved'
@@ -173,6 +202,20 @@ export default function Dashboard() {
   const jobsInProgress = jobs.filter(j => j.contractor_id === user?.id && (j.status === 'in_progress' || j.status === 'awarded'))
   // Completed jobs where this user was the awarded contractor — eligible for review
   const completedJobsWithReview = jobs.filter(j => j.contractor_id === user?.id && j.status === 'completed')
+  // Newly awarded job — contractor side (they were awarded a job)
+  const newlyAwardedJob = jobsInProgress.find(j => j.status === 'awarded')
+  const awardedThread = newlyAwardedJob
+    ? messageThreads.find(t => t.job_id === newlyAwardedJob.id)
+    : null
+
+  // Newly awarded job — poster side (they awarded a job to a contractor)
+  const myAwardedJobs = jobs.filter(j => j.poster_id === user?.id && j.status === 'awarded')
+  const newlyAwardedToPoster = myAwardedJobs[0] ?? null
+  const posterAwardedThread = newlyAwardedToPoster
+    ? messageThreads.find(t => t.job_id === newlyAwardedToPoster.id)
+    : null
+  // contractor_name lives on the job object from the API join
+  const awardedToContractor = newlyAwardedToPoster?.contractor_name ?? null
 
   const showToast = (msg: string) => {
     if (toastTimer.current) clearTimeout(toastTimer.current)
@@ -214,10 +257,7 @@ export default function Dashboard() {
         if (r.length > 0) setMyRating(Math.round((r.reduce((s: number, x: any) => s + x.rating, 0) / r.length * 10) / 10))
       }
       // Show welcome banner once: approved contractor + no job history yet.
-      // Only set the flag if it hasn't already been dismissed.
-      const _isApproved = (user?.status ?? access.profile?.status) === 'approved'
-      const _hasJobHistory = myPostedJobs.length > 0 || jobsInProgress.length > 0
-      if (_isApproved && !_hasJobHistory && !showWelcomeBanner) setShowWelcomeBanner(true)
+      // The localStorage effect above handles the persisted dismiss — no override needed here.
       setLoading(false)
     }).catch(() => setLoading(false))
   }, [access.checked, access.profile])
@@ -305,6 +345,58 @@ export default function Dashboard() {
     } catch { showToast('Failed to submit review.') }
   }
 
+  // Review-on-complete handlers
+  async function handleReviewSubmitOnComplete(rating: number, comment: string) {
+    if (!jobToReview || !rating) return
+    // Review the poster (other contractor), not ourselves.
+    // jobToReview.poster_id is the contractor who posted the job.
+    const subjectId = jobToReview.poster_id
+    if (!subjectId) { await handleReviewSkip(); return }
+    // Reviewer's own display name (the contractor who is submitting this review)
+    const reviewerName = user?.name || user?.full_name || user?.company || 'Contractor'
+    const subjectName = jobToReview.poster?.name || jobToReview.poster?.company || jobToReview.poster?.full_name || jobToReview.homeowner_name || 'Contractor'
+    // Submit review targeting the poster (another contractor)
+    await handleSubmitReview(subjectId, jobToReview.id, reviewerName)
+    // Then mark the job complete
+    const r = await fetch(`/api/jobs/${jobToReview.id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status: 'completed' }),
+    })
+    if (r.ok) {
+      setJobs(prev => prev.map(j => j.id === jobToReview.id ? { ...j, status: 'completed' } : j))
+      showToast('Job completed! Review submitted — thanks.')
+      // Refresh rating immediately so the header badge and widget update without page reload
+      const profileId = (access as any).contractorProfileId ?? access.profile?.id ?? null
+      if (profileId) {
+        fetch(`/api/reviews?contractor_id=${profileId}`).then(r => r.json()).then(data => {
+          if (data?.reviews) {
+            setMyReviews(data.reviews)
+            const revs = data.reviews
+            if (revs.length > 0) {
+              setMyRating(Math.round((revs.reduce((s: number, x: any) => s + x.rating, 0) / revs.length) * 10) / 10)
+            }
+          }
+        }).catch(() => null)
+      }
+    }
+    setJobToReview(null)
+  }
+
+  async function handleReviewSkip() {
+    if (!jobToReview) return
+    const r = await fetch(`/api/jobs/${jobToReview.id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status: 'completed' }),
+    })
+    if (r.ok) {
+      setJobs(prev => prev.map(j => j.id === jobToReview.id ? { ...j, status: 'completed' } : j))
+      showToast('Job marked as complete.')
+    }
+    setJobToReview(null)
+  }
+
   const handleAwardJob = async (jobId: string, contractorId: string, contractorName: string) => {
     setAwardingJob(jobId)
     try {
@@ -339,7 +431,7 @@ export default function Dashboard() {
   if (!access.canAccessContractorApp) {
     return (
       <div style={{ backgroundColor: 'var(--color-bg)', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <div style={{ maxWidth: 380, width: '100%', backgroundColor: 'var(--color-surface-raised)', border: '1px solid var(--color-border)', borderRadius: 16, padding: '40px 32px', boxShadow: '0 8px 40px var(--color-shadow-lg)', textAlign: 'center' }}>
+        <div style={{ maxWidth: 380, width: '100%', backgroundColor: 'var(--color-surface-raised)', border: '1px solid var(--color-border)', borderRadius: 14, padding: '40px 32px', boxShadow: 'var(--ts-shadow-card)', textAlign: 'center' }}>
           <div style={{ width: 52, height: 52, borderRadius: 14, backgroundColor: 'var(--color-blue-soft)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--color-blue)" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
@@ -347,8 +439,12 @@ export default function Dashboard() {
           </div>
           <h2 style={{ fontSize: 18, fontWeight: 800, color: 'var(--color-text)', marginBottom: 8, letterSpacing: '-0.02em' }}>Sign in to access your dashboard</h2>
           <p style={{ fontSize: 13, color: 'var(--color-text-muted)', marginBottom: 24, lineHeight: 1.65 }}>View your jobs, manage contractors, and track your work.</p>
-          <a href="/founder-login" style={{ display: 'block', padding: '12px 16px', borderRadius: 10, backgroundColor: 'var(--color-blue)', color: '#fff', fontSize: 14, fontWeight: 700, textDecoration: 'none', marginBottom: 10, boxShadow: '0 4px 14px rgba(37,99,235,0.3)' }}>Sign In</a>
-          <a href="/apply" style={{ display: 'block', padding: '12px 16px', borderRadius: 10, backgroundColor: 'var(--color-surface)', color: 'var(--color-text)', fontSize: 14, fontWeight: 600, textDecoration: 'none', border: '1px solid var(--color-border-strong)' }}>Apply to Join</a>
+          <a href="/founder-login" style={{ display: 'block', padding: '12px 16px', borderRadius: 10, backgroundColor: 'var(--color-blue)', color: '#fff', fontSize: 14, fontWeight: 700, textDecoration: 'none', marginBottom: 10, boxShadow: '0 4px 14px rgba(37,99,235,0.25)', transition: 'background 0.2s, box-shadow 0.2s' }}
+            onMouseEnter={e => { const el = e.currentTarget as HTMLElement; el.style.background = 'var(--color-blue-hover)'; el.style.boxShadow = '0 6px 18px rgba(37,99,235,0.35)' }}
+            onMouseLeave={e => { const el = e.currentTarget as HTMLElement; el.style.background = 'var(--color-blue)'; el.style.boxShadow = '0 4px 14px rgba(37,99,235,0.25)' }}>Sign In</a>
+          <a href="/apply" style={{ display: 'block', padding: '12px 16px', borderRadius: 10, backgroundColor: 'var(--color-surface)', color: 'var(--color-text)', fontSize: 14, fontWeight: 600, textDecoration: 'none', border: '1px solid var(--color-border-strong)', transition: 'background 0.2s, box-shadow 0.2s' }}
+            onMouseEnter={e => { const el = e.currentTarget as HTMLElement; el.style.background = 'var(--color-surface-hover)'; el.style.boxShadow = 'var(--ts-shadow-card-hover)' }}
+            onMouseLeave={e => { const el = e.currentTarget as HTMLElement; el.style.background = 'var(--color-surface)'; el.style.boxShadow = 'none' }}>Apply to Join</a>
         </div>
       </div>
     )
@@ -370,7 +466,7 @@ export default function Dashboard() {
   if (!user) {
     return (
       <div style={{ backgroundColor: 'var(--color-bg)', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <div style={{ maxWidth: 380, width: '100%', backgroundColor: 'var(--color-surface-raised)', border: '1px solid var(--color-border)', borderRadius: 16, padding: '40px 32px', boxShadow: '0 8px 40px var(--color-shadow-lg)', textAlign: 'center' }}>
+        <div style={{ maxWidth: 380, width: '100%', backgroundColor: 'var(--color-surface-raised)', border: '1px solid var(--color-border)', borderRadius: 14, padding: '40px 32px', boxShadow: 'var(--ts-shadow-card)', textAlign: 'center' }}>
           <div style={{ width: 52, height: 52, borderRadius: 14, backgroundColor: 'var(--color-blue-soft)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--color-blue)" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
@@ -378,8 +474,12 @@ export default function Dashboard() {
           </div>
           <h2 style={{ fontSize: 18, fontWeight: 800, color: 'var(--color-text)', marginBottom: 8, letterSpacing: '-0.02em' }}>Sign in to access your dashboard</h2>
           <p style={{ fontSize: 13, color: 'var(--color-text-muted)', marginBottom: 24, lineHeight: 1.65 }}>View your jobs, manage contractors, and track your work.</p>
-          <a href="/login" style={{ display: 'block', padding: '12px 16px', borderRadius: 10, backgroundColor: 'var(--color-blue)', color: '#fff', fontSize: 14, fontWeight: 700, textDecoration: 'none', marginBottom: 10, boxShadow: '0 4px 14px rgba(37,99,235,0.3)' }}>Sign In</a>
-          <a href="/apply" style={{ display: 'block', padding: '12px 16px', borderRadius: 10, backgroundColor: 'var(--color-surface)', color: 'var(--color-text)', fontSize: 14, fontWeight: 600, textDecoration: 'none', border: '1px solid var(--color-border-strong)' }}>Apply to Join</a>
+          <a href="/login" style={{ display: 'block', padding: '12px 16px', borderRadius: 10, backgroundColor: 'var(--color-blue)', color: '#fff', fontSize: 14, fontWeight: 700, textDecoration: 'none', marginBottom: 10, boxShadow: '0 4px 14px rgba(37,99,235,0.25)', transition: 'background 0.2s, box-shadow 0.2s' }}
+            onMouseEnter={e => { const el = e.currentTarget as HTMLElement; el.style.background = 'var(--color-blue-hover)'; el.style.boxShadow = '0 6px 18px rgba(37,99,235,0.35)' }}
+            onMouseLeave={e => { const el = e.currentTarget as HTMLElement; el.style.background = 'var(--color-blue)'; el.style.boxShadow = '0 4px 14px rgba(37,99,235,0.25)' }}>Sign In</a>
+          <a href="/apply" style={{ display: 'block', padding: '12px 16px', borderRadius: 10, backgroundColor: 'var(--color-surface)', color: 'var(--color-text)', fontSize: 14, fontWeight: 600, textDecoration: 'none', border: '1px solid var(--color-border-strong)', transition: 'background 0.2s, box-shadow 0.2s' }}
+            onMouseEnter={e => { const el = e.currentTarget as HTMLElement; el.style.background = 'var(--color-surface-hover)'; el.style.boxShadow = 'var(--ts-shadow-card-hover)' }}
+            onMouseLeave={e => { const el = e.currentTarget as HTMLElement; el.style.background = 'var(--color-surface)'; el.style.boxShadow = 'none' }}>Apply to Join</a>
         </div>
       </div>
     )
@@ -403,16 +503,416 @@ export default function Dashboard() {
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             <span style={{ fontSize: 10, fontWeight: 700, padding: '3px 10px', borderRadius: 20, backgroundColor: 'var(--color-green-soft)', color: 'var(--color-green)', border: '1px solid rgba(16,185,129,0.2)' }}>✓ Verified</span>
-            {myRating && <span style={{ fontSize: 12, fontWeight: 700, color: '#F59E0B' }}>★ {myRating}/5</span>}
+            {myRating ? (
+              <span style={{ fontSize: 12, fontWeight: 700, padding: '3px 10px', borderRadius: 20, backgroundColor: 'rgba(245,158,11,0.12)', color: '#F59E0B', border: '1px solid rgba(245,158,11,0.2)' }}>
+                ★ {myRating}/5 · {myReviews.length} review{myReviews.length !== 1 ? 's' : ''}
+              </span>
+            ) : (
+              <span style={{ fontSize: 12, fontWeight: 600, padding: '3px 10px', borderRadius: 20, backgroundColor: 'var(--color-surface)', color: 'var(--color-text-subtle)', border: '1px solid var(--color-border)' }}>
+                ★ Not yet rated
+              </span>
+            )}
           </div>
         </div>
       </div>
 
-      {/* ── Onboarding banners — show one at a time, highest priority first ── */}
+      {/* ── Your Reputation widget ── */}
+      {!newlyAwardedJob && (
+        <div style={{ backgroundColor: 'var(--color-bg-alt)', borderBottom: '1px solid var(--color-border)', padding: '16px 32px' }}>
+          <div style={{ maxWidth: 1100, margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
+            {/* Left: rating display */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                {myRating ? (
+                  <>
+                    <span style={{ fontSize: 28, fontWeight: 800, color: '#F59E0B', letterSpacing: '-0.03em', lineHeight: 1 }}>{myRating.toFixed(1)}</span>
+                    <div>
+                      <div style={{ display: 'flex', gap: 1 }}>
+                        {[1,2,3,4,5].map(s => (
+                          <span key={s} style={{ fontSize: 14, color: myRating >= s ? '#F59E0B' : 'var(--color-border-strong)' }}>★</span>
+                        ))}
+                      </div>
+                      <div style={{ fontSize: 10, color: 'var(--color-text-subtle)', marginTop: 2 }}>
+                        {myReviews.length} review{myReviews.length !== 1 ? 's' : ''}
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                    <div style={{ width: 36, height: 36, borderRadius: 10, backgroundColor: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <span style={{ fontSize: 16, color: '#F59E0B', opacity: 0.5 }}>★</span>
+                    </div>
+                    <div>
+                      <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--color-text)' }}>No reputation yet</div>
+                      <div style={{ fontSize: 11, color: 'var(--color-text-subtle)' }}>Complete jobs to earn your first review</div>
+                    </div>
+                  </div>
+                )}
+              </div>
+              {myRating && (
+                <div style={{ height: 32, width: 1, backgroundColor: 'var(--color-border)', flexShrink: 0 }} />
+              )}
+              {myRating ? (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                  <span style={{ fontSize: 11, color: 'var(--color-text-subtle)' }}>
+                    {myReviews.length > 0 ? (
+                      myRating >= 4.5 ? 'Outstanding reputation' : myRating >= 4.0 ? 'Strong reputation' : myRating >= 3.0 ? 'Building reputation' : 'Actively improving'
+                    ) : ''}
+                  </span>
+                  <span style={{ fontSize: 12, color: 'var(--color-text-muted)' }}>
+                    Rated by homeowners you've worked with
+                  </span>
+                </div>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                  <span style={{ fontSize: 11, color: 'var(--color-text-muted)' }}>Finish your first awarded job to start receiving reviews.</span>
+                </div>
+              )}
+            </div>
+
+            {/* Right: CTA */}
+            <a
+              href="/reviews"
+              style={{
+                display: 'flex', alignItems: 'center', gap: 6,
+                padding: '8px 16px', borderRadius: 10,
+                backgroundColor: 'var(--color-surface)',
+                border: '1px solid var(--color-border)',
+                textDecoration: 'none',
+                fontSize: 12, fontWeight: 600, color: 'var(--color-blue)',
+                transition: 'background 0.15s, border-color 0.15s, box-shadow 0.15s',
+                boxShadow: 'var(--ts-shadow-card)',
+              }}
+              onMouseEnter={e => { const el = e.currentTarget as HTMLElement; el.style.background = 'var(--color-blue-soft)'; el.style.borderColor = 'rgba(37,99,235,0.3)'; el.style.boxShadow = 'var(--ts-shadow-card-hover)' }}
+              onMouseLeave={e => { const el = e.currentTarget as HTMLElement; el.style.background = 'var(--color-surface)'; el.style.borderColor = 'var(--color-border)'; el.style.boxShadow = 'var(--ts-shadow-card)' }}
+            >
+              {myRating ? 'See Your Reviews' : 'How it works'}
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+            </a>
+          </div>
+        </div>
+      )}
+
+      {/* ── Awarded-job guidance card — highest priority, shown when contractor has a newly awarded job ── */}
+      {newlyAwardedJob && (
+        <div style={{ backgroundColor: 'var(--color-bg-alt)', borderBottom: '1px solid var(--color-border)', padding: '24px 32px' }}>
+          <div style={{ maxWidth: 1100, margin: '0 auto' }}>
+            <div style={{
+              background: 'linear-gradient(135deg, rgba(37,99,235,0.12) 0%, rgba(37,99,235,0.06) 100%)',
+              border: '1px solid rgba(37,99,235,0.2)',
+              borderRadius: 14, padding: '24px 28px',
+            }}>
+              {/* Header row */}
+              <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16, marginBottom: 16, flexWrap: 'wrap' }}>
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4 }}>
+                    <div style={{ width: 32, height: 32, borderRadius: 8, backgroundColor: 'var(--color-blue-soft)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-blue)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" />
+                      </svg>
+                    </div>
+                    <span style={{ fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--color-blue)' }}>
+                      Job Awarded
+                    </span>
+                  </div>
+                  <h2 style={{ fontSize: 18, fontWeight: 800, color: 'var(--color-text)', letterSpacing: '-0.02em', marginBottom: 4 }}>
+                    {newlyAwardedJob.title}
+                  </h2>
+                  {newlyAwardedJob.area && (
+                    <p style={{ fontSize: 13, color: 'var(--color-text-muted)' }}>{newlyAwardedJob.area}</p>
+                  )}
+                </div>
+                {newlyAwardedJob.budget_min && (
+                  <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                    <div style={{ fontSize: 24, fontWeight: 800, color: 'var(--color-green)', letterSpacing: '-0.03em' }}>
+                      ${newlyAwardedJob.budget_min.toLocaleString()}
+                    </div>
+                    <div style={{ fontSize: 11, color: 'var(--color-text-muted)' }}>Fixed rate</div>
+                  </div>
+                )}
+              </div>
+
+              {/* Next steps */}
+              <div style={{ backgroundColor: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 10, padding: '16px 20px', marginBottom: 16 }}>
+                <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--color-text-muted)', marginBottom: 12 }}>
+                  Your next steps
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                  {[
+                    {
+                      num: 1,
+                      label: 'Confirm the job',
+                      detail: awardedThread ? 'Message the poster to confirm timeline and details' : 'The poster will message you shortly',
+                      action: awardedThread
+                        ? { label: 'Message Now', onClick: () => { setActiveThread(awardedThread); setView('messages') } }
+                        : null,
+                    },
+                    {
+                      num: 2,
+                      label: 'Start work',
+                      detail: 'Once confirmed, update the job status to In Progress',
+                      action: {
+                        label: 'Mark Started',
+                        onClick: async () => {
+                          const r = await fetch(`/api/jobs/${newlyAwardedJob.id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ status: 'in_progress' }) })
+                          if (r.ok) { setJobs(prev => prev.map(j => j.id === newlyAwardedJob.id ? { ...j, status: 'in_progress' } : j)); showToast('Job marked as in progress!') }
+                        },
+                      },
+                    },
+                    {
+                      num: 3,
+                      label: 'Complete and get rated',
+                      detail: 'Mark done when finished. Both parties can leave reviews.',
+                      action: null,
+                    },
+                  ].map(step => (
+                    <div key={step.num} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                      <div style={{
+                        width: 24, height: 24, borderRadius: '50%',
+                        backgroundColor: 'rgba(37,99,235,0.12)',
+                        border: '1px solid rgba(37,99,235,0.2)',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        fontSize: 11, fontWeight: 700, color: 'var(--color-blue)', flexShrink: 0,
+                      }}>
+                        {step.num}
+                      </div>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--color-text)' }}>{step.label}</div>
+                        <div style={{ fontSize: 12, color: 'var(--color-text-muted)' }}>{step.detail}</div>
+                      </div>
+                      {step.action && (
+                        <button
+                          onClick={step.action.onClick as any}
+                          style={{ padding: '7px 14px', borderRadius: 8, fontSize: 12, fontWeight: 700, backgroundColor: 'var(--color-blue)', color: '#fff', border: 'none', cursor: 'pointer', flexShrink: 0, boxShadow: '0 2px 8px rgba(37,99,235,0.25)' }}
+                        >
+                          {step.action.label}
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Dismiss */}
+              <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                <button
+                  onClick={async () => {
+                    const r = await fetch(`/api/jobs/${newlyAwardedJob.id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ status: 'in_progress' }) })
+                    if (r.ok) { setJobs(prev => prev.map(j => j.id === newlyAwardedJob.id ? { ...j, status: 'in_progress' } : j)); showToast('Job marked as in progress!') }
+                  }}
+                  style={{ padding: '6px 14px', borderRadius: 8, fontSize: 11, fontWeight: 600, backgroundColor: 'transparent', color: 'var(--color-text-muted)', border: '1px solid var(--color-border)', cursor: 'pointer' }}
+                >
+                  Dismiss
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── Poster-side post-award guidance — shown when poster has awarded a job ── */}
+      {(() => {
+        if (!newlyAwardedToPoster) return null
+        // Persist dismissal — if this job has been dismissed, don't show again
+        try {
+          const lastDismissed = localStorage.getItem('ts_poster_awarded_dismissed')
+          if (lastDismissed === newlyAwardedToPoster.id) return null
+        } catch {}
+        // Hide when poster is already on the posted jobs tab
+        if (view === 'posted') return null
+        return (
+        <div style={{ backgroundColor: 'var(--color-bg-alt)', borderBottom: '1px solid var(--color-border)', padding: '24px 32px' }}>
+          <div style={{ maxWidth: 1100, margin: '0 auto' }}>
+            <div style={{
+              background: 'linear-gradient(135deg, rgba(245,158,11,0.12) 0%, rgba(245,158,11,0.05) 100%)',
+              border: '1px solid rgba(245,158,11,0.2)',
+              borderRadius: 14, padding: '24px 28px',
+            }}>
+              {/* Header row */}
+              <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16, marginBottom: 16, flexWrap: 'wrap' }}>
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4 }}>
+                    <div style={{ width: 32, height: 32, borderRadius: 8, backgroundColor: 'rgba(245,158,11,0.15)', border: '1px solid rgba(245,158,11,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" />
+                      </svg>
+                    </div>
+                    <span style={{ fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#F59E0B' }}>
+                      Job Awarded
+                    </span>
+                  </div>
+                  <h2 style={{ fontSize: 18, fontWeight: 800, color: 'var(--color-text)', letterSpacing: '-0.02em', marginBottom: 4 }}>
+                    {newlyAwardedToPoster.title}
+                  </h2>
+                  {newlyAwardedToPoster.area && (
+                    <p style={{ fontSize: 13, color: 'var(--color-text-muted)' }}>{newlyAwardedToPoster.area}</p>
+                  )}
+                  {awardedToContractor && (
+                    <p style={{ fontSize: 12, color: 'var(--color-text-muted)', marginTop: 2 }}>
+                      Awarded to <strong style={{ color: 'var(--color-text)', fontWeight: 600 }}>{awardedToContractor}</strong>
+                    </p>
+                  )}
+                </div>
+                {newlyAwardedToPoster.budget_min && (
+                  <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                    <div style={{ fontSize: 24, fontWeight: 800, color: 'var(--color-green)', letterSpacing: '-0.03em' }}>
+                      ${newlyAwardedToPoster.budget_min.toLocaleString()}
+                    </div>
+                    <div style={{ fontSize: 11, color: 'var(--color-text-muted)' }}>Fixed rate</div>
+                  </div>
+                )}
+              </div>
+
+              {/* Next steps */}
+              <div style={{ backgroundColor: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 10, padding: '16px 20px', marginBottom: 16 }}>
+                <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--color-text-muted)', marginBottom: 12 }}>
+                  Your next steps as poster
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                  {[
+                    {
+                      num: 1,
+                      label: 'Confirm the details',
+                      detail: posterAwardedThread
+                        ? 'Message the contractor to confirm timeline, start date, and scope'
+                        : 'The contractor will reach out to confirm timeline and scheduling',
+                      action: posterAwardedThread
+                        ? { label: 'Message Now', onClick: () => { setActiveThread(posterAwardedThread); setView('messages') } }
+                        : null,
+                    },
+                    {
+                      num: 2,
+                      label: 'Track the job',
+                      detail: 'Update the job status to In Progress once work begins. Keep an eye on messages.',
+                      action: null,
+                    },
+                    {
+                      num: 3,
+                      label: 'Leave a review',
+                      detail: 'After completion, both parties can leave reviews. Your review builds network trust.',
+                      action: null,
+                    },
+                  ].map(step => (
+                    <div key={step.num} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                      <div style={{
+                        width: 24, height: 24, borderRadius: '50%',
+                        backgroundColor: 'rgba(245,158,11,0.12)',
+                        border: '1px solid rgba(245,158,11,0.2)',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        fontSize: 11, fontWeight: 700, color: '#F59E0B', flexShrink: 0,
+                      }}>
+                        {step.num}
+                      </div>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--color-text)' }}>{step.label}</div>
+                        <div style={{ fontSize: 12, color: 'var(--color-text-muted)' }}>{step.detail}</div>
+                      </div>
+                      {step.action && (
+                        <button
+                          onClick={step.action.onClick as any}
+                          style={{ padding: '7px 14px', borderRadius: 8, fontSize: 12, fontWeight: 700, backgroundColor: '#F59E0B', color: '#fff', border: 'none', cursor: 'pointer', flexShrink: 0, boxShadow: '0 2px 8px rgba(245,158,11,0.25)' }}
+                        >
+                          {step.action.label}
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Dismiss */}
+              <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                <button
+                  onClick={dismissPosterAwardCard}
+                  style={{ padding: '6px 14px', borderRadius: 8, fontSize: 11, fontWeight: 600, backgroundColor: 'transparent', color: 'var(--color-text-muted)', border: '1px solid var(--color-border)', cursor: 'pointer' }}
+                >
+                  Dismiss
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )})()}
+
+      {/* ── First-job guidance card — shown to newly approved contractors with no history ── */}
+      {!newlyAwardedJob && isApproved && myPostedJobs.length === 0 && jobsInProgress.length === 0 && showWelcomeBanner && (
+        <div style={{ backgroundColor: 'var(--color-bg-alt)', borderBottom: '1px solid var(--color-border)', padding: '24px 32px' }}>
+          <div style={{ maxWidth: 1100, margin: '0 auto' }}>
+            <div style={{
+              background: 'linear-gradient(135deg, rgba(16,185,129,0.1) 0%, rgba(16,185,129,0.04) 100%)',
+              border: '1px solid rgba(16,185,129,0.2)',
+              borderRadius: 14, padding: '24px 28px',
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+              gap: 20, flexWrap: 'wrap',
+            }}>
+              {/* Left: text */}
+              <div style={{ flex: 1, minWidth: 280 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--color-green)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" />
+                  </svg>
+                  <span style={{ fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--color-green)' }}>
+                    Welcome to TradeSource
+                  </span>
+                </div>
+                <h2 style={{ fontSize: 18, fontWeight: 800, color: 'var(--color-text)', letterSpacing: '-0.02em', marginBottom: 6 }}>
+                  Start by posting your first overflow job.
+                </h2>
+                <p style={{ fontSize: 13, color: 'var(--color-text-muted)', lineHeight: 1.65, marginBottom: 16 }}>
+                  Other contractors can start expressing interest the moment your job goes live. The faster you post, the sooner you connect.
+                </p>
+                <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+                  <a href="/post-job"
+                    style={{ padding: '10px 20px', borderRadius: 10, backgroundColor: 'var(--color-green)', color: '#fff', fontSize: 13, fontWeight: 700, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 8, boxShadow: '0 4px 14px rgba(16,185,129,0.25)', transition: 'background 0.2s, box-shadow 0.2s' }}
+                    onMouseEnter={e => { const el = e.currentTarget as HTMLElement; el.style.background = '#047857'; el.style.boxShadow = '0 6px 18px rgba(5,150,105,0.35)' }}
+                    onMouseLeave={e => { const el = e.currentTarget as HTMLElement; el.style.background = 'var(--color-green)'; el.style.boxShadow = '0 4px 14px rgba(16,185,129,0.25)' }}
+                  >
+                    Post Your First Job
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                  </a>
+                  <a href="/jobs"
+                    style={{ padding: '10px 20px', borderRadius: 10, backgroundColor: 'var(--color-surface)', color: 'var(--color-text-muted)', fontSize: 13, fontWeight: 600, textDecoration: 'none', border: '1px solid var(--color-border)', transition: 'background 0.2s, box-shadow 0.2s, border-color 0.2s' }}
+                    onMouseEnter={e => { const el = e.currentTarget as HTMLElement; el.style.color = 'var(--color-text)'; el.style.borderColor = 'var(--color-blue-border)'; el.style.boxShadow = 'var(--ts-shadow-card-hover)' }}
+                    onMouseLeave={e => { const el = e.currentTarget as HTMLElement; el.style.color = 'var(--color-text-muted)'; el.style.borderColor = 'var(--color-border)'; el.style.boxShadow = 'none' }}
+                  >
+                    Browse jobs first
+                  </a>
+                </div>
+              </div>
+
+              {/* Right: stats snapshot */}
+              <div style={{ display: 'flex', gap: 24, flexShrink: 0 }}>
+                {[
+                  { n: availableJobs.length, label: 'Open Jobs', color: 'var(--color-green)' },
+                  { n: 4, label: 'Counties Live', color: 'var(--color-blue)' },
+                  { n: '5', label: 'Vetting Checks', color: 'var(--color-blue)' },
+                ].map(stat => (
+                  <div key={stat.label} style={{ textAlign: 'center' }}>
+                    <div style={{ fontSize: 28, fontWeight: 800, color: stat.color, letterSpacing: '-0.03em', lineHeight: 1 }}>{stat.n}</div>
+                    <div style={{ fontSize: 10, fontWeight: 600, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginTop: 4 }}>{stat.label}</div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Dismiss */}
+              <button
+                onClick={dismissWelcomeBanner}
+                style={{ padding: '6px 10px', borderRadius: 8, fontSize: 11, fontWeight: 600, backgroundColor: 'transparent', color: 'var(--color-text-muted)', border: '1px solid var(--color-border)', cursor: 'pointer', alignSelf: 'flex-start', flexShrink: 0 }}
+              >
+                Dismiss
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── Onboarding banners — lower priority ── */}
       {(() => {
         const hasPending = access.vettingStatus === 'pending'
-        const hasJobHistory = myPostedJobs.length > 0 || jobsInProgress.length > 0
-        const isApproved = (user?.status ?? access.profile?.status) === 'approved'
         const hasCompany = !!(user?.company || user?.business_name)
         if (hasPending) return (
           <div style={{ backgroundColor: 'rgba(245,158,11,0.08)', borderBottom: '1px solid rgba(245,158,11,0.2)', padding: '12px 32px' }}>
@@ -426,25 +926,7 @@ export default function Dashboard() {
             </div>
           </div>
         )
-        if (showWelcomeBanner && isApproved && !hasJobHistory) return (
-          <div style={{ backgroundColor: 'rgba(16,185,129,0.07)', borderBottom: '1px solid rgba(16,185,129,0.15)', padding: '12px 32px' }}>
-            <div style={{ maxWidth: 1100, margin: '0 auto', display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--color-green)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
-                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" />
-              </svg>
-              <p style={{ flex: 1, fontSize: 13, color: 'var(--color-text-muted)', lineHeight: 1.5 }}>
-                <strong style={{ color: 'var(--color-text)', fontWeight: 600 }}>Welcome to TradeSource!</strong> Here is what to do first: browse open jobs to express interest, then post overflow work, and build your rating.
-              </p>
-              <button
-                onClick={() => setShowWelcomeBanner(false)}
-                style={{ padding: '6px 12px', borderRadius: 8, fontSize: 11, fontWeight: 600, backgroundColor: 'transparent', color: 'var(--color-text-muted)', border: '1px solid var(--color-border)', cursor: 'pointer', flexShrink: 0 }}
-              >
-                Got it
-              </button>
-            </div>
-          </div>
-        )
-        if (!hasCompany) return (
+        if (!newlyAwardedJob && !isApproved && myPostedJobs.length === 0 && jobsInProgress.length === 0 && !hasCompany && showWelcomeBanner) return (
           <div style={{ backgroundColor: 'rgba(37,99,235,0.08)', borderBottom: '1px solid rgba(37,99,235,0.15)', padding: '12px 32px' }}>
             <div style={{ maxWidth: 1100, margin: '0 auto', display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--color-blue)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
@@ -453,12 +935,7 @@ export default function Dashboard() {
               <p style={{ flex: 1, fontSize: 13, color: 'var(--color-text-muted)', lineHeight: 1.5 }}>
                 <strong style={{ color: 'var(--color-text)', fontWeight: 600 }}>Complete your profile</strong> to show contractors your business details and get rated.
               </p>
-              <button
-                onClick={() => setView('profile')}
-                style={{ padding: '7px 14px', borderRadius: 8, fontSize: 12, fontWeight: 600, backgroundColor: 'var(--color-blue)', color: '#fff', border: 'none', cursor: 'pointer', flexShrink: 0 }}
-              >
-                Complete Profile
-              </button>
+              <button onClick={() => setView('profile')} style={{ padding: '7px 14px', borderRadius: 8, fontSize: 12, fontWeight: 600, backgroundColor: 'var(--color-blue)', color: '#fff', border: 'none', cursor: 'pointer', flexShrink: 0, boxShadow: '0 4px 14px rgba(37,99,235,0.25)', transition: 'background 0.2s, box-shadow 0.2s' }} onMouseEnter={e => { const el = e.currentTarget as HTMLElement; el.style.background = 'var(--color-blue-hover)'; el.style.boxShadow = '0 6px 18px rgba(37,99,235,0.35)' }} onMouseLeave={e => { const el = e.currentTarget as HTMLElement; el.style.background = 'var(--color-blue)'; el.style.boxShadow = '0 4px 14px rgba(37,99,235,0.25)' }}>Complete Profile</button>
             </div>
           </div>
         )
@@ -524,12 +1001,20 @@ export default function Dashboard() {
                         </div>
                         <div style={{ display: 'flex', gap: 8, flexShrink: 0 }}>
                           {job.status === 'awarded' && (
-                            <button onClick={async () => { const r = await fetch(`/api/jobs/${job.id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ status: 'in_progress' }) }); if (r.ok) { setJobs(prev => prev.map(j => j.id === job.id ? { ...j, status: 'in_progress' } : j)); showToast('Job started!') } }} style={{ padding: '7px 14px', borderRadius: 8, fontSize: 12, fontWeight: 700, backgroundColor: 'var(--color-blue-soft)', color: 'var(--color-blue)', border: '1px solid rgba(59,130,246,0.2)', cursor: 'pointer' }}>Start Work</button>
+                            <button onClick={async () => { const r = await fetch(`/api/jobs/${job.id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ status: 'in_progress' }) }); if (r.ok) { setJobs(prev => prev.map(j => j.id === job.id ? { ...j, status: 'in_progress' } : j)); showToast('Job started!') } }}
+                  style={{ padding: '7px 14px', borderRadius: 8, fontSize: 12, fontWeight: 700, backgroundColor: 'var(--color-blue)', color: '#fff', border: 'none', cursor: 'pointer', flexShrink: 0, boxShadow: '0 4px 14px rgba(37,99,235,0.25)', transition: 'background 0.2s, box-shadow 0.2s' }}
+                  onMouseEnter={e => { const el = e.currentTarget as HTMLElement; el.style.background = 'var(--color-blue-hover)'; el.style.boxShadow = '0 6px 18px rgba(37,99,235,0.35)' }}
+                  onMouseLeave={e => { const el = e.currentTarget as HTMLElement; el.style.background = 'var(--color-blue)'; el.style.boxShadow = '0 4px 14px rgba(37,99,235,0.25)' }}
+                >Confirm & Start</button>
                           )}
                           {job.status === 'in_progress' && (
-                            <button onClick={async () => { const r = await fetch(`/api/jobs/${job.id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ status: 'completed' }) }); if (r.ok) { setJobs(prev => prev.map(j => j.id === job.id ? { ...j, status: 'completed' } : j)); showToast('Job completed!') } }} style={{ padding: '7px 14px', borderRadius: 8, fontSize: 12, fontWeight: 700, backgroundColor: 'var(--color-green-soft)', color: 'var(--color-green)', border: '1px solid rgba(16,185,129,0.2)', cursor: 'pointer' }}>Mark Done</button>
+                            <button onClick={() => setJobToReview(job)}
+                  style={{ padding: '7px 14px', borderRadius: 8, fontSize: 12, fontWeight: 700, backgroundColor: 'var(--color-green-soft)', color: 'var(--color-green)', border: '1px solid rgba(16,185,129,0.2)', cursor: 'pointer', transition: 'background 0.2s, box-shadow 0.2s', boxShadow: '0 4px 14px rgba(16,185,129,0.15)' }}
+                  onMouseEnter={e => { const el = e.currentTarget as HTMLElement; el.style.background = 'var(--color-green)'; el.style.color = '#fff'; el.style.borderColor = 'var(--color-green)'; el.style.boxShadow = '0 6px 18px rgba(16,185,129,0.35)' }}
+                  onMouseLeave={e => { const el = e.currentTarget as HTMLElement; el.style.background = 'var(--color-green-soft)'; el.style.color = 'var(--color-green)'; el.style.borderColor = 'rgba(16,185,129,0.2)'; el.style.boxShadow = '0 4px 14px rgba(16,185,129,0.15)' }}
+                >Mark Done</button>
                           )}
-                          <a href={`/jobs/${job.id}`} style={{ padding: '7px 14px', borderRadius: 8, fontSize: 12, fontWeight: 600, backgroundColor: 'var(--color-surface)', color: 'var(--color-text-muted)', border: '1px solid var(--color-border)', textDecoration: 'none' }}>View</a>
+                          <a href={`/jobs/${job.id}`} style={{ padding: '7px 14px', borderRadius: 8, fontSize: 12, fontWeight: 600, backgroundColor: 'var(--color-surface)', color: 'var(--color-text-muted)', border: '1px solid var(--color-border)', textDecoration: 'none' }}>Details</a>
                         </div>
                       </div>
                     </div>
@@ -547,7 +1032,8 @@ export default function Dashboard() {
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                   {completedJobsWithReview.map((job: any) => {
-                    const posterName = job.poster?.name || job.poster?.company || job.poster?.full_name || 'the homeowner'
+                    const subjectName = job.poster?.name || job.poster?.company || job.poster?.full_name || 'the homeowner'
+                    const reviewerName = user?.name || user?.full_name || user?.company || 'Contractor'
                     const alreadyReviewed = reviewSubmitted.has(job.id)
                     const showForm = showReviewForm === job.id
                     return (
@@ -564,7 +1050,7 @@ export default function Dashboard() {
                             </div>
                           </div>
                           {!alreadyReviewed && !showForm && (
-                            <button onClick={() => setShowReviewForm(job.id)} style={{ padding: '7px 14px', borderRadius: 8, fontSize: 12, fontWeight: 700, backgroundColor: '#F59E0B', color: '#fff', border: 'none', cursor: 'pointer', flexShrink: 0, boxShadow: '0 2px 8px rgba(245,158,11,0.3)' }}>Leave Review</button>
+                            <button onClick={() => setShowReviewForm(job.id)} style={{ padding: '7px 14px', borderRadius: 8, fontSize: 12, fontWeight: 700, backgroundColor: '#F59E0B', color: '#fff', border: 'none', cursor: 'pointer', flexShrink: 0, boxShadow: '0 2px 8px rgba(245,158,11,0.25)' }}>Leave Review</button>
                           )}
                           {alreadyReviewed && (
                             <span style={{ padding: '6px 14px', borderRadius: 8, fontSize: 12, fontWeight: 600, backgroundColor: 'var(--color-green-soft)', color: 'var(--color-green)', flexShrink: 0 }}>✓ Review Submitted</span>
@@ -573,25 +1059,25 @@ export default function Dashboard() {
                         {showForm && (
                           <div style={{ marginTop: 14, paddingTop: 14, borderTop: '1px solid var(--color-divider)' }}>
                             <p style={{ fontSize: 12, color: 'var(--color-text-muted)', marginBottom: 12 }}>
-                              How was working with {posterName} on <strong>{job.title}</strong>?
+                              How was working with <strong>{subjectName}</strong> on <strong>{job.title}</strong>?
                             </p>
                             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
                               {[1,2,3,4,5].map(star => (
-                                <button key={star} onClick={() => setReviewForm(prev => ({ ...prev, [job.contractor_id]: { ...(prev[job.contractor_id] || {}), rating: star, comment: prev[job.contractor_id]?.comment || '' } }))} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 24, lineHeight: 1, padding: '0 2px', color: (reviewForm[job.contractor_id]?.rating || 0) >= star ? '#F59E0B' : 'var(--color-border-strong)' }}>★</button>
+                                <button key={star} onClick={() => setReviewForm(prev => ({ ...prev, [job.contractor_id]: { ...(prev[job.contractor_id] || {}), rating: star, comment: prev[job.contractor_id]?.comment || '' } }))} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 24, lineHeight: 1, padding: '0 2px', color: (reviewForm[job.poster_id]?.rating || 0) >= star ? '#F59E0B' : 'var(--color-border-strong)' }}>★</button>
                               ))}
-                              {(reviewForm[job.contractor_id]?.rating || 0) > 0 && (
-                                <span style={{ fontSize: 12, fontWeight: 600, color: '#F59E0B' }}>{(reviewForm[job.contractor_id]?.rating || 0)}/5</span>
+                              {(reviewForm[job.poster_id]?.rating || 0) > 0 && (
+                                <span style={{ fontSize: 12, fontWeight: 600, color: '#F59E0B' }}>{(reviewForm[job.poster_id]?.rating || 0)}/5</span>
                               )}
                             </div>
                             <textarea
-                              value={reviewForm[job.contractor_id]?.comment || ''}
+                              value={reviewForm[job.poster_id]?.comment || ''}
                               onChange={e => setReviewForm(prev => ({ ...prev, [job.contractor_id]: { ...(prev[job.contractor_id] || {}), comment: e.target.value } }))}
                               placeholder="Share your experience (optional)…"
                               rows={3}
                               style={{ width: '100%', padding: '10px 12px', borderRadius: 10, border: '1.5px solid var(--color-input-border)', backgroundColor: 'var(--color-input-bg)', color: 'var(--color-input-text)', fontSize: 13, fontFamily: 'inherit', resize: 'vertical', outline: 'none', marginBottom: 10 }}
                             />
                             <div style={{ display: 'flex', gap: 8 }}>
-                              <button onClick={() => handleSubmitReview(job.contractor_id, job.id, posterName)} disabled={!reviewForm[job.contractor_id]?.rating} style={{ padding: '7px 16px', borderRadius: 8, fontSize: 12, fontWeight: 700, backgroundColor: reviewForm[job.contractor_id]?.rating ? '#F59E0B' : 'var(--color-border)', color: reviewForm[job.contractor_id]?.rating ? '#fff' : 'var(--color-text-subtle)', border: 'none', cursor: reviewForm[job.contractor_id]?.rating ? 'pointer' : 'not-allowed', opacity: reviewForm[job.contractor_id]?.rating ? 1 : 0.6 }}>Submit Review</button>
+                              <button onClick={() => handleSubmitReview(job.poster_id, job.id, reviewerName)} disabled={!reviewForm[job.poster_id]?.rating} style={{ padding: '7px 16px', borderRadius: 8, fontSize: 12, fontWeight: 700, backgroundColor: reviewForm[job.poster_id]?.rating ? '#F59E0B' : 'var(--color-border)', color: reviewForm[job.poster_id]?.rating ? '#fff' : 'var(--color-text-subtle)', border: 'none', cursor: reviewForm[job.poster_id]?.rating ? 'pointer' : 'not-allowed', opacity: reviewForm[job.poster_id]?.rating ? 1 : 0.6 }}>Submit Review</button>
                               <button onClick={() => setShowReviewForm(null)} style={{ padding: '7px 14px', borderRadius: 8, fontSize: 12, fontWeight: 600, backgroundColor: 'transparent', color: 'var(--color-text-muted)', border: '1px solid var(--color-border)', cursor: 'pointer' }}>Cancel</button>
                             </div>
                           </div>
@@ -611,9 +1097,9 @@ export default function Dashboard() {
               </div>
               {availableJobs.length === 0 ? (
                 <div style={{ padding: '48px 32px', borderRadius: 14, backgroundColor: 'var(--color-surface-raised)', border: '1px solid var(--color-border)', textAlign: 'center' }}>
-                  <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--color-text)', marginBottom: 6 }}>No open jobs right now</p>
-                  <p style={{ fontSize: 12, color: 'var(--color-text-subtle)', marginBottom: 20 }}>Check back soon — new jobs are posted regularly.</p>
-                  <a href="/jobs" style={{ display: 'inline-block', padding: '10px 20px', borderRadius: 10, backgroundColor: 'var(--color-blue)', color: '#fff', fontSize: 13, fontWeight: 600, textDecoration: 'none', boxShadow: '0 4px 14px rgba(37,99,235,0.3)' }}>Browse All Jobs</a>
+                  <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--color-text)', marginBottom: 6 }}>No open jobs in your area right now</p>
+                  <p style={{ fontSize: 12, color: 'var(--color-text-subtle)', marginBottom: 20 }}>Jobs are posted by network contractors as overflow work comes in. New work goes up regularly.</p>
+                  <a href="/jobs" style={{ display: 'inline-block', padding: '10px 20px', borderRadius: 10, backgroundColor: 'var(--color-blue)', color: '#fff', fontSize: 13, fontWeight: 600, textDecoration: 'none', boxShadow: '0 4px 14px rgba(37,99,235,0.25)' }}>Browse All Jobs</a>
                 </div>
               ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
@@ -634,12 +1120,50 @@ export default function Dashboard() {
         {/* POSTED JOBS */}
         {view === 'posted' && (
           <div>
+            {/* Poster-side review prompt: show when they have completed awarded jobs */}
+            {(myPostedJobs.some((j: any) => j.status === 'completed' && j.contractor_id)) && (
+              <div style={{
+                background: 'linear-gradient(135deg, rgba(245,158,11,0.1) 0%, rgba(245,158,11,0.04) 100%)',
+                border: '1px solid rgba(245,158,11,0.2)',
+                borderRadius: 14, padding: '20px 24px', marginBottom: 20,
+                display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16,
+                flexWrap: 'wrap',
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                  <div style={{ width: 40, height: 40, borderRadius: 12, backgroundColor: 'rgba(245,158,11,0.15)', border: '1px solid rgba(245,158,11,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <p style={{ fontSize: 14, fontWeight: 700, color: 'var(--color-text)', marginBottom: 2 }}>
+                      Rate your completed contractor work
+                    </p>
+                    <p style={{ fontSize: 12, color: 'var(--color-text-muted)' }}>
+                      Your review helps other homeowners find trustworthy contractors on the network.
+                    </p>
+                  </div>
+                </div>
+                <a href="/reviews" style={{
+                  padding: '9px 18px', borderRadius: 10,
+                  backgroundColor: '#F59E0B', color: '#fff',
+                  fontSize: 12, fontWeight: 700, textDecoration: 'none', flexShrink: 0,
+                  boxShadow: '0 4px 14px rgba(245,158,11,0.25)',
+                  transition: 'background 0.2s, box-shadow 0.2s',
+                }}
+                  onMouseEnter={e => { const el = e.currentTarget as HTMLElement; el.style.background = '#D97706'; el.style.boxShadow = '0 6px 18px rgba(245,158,11,0.35)' }}
+                  onMouseLeave={e => { const el = e.currentTarget as HTMLElement; el.style.background = '#F59E0B'; el.style.boxShadow = '0 4px 14px rgba(245,158,11,0.25)' }}
+                >
+                  Leave a Review
+                </a>
+              </div>
+            )}
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
               <div>
                 <h2 style={{ fontSize: 20, fontWeight: 800, color: 'var(--color-text)', letterSpacing: '-0.02em', marginBottom: 4 }}>My Posted Jobs</h2>
                 <p style={{ fontSize: 13, color: 'var(--color-text-muted)' }}>Manage contractors who expressed interest in your work.</p>
               </div>
-              <a href="/post-job" style={{ padding: '10px 20px', borderRadius: 10, backgroundColor: 'var(--color-blue)', color: '#fff', fontSize: 13, fontWeight: 700, textDecoration: 'none', boxShadow: '0 4px 14px rgba(37,99,235,0.3)' }}>Post New Job</a>
+              <a href="/post-job" style={{ padding: '10px 20px', borderRadius: 10, backgroundColor: 'var(--color-blue)', color: '#fff', fontSize: 13, fontWeight: 700, textDecoration: 'none', boxShadow: '0 4px 14px rgba(37,99,235,0.25)' }}>Post New Job</a>
             </div>
             {myPostedJobs.length === 0 ? (
               <div style={{ padding: '64px 32px', borderRadius: 14, backgroundColor: 'var(--color-surface-raised)', border: '1px solid var(--color-border)', textAlign: 'center' }}>
@@ -648,7 +1172,7 @@ export default function Dashboard() {
                 </div>
                 <h3 style={{ fontSize: 16, fontWeight: 700, color: 'var(--color-text)', marginBottom: 6 }}>No jobs posted yet</h3>
                 <p style={{ fontSize: 13, color: 'var(--color-text-muted)', marginBottom: 20, lineHeight: 1.65 }}>Post your overflow work so other vetted contractors can express interest.</p>
-                <a href="/post-job" style={{ display: 'inline-block', padding: '11px 22px', borderRadius: 10, backgroundColor: 'var(--color-blue)', color: '#fff', fontSize: 13, fontWeight: 700, textDecoration: 'none', boxShadow: '0 4px 14px rgba(37,99,235,0.3)' }}>Post Your First Job</a>
+                <a href="/post-job" style={{ display: 'inline-block', padding: '11px 22px', borderRadius: 10, backgroundColor: 'var(--color-blue)', color: '#fff', fontSize: 13, fontWeight: 700, textDecoration: 'none', boxShadow: '0 4px 14px rgba(37,99,235,0.25)' }}>Post Your First Job</a>
               </div>
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
@@ -662,7 +1186,7 @@ export default function Dashboard() {
 
         {/* MESSAGES */}
         {view === 'messages' && (
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.7fr', gap: 16, minHeight: 480 }}>
+          <div className="dashboard-messages-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1.7fr', gap: 16, minHeight: 480 }}>
             <div style={{ backgroundColor: 'var(--color-surface-raised)', border: '1px solid var(--color-border)', borderRadius: 14, padding: 20, display: 'flex', flexDirection: 'column' }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
                 <h2 style={{ fontSize: 14, fontWeight: 700, color: 'var(--color-text)' }}>Conversations</h2>
@@ -722,8 +1246,8 @@ export default function Dashboard() {
                     ))}
                   </div>
                   <div style={{ display: 'flex', gap: 8 }}>
-                    <input type="text" value={newMessage} onChange={e => setNewMessage(e.target.value)} onKeyDown={e => { if (e.key === 'Enter' && !sendingMessage) handleSendMessage(activeThread.id) }} placeholder="Type a message…" style={{ flex: 1, padding: '10px 14px', borderRadius: 10, border: '1.5px solid var(--color-input-border)', backgroundColor: 'var(--color-input-bg)', color: 'var(--color-input-text)', fontSize: 13, fontFamily: 'inherit', outline: 'none' }} disabled={sendingMessage} />
-                    <button onClick={() => handleSendMessage(activeThread.id)} disabled={sendingMessage || !newMessage.trim()} style={{ padding: '10px 18px', borderRadius: 10, backgroundColor: 'var(--color-blue)', color: '#fff', border: 'none', fontSize: 13, fontWeight: 700, cursor: sendingMessage || !newMessage.trim() ? 'not-allowed' : 'pointer', opacity: (sendingMessage || !newMessage.trim()) ? 0.5 : 1, boxShadow: '0 4px 14px rgba(37,99,235,0.3)' }}>Send</button>
+                    <input type="text" value={newMessage} onChange={e => setNewMessage(e.target.value)} onKeyDown={e => { if (e.key === 'Enter' && !sendingMessage) handleSendMessage(activeThread.id) }} placeholder="Send a message…" style={{ flex: 1, padding: '10px 14px', borderRadius: 10, border: '1.5px solid var(--color-input-border)', backgroundColor: 'var(--color-input-bg)', color: 'var(--color-input-text)', fontSize: 13, fontFamily: 'inherit', outline: 'none' }} disabled={sendingMessage} />
+                    <button onClick={() => handleSendMessage(activeThread.id)} disabled={sendingMessage || !newMessage.trim()} style={{ padding: '10px 18px', borderRadius: 10, backgroundColor: 'var(--color-blue)', color: '#fff', border: 'none', fontSize: 13, fontWeight: 700, cursor: sendingMessage || !newMessage.trim() ? 'not-allowed' : 'pointer', opacity: (sendingMessage || !newMessage.trim()) ? 0.5 : 1, boxShadow: '0 4px 14px rgba(37,99,235,0.25)' }}>Send</button>
                   </div>
                 </>
               )}
@@ -735,6 +1259,16 @@ export default function Dashboard() {
         {view === 'profile' && <ProfileSection user={user} onBack={() => setView('browse')} />}
 
       </div>
+
+      {jobToReview && (
+        <ReviewJobModal
+          isOpen={true}
+          job={jobToReview}
+          onSubmit={handleReviewSubmitOnComplete}
+          onSkip={handleReviewSkip}
+          onClose={() => setJobToReview(null)}
+        />
+      )}
 
       <QuickAvailabilityModal isOpen={showQuickAvailModal} onClose={() => setShowQuickAvailModal(false)} onSuccess={() => showToast("Availability posted! The network can now see you're open for work.")} userId={user?.id || null} />
       <FloatingAssistant route="/dashboard" pageTitle="Dashboard" pageDescription="Contractor dashboard — browse jobs, manage posted work, messages" pageStateSummary="Dashboard view — browsing, posted jobs, messages, vetting status" userRole="contractor" isLoggedIn={!!user} />

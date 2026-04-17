@@ -154,7 +154,9 @@ export default function ReviewsPage() {
       </div>
 
       {/* Content */}
-      <div style={{ flex: 1, padding: '32px 24px', maxWidth: 800, margin: '0 auto', width: '100%', boxSizing: 'border-box' }}>
+      <div style={{ flex: 1, padding: '32px 24px', maxWidth: 1200, margin: '0 auto', width: '100%', boxSizing: 'border-box' }}>
+        <div style={{ display: 'flex', gap: 32, alignItems: 'flex-start', flexWrap: 'wrap' }}>
+          <div style={{ flex: 1, minWidth: 0 }}>
 
         {/* Rating summary */}
         <div style={{
@@ -380,6 +382,101 @@ export default function ReviewsPage() {
           </div>
         )}
 
+          {/* Left content closes */}
+          </div>
+
+          {/* ── Right: Reputation Stats Sidebar (desktop only) ── */}
+          <div data-reviews-sidebar style={{
+            width: 260, flexShrink: 0,
+            display: 'none',
+          }}>
+            <div style={{
+              backgroundColor: 'var(--color-surface-raised)',
+              border: '1px solid var(--color-border)',
+              borderRadius: 14,
+              padding: '20px',
+              position: 'sticky',
+              top: 80,
+            }}>
+              <h3 style={{ fontSize: 11, fontWeight: 700, color: 'var(--color-text-subtle)', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 16 }}>
+                Your Reputation
+              </h3>
+
+              {/* Big rating */}
+              <div style={{ textAlign: 'center', padding: '16px 0', borderBottom: '1px solid var(--color-divider)', marginBottom: 16 }}>
+                <div style={{ fontSize: 48, fontWeight: 800, color: myRating ? '#F59E0B' : 'var(--color-border-strong)', letterSpacing: '-0.04em', lineHeight: 1 }}>
+                  {myRating ? myRating.toFixed(1) : '—'}
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'center', gap: 2, marginTop: 6 }}>
+                  {[1,2,3,4,5].map(s => (
+                    <span key={s} style={{ fontSize: 14, color: (myRating || 0) >= s ? '#F59E0B' : 'var(--color-border-strong)' }}>★</span>
+                  ))}
+                </div>
+                <div style={{ fontSize: 12, color: 'var(--color-text-subtle)', marginTop: 6 }}>
+                  {myReviews.length} review{myReviews.length !== 1 ? 's' : ''}
+                </div>
+              </div>
+
+              {/* Reputation tier */}
+              {myRating ? (
+                <div style={{ marginBottom: 16 }}>
+                  <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--color-text)', marginBottom: 4 }}>
+                    {myRating >= 4.5 ? 'Outstanding' : myRating >= 4.0 ? 'Strong' : myRating >= 3.0 ? 'Building' : 'Getting started'}
+                  </div>
+                  <div style={{ fontSize: 11, color: 'var(--color-text-subtle)', lineHeight: 1.6 }}>
+                    {myRating >= 4.5 ? 'Contractors rank you among the best in the network.' :
+                      myRating >= 4.0 ? 'Homeowners consistently rate their experience positively.' :
+                      myRating >= 3.0 ? 'Building a track record across more completed jobs will strengthen your profile.' :
+                      'Completing more jobs and earning reviews will help establish your reputation.'}
+                  </div>
+                </div>
+              ) : (
+                <div style={{ marginBottom: 16 }}>
+                  <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--color-text)', marginBottom: 4 }}>Not yet rated</div>
+                  <div style={{ fontSize: 11, color: 'var(--color-text-subtle)', lineHeight: 1.6 }}>
+                    Complete your first awarded job to start receiving reviews from other contractors.
+                  </div>
+                </div>
+              )}
+
+              {/* Review breakdown */}
+              {myReviews.length > 0 && (
+                <div style={{ marginBottom: 16 }}>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--color-text-subtle)', letterSpacing: '0.05em', textTransform: 'uppercase', marginBottom: 10 }}>Review breakdown</div>
+                  {[5,4,3,2,1].map(star => {
+                    const count = myReviews.filter((r: any) => r.rating === star).length
+                    if (count === 0 && star < 5) return null
+                    const pct = Math.round((count / myReviews.length) * 100)
+                    return (
+                      <div key={star} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+                        <span style={{ fontSize: 11, color: 'var(--color-text-subtle)', width: 14 }}>{star}★</span>
+                        <div style={{ flex: 1, height: 6, borderRadius: 3, backgroundColor: 'var(--color-border)', overflow: 'hidden' }}>
+                          <div style={{ height: '100%', width: pct + '%', backgroundColor: '#F59E0B', borderRadius: 3 }} />
+                        </div>
+                        <span style={{ fontSize: 10, color: 'var(--color-text-subtle)', width: 28, textAlign: 'right' }}>{pct}%</span>
+                      </div>
+                    )
+                  })}
+                </div>
+              )}
+
+              {/* CTA */}
+              <a href="/post-job" style={{
+                display: 'block', textAlign: 'center',
+                padding: '9px 16px', borderRadius: 8,
+                backgroundColor: 'var(--color-surface)',
+                border: '1px solid var(--color-border)',
+                fontSize: 12, fontWeight: 600,
+                color: 'var(--color-blue)',
+                textDecoration: 'none',
+                boxShadow: 'var(--ts-shadow-card)',
+                transition: 'background 0.15s, border-color 0.15s',
+              }}>
+                Post work to earn reviews
+              </a>
+            </div>
+          </div>
+        </div>
       </div>
 
       <FloatingAssistant route="/reviews" pageTitle="Reviews" pageDescription="Contractor reviews — view your ratings and leave reviews for completed jobs" pageStateSummary="Reviews page — rating summary, reviews received, and leave-review form" userRole="contractor" isLoggedIn={!!user} />

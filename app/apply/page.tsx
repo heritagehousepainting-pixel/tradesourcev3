@@ -1,8 +1,9 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
+import { trackApplyStep, trackApplySubmit } from '@/lib/analytics'
 
 const PA_COUNTIES = ['Philadelphia', 'Montgomery County', 'Bucks County', 'Delaware County']
 
@@ -59,7 +60,7 @@ function FileUploadField({
             : file
             ? '2px solid var(--color-green)'
             : '2px solid var(--color-input-border)',
-          borderRadius: 12,
+          borderRadius: 10,
           padding: '20px 18px',
           backgroundColor: file ? 'rgba(16,185,129,0.04)' : dragging ? 'var(--color-blue-soft)' : 'var(--color-surface-raised)',
           cursor: 'pointer',
@@ -176,8 +177,72 @@ export default function Apply() {
   const [insuranceFile, setInsuranceFile] = useState<File | null>(null)
   const [currentStep, setCurrentStep] = useState(1)
   const [stepError, setStepError] = useState('')
+  const [hasStarted, setHasStarted] = useState(false)
+  const [savedProgress, setSavedProgress] = useState(false) // true when form was restored from resume token
+  const [saveEmail, setSaveEmail] = useState('')  // email entered for save
+  const [saveEmailError, setSaveEmailError] = useState('')
+  const [saveEmailSent, setSaveEmailSent] = useState(false)
+  const [savingProgress, setSavingProgress] = useState(false)
 
   const TOTAL_STEPS = 4
+
+  // Restore saved progress from resume token (?resume=...)
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const resumeToken = params.get('resume')
+    if (!resumeToken) return
+
+    fetch(`/api/apply-resume?token=${encodeURIComponent(resumeToken)}`)
+      .then(r => r.json())
+      .then(data => {
+        if (data.ok && data.form_data) {
+          const { form_data, step } = data
+          if (form_data.full_name !== undefined) setForm(prev => ({ ...prev, ...form_data }))
+          if (step) setCurrentStep(Number(step))
+          setSavedProgress(true)
+          window.scrollTo({ top: 0, behavior: 'smooth' })
+        }
+      })
+      .catch(() => {})
+  }, [])
+
+  const handleSaveProgress = async () => {
+    const email = form.email?.trim()
+    if (!email || !email.includes('@')) {
+      setSaveEmailError('Enter the email you used on this application to save your progress.')
+      setSaveEmail(email || '')
+      return
+    }
+    setSaveEmailError('')
+    setSavingProgress(true)
+    try {
+      const res = await fetch('/api/apply-save', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, formData: form, step: currentStep }),
+      })
+      const data = await res.json()
+      if (data.ok) {
+        setSaveEmailSent(true)
+      } else {
+        setSaveEmailError('Could not save progress. Please try again.')
+      }
+    } catch {
+      setSaveEmailError('Network error. Please try again.')
+    } finally {
+      setSavingProgress(false)
+    }
+  }
+
+  // Track apply page visit as the conversion funnel start
+  useEffect(() => {
+    setHasStarted(true)
+    fetch('/api/track', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ event_type: 'page_view', event_name: 'apply_page_view', properties: { step: 1 }, session_id: 'unknown' }),
+    }).catch(() => {})
+  }, [])
 
   const update = (field: string, value: any) =>
     setForm(prev => ({ ...prev, [field]: value }))
@@ -211,12 +276,14 @@ export default function Apply() {
     const err = validateStep(currentStep)
     if (err) { setStepError(err); return }
     setStepError('')
+    trackApplyStep(currentStep, 'next')
     if (currentStep < TOTAL_STEPS) setCurrentStep(s => s + 1)
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   const goBack = () => {
     setStepError('')
+    trackApplyStep(currentStep, 'back')
     if (currentStep > 1) {
       setCurrentStep(s => s - 1)
       window.scrollTo({ top: 0, behavior: 'smooth' })
@@ -265,12 +332,7 @@ export default function Apply() {
         body: formData,
       })
       if (res.ok) {
-        // Send confirmation email (non-blocking — redirect regardless of email outcome)
-        fetch('/api/email/apply-confirmation', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name: form.full_name || '', email: form.email || '' }),
-        }).catch(() => {}) // swallow errors — email failure must not block the UX
+        trackApplySubmit()
         router.push('/pending?submitted=true')
       } else {
         const body = await res.json().catch(() => ({}))
@@ -287,9 +349,9 @@ export default function Apply() {
     <div style={{ backgroundColor: 'var(--color-bg)', minHeight: '100vh', display: 'flex', alignItems: 'stretch' }}>
 
       {/* ─── Left Panel ─── */}
-      <div style={{
+      <div data-apply-left-panel style={{
         display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
-        width: '42%', padding: '48px 56px',
+        width: '48%', padding: '48px 56px',
         backgroundColor: 'var(--color-bg-alt)',
         backgroundImage: 'repeating-linear-gradient(-45deg, transparent, transparent 8px, rgba(255,255,255,0.012) 8px, rgba(255,255,255,0.012) 9px)',
         borderRight: '1px solid var(--color-border)',
@@ -315,17 +377,53 @@ export default function Apply() {
         <div>
           <div style={{ width: 32, height: 3, borderRadius: 2, backgroundColor: 'var(--color-orange)', marginBottom: 20 }} />
           <h1 style={{ fontSize: 'clamp(28px, 3.5vw, 44px)', fontWeight: 800, color: 'var(--color-text)', letterSpacing: '-0.03em', lineHeight: 1.1, marginBottom: 16, textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>
-            Get access to overflow work in your area.
+            Join the TradeSource network.
           </h1>
           <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.75)', lineHeight: 1.7, marginBottom: 32, textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>
-            TradeSource is a private network of professional painters in Montgomery, Bucks, and Delaware Counties and Philadelphia. We connect contractors who are booked out with contractors who have capacity — fixed price, no bidding.
+            A private network of professional painters in Montgomery, Bucks, Delaware Counties and Philadelphia. Fixed-price overflow work — no bidding, no lead fees.
           </p>
+
+          {/* What you need to apply */}
+          <div style={{
+            background: 'rgba(255,255,255,0.05)',
+            border: '1px solid rgba(255,255,255,0.1)',
+            borderRadius: 12, padding: '18px 20px',
+            marginBottom: 24,
+          }}>
+            <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'rgba(255,255,255,0.5)', marginBottom: 12 }}>
+              What you need to apply
+            </div>
+            {[
+              'Valid PA Contractor License',
+              'Proof of Insurance',
+              'W-9 Form',
+              'External Review Link (Google, Houzz, Angi)',
+              'Trade experience documentation',
+            ].map(req => (
+              <div key={req} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 7 }}>
+                <div style={{ width: 5, height: 5, borderRadius: '50%', backgroundColor: '#10b981', flexShrink: 0 }} />
+                <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>{req}</span>
+              </div>
+            ))}
+            {/* Post-job bridge — shown as a different style to signal it's a post-approval benefit */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 12, paddingTop: 10, borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+                <path d="M13 10V3L4 14h7v7l9-11h-7z"/>
+              </svg>
+              <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>Once approved: post your own overflow work</span>
+            </div>
+            <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', marginTop: 10, textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>
+              Takes 5–10 minutes. Documents uploaded on Step 4.
+            </p>
+          </div>
+
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
             {[
-              { icon: 'shield', title: 'License + insurance required', sub: 'Every contractor is verified before joining' },
-              { icon: 'clock', title: 'Real humans review every application', sub: 'Most applications reviewed within 1–2 business days' },
-              { icon: 'dollar', title: 'Fixed-price work only', sub: 'No bids, no estimates, no surprises' },
+              { icon: 'shield', title: 'Every contractor is verified first', sub: 'License, insurance, W-9, and experience — checked before you get access' },
+              { icon: 'clock', title: 'Real humans review every application', sub: 'Most applicants hear back within 1–2 business days' },
+              { icon: 'dollar', title: 'Fixed-price work only', sub: 'No bids, no estimates — you set the rate and contractors accept or pass' },
+              { icon: 'users', title: 'Phase 1 — county-by-county rollout', sub: 'Early approved contractors shape how the network works in their area' },
             ].map(({ icon, title, sub }) => (
               <div key={title} style={{ display: 'flex', alignItems: 'flex-start', gap: 14 }}>
                 <div style={{
@@ -361,7 +459,7 @@ export default function Apply() {
         </div>
 
         <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>
-          Phase 1 · Montgomery/Bucks/Delaware/Philadelphia
+          Phase 1 · Montgomery / Bucks / Delaware / Philadelphia · 5–10 min to apply
         </span>
       </div>
 
@@ -382,11 +480,27 @@ export default function Apply() {
             </p>
           </div>
 
+            {/* Resume restored banner */}
+            {savedProgress && (
+              <div style={{
+                marginBottom: 16, padding: '12px 16px', borderRadius: 10, fontSize: 13,
+                backgroundColor: 'rgba(16,185,129,0.06)', border: '1px solid rgba(16,185,129,0.2)',
+                color: 'var(--color-green)', fontWeight: 600, lineHeight: 1.5,
+                display: 'flex', alignItems: 'center', gap: 10,
+              }}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+                  <path d="M5 13l4 4L19 7"/>
+                </svg>
+                Progress restored! Continue from where you left off.
+              </div>
+            )}
+
           {/* Form card */}
           <div className="form-card" style={{
-            borderRadius: 16,
+            borderRadius: 14,
             overflow: 'hidden',
-            boxShadow: '0 8px 40px var(--color-shadow-lg)',
+            boxShadow: 'var(--ts-shadow-card-hover)',
+                        // token-based shadow applied via globals
           }}>
             {/* Blue accent bar */}
             <div style={{ height: 4, backgroundColor: 'var(--color-blue)' }} />
@@ -404,25 +518,55 @@ export default function Apply() {
               )}
 
               {/* ── Step progress indicator ── */}
-              <div style={{ marginBottom: 24 }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                  <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--color-text)' }}>
-                    {currentStep === 1 ? 'Contact Info' :
-                     currentStep === 2 ? 'Coverage & Credentials' :
-                     currentStep === 3 ? 'Your Experience' :
-                     'Verification Documents'}
-                  </span>
-                  <span style={{ fontSize: 12, color: 'var(--color-text-muted)' }}>
-                    {currentStep} of {TOTAL_STEPS}
-                  </span>
+              <div style={{ marginBottom: 20 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+                  <div>
+                    <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--color-text)', letterSpacing: '0.02em' }}>
+                      Step {currentStep} of {TOTAL_STEPS}
+                    </span>
+                    <span style={{ fontSize: 12, color: 'var(--color-text-muted)', marginLeft: 8 }}>
+                      {currentStep === 1 ? '— Your contact info' :
+                       currentStep === 2 ? '— Coverage & credentials' :
+                       currentStep === 3 ? '— Your experience' :
+                       '— Document uploads'}
+                    </span>
+                  </div>
+                  {currentStep < TOTAL_STEPS && (
+                    <span style={{ fontSize: 11, color: 'var(--color-text-subtle)' }}>
+                      {TOTAL_STEPS - currentStep} step{TOTAL_STEPS - currentStep > 1 ? 's' : ''} remaining
+                    </span>
+                  )}
+                  {currentStep === TOTAL_STEPS && (
+                    <span style={{ fontSize: 11, color: '#10b981', fontWeight: 600 }}>
+                      Final step
+                    </span>
+                  )}
                 </div>
                 <div style={{ display: 'flex', gap: 4 }}>
                   {Array.from({ length: TOTAL_STEPS }, (_, i) => i + 1).map(n => (
                     <div key={n} style={{
-                      flex: 1, height: 4, borderRadius: 2,
-                      backgroundColor: n <= currentStep ? 'var(--color-blue)' : 'var(--color-border)',
-                      transition: 'background-color 0.2s',
+                      flex: 1,
+                      height: 6,
+                      borderRadius: 3,
+                      backgroundColor: n < currentStep ? 'var(--color-green)' :
+                                       n === currentStep ? 'var(--color-blue)' : 'var(--color-border)',
+                      transition: 'background-color 0.25s',
                     }} />
+                  ))}
+                </div>
+                {/* Step labels */}
+                <div style={{ display: 'flex', gap: 4, marginTop: 6 }}>
+                  {['Contact', 'Coverage', 'Experience', 'Documents'].map((label, n) => (
+                    <div key={label} style={{
+                      flex: 1,
+                      textAlign: 'center',
+                      fontSize: 9, fontWeight: 700, letterSpacing: '0.04em',
+                      textTransform: 'uppercase',
+                      color: n + 1 === currentStep ? 'var(--color-blue)' :
+                             n + 1 < currentStep ? 'var(--color-green)' : 'var(--color-text-subtle)',
+                    }}>
+                      {n + 1 < currentStep ? '✓ ' : ''}{label}
+                    </div>
                   ))}
                 </div>
                 {stepError && (
@@ -555,7 +699,27 @@ export default function Apply() {
                     <p style={{ fontSize: 12, color: 'var(--color-text-subtle)', margin: 0 }}>
                       Select at least one county you serve in Pennsylvania.
                     </p>
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center' }}>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const allSelected = PA_COUNTIES.every(c => form.service_areas.includes(c))
+                          if (allSelected) {
+                            PA_COUNTIES.forEach(c => { if (form.service_areas.includes(c)) toggleArray('service_areas', c) })
+                          } else {
+                            PA_COUNTIES.forEach(c => { if (!form.service_areas.includes(c)) toggleArray('service_areas', c) })
+                          }
+                        }}
+                        style={{
+                          padding: '7px 14px', borderRadius: 8, fontSize: 12, fontWeight: 700,
+                          cursor: 'pointer', whiteSpace: 'nowrap', minHeight: 44,
+                          border: '1.5px solid var(--color-blue)',
+                          backgroundColor: 'var(--color-blue-soft)',
+                          color: 'var(--color-blue)',
+                        }}
+                      >
+                        {PA_COUNTIES.every(c => form.service_areas.includes(c)) ? 'Deselect All' : 'Select All 4 Counties'}
+                      </button>
                       {PA_COUNTIES.map(county => (
                         <button
                           key={county}
@@ -711,7 +875,100 @@ export default function Apply() {
                   </div>
                 </>}
 
+                {/* ── Save progress — shown on every step ── */}
+                {currentStep < TOTAL_STEPS && !saveEmailSent && (
+                  <div style={{
+                    display: 'flex', alignItems: 'center', gap: 10,
+                    padding: '10px 14px',
+                    borderRadius: 10,
+                    backgroundColor: 'var(--color-surface)',
+                    border: '1px solid var(--color-border)',
+                    marginTop: 4,
+                  }}>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-muted)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+                      <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 8 8"/>
+                    </svg>
+                    <span style={{ fontSize: 12, color: 'var(--color-text-muted)', flex: 1, lineHeight: 1.5 }}>
+                      Need to step away?
+                    </span>
+                    {saveEmailError && (
+                      <span style={{ fontSize: 11, color: 'var(--color-red)', marginRight: 6 }}>{saveEmailError}</span>
+                    )}
+                    <input
+                      type="email"
+                      value={saveEmail}
+                      onChange={e => { setSaveEmail(e.target.value); setSaveEmailError('') }}
+                      placeholder="Your email"
+                      style={{
+                        padding: '6px 10px', borderRadius: 8, fontSize: 12,
+                        border: '1px solid var(--color-border)',
+                        backgroundColor: 'var(--color-input-bg)',
+                        color: 'var(--color-input-text)', outline: 'none',
+                        width: 180,
+                      }}
+                      onFocus={e => e.target.style.borderColor = 'var(--color-blue)'}
+                      onBlur={e => e.target.style.borderColor = 'var(--color-border)'}
+                    />
+                    <button
+                      type="button"
+                      onClick={handleSaveProgress}
+                      disabled={savingProgress}
+                      style={{
+                        padding: '6px 12px', borderRadius: 8, fontSize: 11, fontWeight: 600,
+                        backgroundColor: 'transparent', color: 'var(--color-text-muted)',
+                        border: '1px solid var(--color-border)', cursor: savingProgress ? 'not-allowed' : 'pointer',
+                        opacity: savingProgress ? 0.6 : 1, whiteSpace: 'nowrap',
+                      }}
+                    >
+                      {savingProgress ? 'Saving…' : 'Save & email link'}
+                    </button>
+                  </div>
+                )}
+                {saveEmailSent && (
+                  <div style={{
+                    display: 'flex', alignItems: 'center', gap: 10,
+                    padding: '10px 14px',
+                    borderRadius: 10,
+                    backgroundColor: 'rgba(16,185,129,0.06)',
+                    border: '1px solid rgba(16,185,129,0.2)',
+                    marginTop: 4,
+                  }}>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-green)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+                      <path d="M5 13l4 4L19 7"/>
+                    </svg>
+                    <span style={{ fontSize: 12, color: 'var(--color-green)', fontWeight: 600, flex: 1 }}>
+                      Progress saved! Check your email for a resume link.
+                    </span>
+                  </div>
+                )}
+
                 {/* ── Navigation buttons ── */}
+                {currentStep === 3 && (
+                  <div style={{
+                    marginTop: -8,
+                    padding: '12px 16px',
+                    borderRadius: 10,
+                    backgroundColor: 'rgba(37,99,235,0.06)',
+                    border: '1px solid rgba(37,99,235,0.12)',
+                    fontSize: 12, color: 'var(--color-text-muted)',
+                    lineHeight: 1.6,
+                  }}>
+                    <strong style={{ color: 'var(--color-text)', fontWeight: 600 }}>Almost done.</strong> The final step uploads your W-9 and insurance documents — quick and secure.
+                  </div>
+                )}
+                {currentStep === 2 && (
+                  <div style={{
+                    marginTop: -8,
+                    padding: '12px 16px',
+                    borderRadius: 10,
+                    backgroundColor: 'rgba(37,99,235,0.06)',
+                    border: '1px solid rgba(37,99,235,0.12)',
+                    fontSize: 12, color: 'var(--color-text-muted)',
+                    lineHeight: 1.6,
+                  }}>
+                    <strong style={{ color: 'var(--color-text)', fontWeight: 600 }}>Step 3 is quick.</strong> Just a short bio and your external review link — your documents come next on Step 4.
+                  </div>
+                )}
                 <div style={{ display: 'flex', gap: 10, paddingTop: 4 }}>
                   {currentStep > 1 && (
                     <button
@@ -735,9 +992,11 @@ export default function Apply() {
                         flex: 1, padding: '12px 20px', borderRadius: 10,
                         fontSize: 14, fontWeight: 700, color: '#fff',
                         backgroundColor: 'var(--color-blue)', border: 'none',
-                        cursor: 'pointer', transition: 'all 0.15s',
-                        boxShadow: '0 4px 14px rgba(37,99,235,0.3)',
+                        cursor: 'pointer', transition: 'background 0.2s, box-shadow 0.2s',
+                        boxShadow: 'var(--ts-shadow-card)',
                       }}
+                      onMouseEnter={e => { const el = e.currentTarget as HTMLElement; el.style.background = 'var(--color-blue-hover)'; el.style.boxShadow = '0 6px 18px rgba(37,99,235,0.35)' }}
+                      onMouseLeave={e => { const el = e.currentTarget as HTMLElement; el.style.background = 'var(--color-blue)'; el.style.boxShadow = '0 4px 14px rgba(37,99,235,0.25)' }}
                     >
                       Continue →
                     </button>
@@ -750,9 +1009,11 @@ export default function Apply() {
                         fontSize: 14, fontWeight: 700, color: '#fff',
                         backgroundColor: loading ? 'var(--color-blue)' : 'var(--color-green)',
                         border: 'none', cursor: loading ? 'default' : 'pointer',
-                        transition: 'all 0.15s',
-                        boxShadow: loading ? 'none' : '0 4px 14px rgba(16,185,129,0.3)',
+                        transition: 'background 0.2s, box-shadow 0.2s',
+                        boxShadow: loading ? 'none' : '0 4px 14px rgba(16,185,129,0.25)',
                       }}
+                      onMouseEnter={e => { if (!loading) { const el = e.currentTarget as HTMLElement; el.style.background = '#047857'; el.style.boxShadow = '0 6px 18px rgba(16,185,129,0.35)' }}}
+                      onMouseLeave={e => { const el = e.currentTarget as HTMLElement; el.style.background = 'var(--color-green)'; el.style.boxShadow = '0 4px 14px rgba(16,185,129,0.25)' }}
                     >
                       {loading ? (
                         <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
