@@ -142,7 +142,7 @@ export async function middleware(request: NextRequest) {
           const decoded = JSON.parse(atob(padded))
           userId = decoded.sub ?? null
           userEmail = decoded.email ?? null
-          isJwtAdmin = (decoded.app_metadata as Record<string, unknown>)?.role === 'admin'
+          isJwtAdmin = (decoded.app_metadata as Record<string, unknown>)?.role === 'admin' || (decoded.user_metadata as Record<string, unknown>)?.role === 'admin'
         }
       }
     }

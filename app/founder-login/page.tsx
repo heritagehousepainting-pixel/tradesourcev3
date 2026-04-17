@@ -90,8 +90,32 @@ function FounderForm() {
     setError('')
 
     try {
-      const { error: authError } = await signIn(email.trim(), password)
+      // Check if this is the founder/admin email — use server-side auth
+      const founderEmails = (process.env.NEXT_PUBLIC_FOUNDER_EMAILS || '')
+        .split(',')
+        .map((e: string) => e.trim().toLowerCase())
+        .filter(Boolean)
+      const isFounderEmail = founderEmails.includes(email.trim().toLowerCase())
 
+      if (isFounderEmail) {
+        // Use our server-side endpoint for founder accounts
+        const res = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: email.trim(), password }),
+        })
+        const data = await res.json()
+        if (!res.ok) {
+          setError(data.error || 'Sign in failed. Please try again.')
+          setLoading(false)
+          return
+        }
+        window.location.href = data.redirectTo || '/admin'
+        return
+      }
+
+      // Regular contractor login via Supabase Auth
+      const { error: authError } = await signIn(email.trim(), password)
       if (authError) {
         const msg = authError.message?.toLowerCase()
         if (msg?.includes('invalid login')) {
@@ -104,13 +128,7 @@ function FounderForm() {
         setLoading(false)
         return
       }
-
-      const founderEmails = (process.env.NEXT_PUBLIC_FOUNDER_EMAILS || '')
-        .split(',')
-        .map((e: string) => e.trim().toLowerCase())
-        .filter(Boolean)
-      const isFounderEmail = founderEmails.includes(email.trim().toLowerCase())
-      window.location.href = isFounderEmail ? '/admin' : '/dashboard'
+      window.location.href = '/dashboard'
     } catch (err: any) {
       setError(err.message || 'An unexpected error occurred.')
       setLoading(false)
