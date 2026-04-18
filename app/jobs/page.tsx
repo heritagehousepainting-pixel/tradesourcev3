@@ -7,6 +7,7 @@
  */
 import JobsClient from './JobsClient'
 import { createClient } from '@supabase/supabase-js'
+import { getServerUserAccessFromCookies } from '@/lib/auth/access.server'
 
 export const metadata = {
   title: 'Browse Jobs — TradeSource',
@@ -16,6 +17,13 @@ export const metadata = {
 export default async function JobsPage() {
   let initialJobs: any[] = []
   let isAuthenticated = false
+
+  try {
+    const access = await getServerUserAccessFromCookies()
+    isAuthenticated = !!access?.isAuthenticated
+  } catch {
+    // Non-fatal — client will still resolve auth state
+  }
 
   const networkContext = {
     vettingNote:

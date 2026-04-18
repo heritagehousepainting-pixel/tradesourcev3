@@ -391,26 +391,7 @@ body {
     padding: 24px 16px 40px !important;
   }
 
-  /* Apply page: hide left panel on all mobile — form is self-contained */
-  [style*="border-right:1px solid var(--color-border)"][style*="width:42%"] {
-    display: none !important;
-  }
-
-  /* Apply page: right form panel — full width on mobile with compact header */
-  [style*="overflow-y"] {
-    flex: none !important;
-    width: 100% !important;
-    padding: 0 0 64px !important;
-  }
-  /* Form content area: tighter mobile padding */
-  [style*="overflow-y"] > div[style*="maxWidth"] {
-    max-width: 100% !important;
-    padding: 20px 20px !important;
-  }
-  /* Form card: tighter mobile padding */
-  [style*="overflow-y"] > div[style*="maxWidth"] .form-card > div:last-child {
-    padding: 20px 20px !important;
-  }
+  /* Apply page: legacy brittle rule removed — see robust rules below */
 
   /* Messages page: thread list + detail — full-width stacked on mobile */
   /* Thread list: full width on mobile, compact height */
@@ -551,9 +532,14 @@ body {
     gap: 40px !important;
   }
 
-  /* ── Apply page: left panel wider on desktop ── */
+  /* ── Apply page: two-panel layout on desktop ── */
   [data-apply-left-panel] {
-    width: 50% !important;
+    display: flex !important;
+    width: 46% !important;
+  }
+  [data-apply-form-panel] {
+    width: 54% !important;
+    padding: 56px 48px !important;
   }
 
   /* ── Dashboard messages: wider on desktop ── */
@@ -1125,9 +1111,9 @@ body.no-shell header,
 body.no-shell footer {
   display: none !important;
 }
-/* Founder login: full dark background */
+/* Sign-in / founder-login: theme-aware background (let theme tokens drive). */
 body.no-shell {
-  background-color: #0F172A !important;
+  background-color: var(--color-bg) !important;
   margin: 0 !important;
 }
 
@@ -1167,9 +1153,20 @@ body.no-shell {
   }
 
 
-  /* S3-D: Hero overlay — lighter center so circuit art shows through */
+  /* S3-D: Hero overlay — refined gradient for mobile */
   .hero-overlay {
-    background: radial-gradient(ellipse 70% 70% at 55% 50%, rgba(2,8,22,0.15) 0%, rgba(2,8,22,0.40) 50%, rgba(1,5,18,0.80) 100%) !important;
+    background: linear-gradient(
+      180deg,
+      rgba(2, 8, 22, 0.85) 0%,
+      rgba(2, 8, 22, 0.75) 40%,
+      rgba(1, 5, 18, 0.90) 100%
+    ) !important;
+  }
+
+  /* Mobile hero: reference image positioned for best composition */
+  [data-homepage-hero] > [aria-hidden="true"] img {
+    object-position: 50% 30% !important;
+    opacity: 0.35 !important;
   }
 
   /* S3-C: Headline — tighter line-height for mobile */
@@ -1529,52 +1526,112 @@ body.no-shell {
   [style*="padding:28px 32px"][style*="border-radius:14"] {
     padding: 16px !important;
   }
-  /* Reference image: mobile — chip at left edge, dark gradient on right */
+  /* Mobile hero reference image: refined positioning */
   [data-homepage-hero] img {
-    object-position: 12% 50% !important;
+    object-position: 50% 40% !important;
     opacity: 0.25 !important;
-    transform: none !important;
+  }
+
+  /* Hero: tighter content spacing on mobile */
+  [data-homepage-hero] > div[style*="max-width"] {
+    padding: 40px 20px 0 !important;
+  }
+
+  /* Hero headline: optimized for mobile */
+  [data-homepage-hero] .hero-headline {
+    font-size: clamp(26px, 7vw, 64px) !important;
+    line-height: 1.05 !important;
+    letter-spacing: -1.5px !important;
+  }
+
+  /* Hero sub-copy: compact on mobile */
+  [data-homepage-hero] .hero-sub-copy {
+    font-size: 14px !important;
+    line-height: 1.55 !important;
+    margin-bottom: 16px !important;
+  }
+
+  /* Hero CTA row: full-width buttons */
+  [data-homepage-hero] > div[style*="max-width"] > div > div[style*="display: flex"][style*="align-items: center"][style*="gap: 12"] {
+    flex-direction: column !important;
+    gap: 12px !important;
+  }
+  [data-homepage-hero] > div[style*="max-width"] > div > div[style*="display: flex"][style*="align-items: center"][style*="gap: 12"] a {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+
+  /* Phase badge: compact on mobile */
+  [data-homepage-hero] [style*="background: rgba(37,99,235,0.12)"] span {
+    font-size: 9px !important;
+    letter-spacing: 1px !important;
+  }
+
+  /* Section padding: tighter on mobile */
+  [data-homepage-hero] ~ section > div[style*="max-width"] {
+    padding: 48px 20px !important;
+  }
+  section > div[style*="max-width"][style*="padding: 72px 56px"] {
+    padding: 48px 20px !important;
+  }
+
+  /* Closing CTA: tighter on mobile */
+  .closing-cta-section {
+    padding: 56px 20px !important;
   }
 
 }
 
-/* Reference image: desktop — centered on the horizontal axis, no translate offset.
-   The translateX(-137px) has been removed — it was pulling the image left and shifting
-   the painter's face into the stats panel area. Centered positioning (50%) moves the
-   focal content (painter, bright interior) toward the right half of the hero, reducing
-   competition with the text on the left. */
-/* Desktop-only media query — mobile CSS inside @media(max-width:640px) cannot override */
+/* Reference image: desktop — centered on the horizontal axis for balanced composition */
 @media (min-width: 641px) {
   [data-homepage-hero] img {
     object-position: 50% 50% !important;
-    transform: none !important;
   }
 }
 
 /* Tablet polish */
 @media (min-width: 641px) and (max-width: 1024px) {
-  [style*="min-width:240px"],
-  [style*="minWidth:240"] {
-    width: 190px !important;
+  /* Hero content: optimized width for tablet */
+  [data-homepage-hero] > div[style*="max-width"] {
+    padding: 52px 32px 0 !important;
+  }
+
+  /* Hero stats panel: properly sized for tablet */
+  .hero-stats-row > [data-mobile-panel="true"][data-mobile-grid="stats"] {
+    width: 200px !important;
     min-width: unset !important;
-    padding: 20px !important;
   }
 
   [style*="padding:80px 56px 0"] {
     padding: 52px 32px 0 !important;
   }
 
+  [style*="padding:72px 56px"] {
+    padding: 56px 32px !important;
+  }
+
+  [style*="padding:88px 56px"] {
+    padding: 64px 32px !important;
+  }
+
   [style*="padding:104px 56px"] {
     padding: 68px 32px !important;
   }
 
-  /* Process ghost numbers: smaller on tablet — 56px is too large */
-  [style*="font-size:56px"] {
+  /* Process ghost numbers: smaller on tablet — 48px/56px can overflow */
+  [style*="font-size:48"] {
+    font-size: 36px !important;
+    letter-spacing: -2px !important;
+  }
+  [style*="font-size:56"] {
     font-size: 40px !important;
     letter-spacing: -2px !important;
   }
 
-  /* Who ghost numbers: hide on tablet too — same overflow issue */
+  /* Contractor type ghost numbers: hide on tablet — 64px too large */
+  [style*="font-size:64"] {
+    display: none !important;
+  }
   [style*="font-size:120px"] {
     display: none !important;
   }
@@ -1586,6 +1643,33 @@ body.no-shell {
   [style*="display:flex"][style*="gap:64"] {
     gap: 32px !important;
   }
+
+  /* AI section: stack on tablet */
+  .ai-section-grid {
+    grid-template-columns: 1fr !important;
+    gap: 40px !important;
+  }
+}
+
+/* ── Section dividers: consistent styling ── */
+section[style*="border-top: 1px solid var(--color-border)"] {
+  border-color: var(--color-border) !important;
+}
+
+/* ── Light mode: section card backgrounds need proper white ── */
+[data-theme="light"] section [style*="background: var(--color-bg-card)"] {
+  background-color: var(--color-bg-card) !important;
+  border-color: var(--color-border) !important;
+}
+
+/* ── Button focus states: clear and consistent ── */
+a[style*="background: var(--color-blue)"]:focus-visible {
+  outline: 2px solid var(--color-blue) !important;
+  outline-offset: 3px !important;
+}
+button[style*="background: var(--color-blue)"]:focus-visible {
+  outline: 2px solid var(--color-blue) !important;
+  outline-offset: 3px !important;
 }
 
 /* Desktop: restore defaults */
@@ -1623,12 +1707,151 @@ body.no-shell {
   background-color: #030C1A;
 }
 
-/* Light mode hero: dark navy — provides solid dark base so white hero text stays readable
-   regardless of how bright the background image is. The dark overlay gradient on top ensures
-   the image is visible from the left edge (image bleeds through naturally), while the right
-   side darkens to support the image's own dark tones. */
+/* Light mode hero: solid dark base so white hero text stays readable.
+   The reference image is visible through a controlled overlay. */
 [data-theme="light"] [data-homepage-hero] {
   background-color: #060C1A;
+}
+
+/* ── Hero background image: centered and balanced ──
+   The reference image focal point (painter + interior) should be centered
+   for optimal composition with the text on the left. */
+[data-homepage-hero] > [aria-hidden="true"] img {
+  object-position: 50% 50% !important;
+  opacity: 1 !important;
+  transform: none !important;
+}
+
+/* ── Hero overlay: ensure consistent darkening in both modes ── */
+[data-theme="dark"] [data-homepage-hero] .hero-overlay {
+  background: linear-gradient(
+    to right,
+    rgba(2, 8, 22, 0.92) 0%,
+    rgba(2, 8, 22, 0.88) 35%,
+    rgba(2, 8, 22, 0.60) 60%,
+    rgba(2, 8, 22, 0.25) 100%
+  ) !important;
+}
+
+[data-theme="light"] [data-homepage-hero] .hero-overlay {
+  background: linear-gradient(
+    to right,
+    rgba(2, 8, 22, 0.94) 0%,
+    rgba(2, 8, 22, 0.90) 35%,
+    rgba(2, 8, 22, 0.65) 60%,
+    rgba(2, 8, 22, 0.35) 100%
+  ) !important;
+}
+
+/* Desktop: image centered horizontally */
+@media (min-width: 641px) {
+  [data-homepage-hero] > [aria-hidden="true"] img {
+    object-position: 50% 50% !important;
+  }
+}
+
+/* ── Hero overlay: clean dark gradient, consistent in both modes ──
+   Left side: very dark for text readability
+   Right side: fades to reveal more of the background image
+   This creates a premium photo-hero feel. */
+[data-homepage-hero] .hero-overlay {
+  background: linear-gradient(
+    to right,
+    rgba(2, 8, 22, 0.92) 0%,
+    rgba(2, 8, 22, 0.88) 35%,
+    rgba(2, 8, 22, 0.60) 60%,
+    rgba(2, 8, 22, 0.25) 100%
+  ) !important;
+}
+
+/* ── Hero stats panel: refined glass treatment for both modes ──
+   Desktop stats panel uses a dark frosted glass effect that works
+   consistently across light and dark theme settings. */
+[data-homepage-hero] .hero-stats-panel {
+  background: rgba(4, 12, 30, 0.75) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  border: 1px solid rgba(59, 130, 246, 0.20) !important;
+  box-shadow: 
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    0 8px 40px rgba(0, 0, 0, 0.40) !important;
+}
+
+/* Light mode: slightly darker panel for better contrast */
+[data-theme="light"] [data-homepage-hero] .hero-stats-panel {
+  background: rgba(2, 8, 20, 0.88) !important;
+  border-color: rgba(59, 130, 246, 0.25) !important;
+}
+
+/* ── Hero headline: enhanced text treatment for maximum readability ── */
+[data-homepage-hero] .hero-headline {
+  text-shadow: 
+    0 2px 24px rgba(0, 0, 0, 0.60),
+    0 1px 3px rgba(0, 0, 0, 0.50),
+    0 0 40px rgba(0, 0, 0, 0.20) !important;
+}
+
+/* ── Hero subtext: improved contrast for both modes ── */
+[data-homepage-hero] [style*="font-size: 16"][style*="line-height: 1.7"] {
+  color: rgba(220, 235, 255, 0.88) !important;
+  text-shadow: 0 1px 10px rgba(0, 0, 0, 0.40) !important;
+}
+
+/* ── Section labels: consistent uppercase style ── */
+section > div > div[style*="letter-spacing: 3"][style*="text-transform: uppercase"] {
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  letter-spacing: 2.5px !important;
+}
+
+/* ── Section titles: refined typography ── */
+section > div > div[style*="clamp(28px"] {
+  font-weight: 800 !important;
+  letter-spacing: -1.5px !important;
+  line-height: 1.1 !important;
+}
+section > div > div[style*="clamp(32px"] {
+  font-weight: 800 !important;
+  letter-spacing: -1.5px !important;
+  line-height: 1.1 !important;
+}
+
+/* ── Phase badge refinement ── */
+[data-homepage-hero] [style*="background: rgba(37,99,235,0.12)"][style*="border: 1px solid rgba(37,99,235,0.25)"] {
+  border-radius: 100px !important;
+}
+[data-homepage-hero] [style*="background: rgba(37,99,235,0.12)"][style*="border: 1px solid rgba(37,99,235,0.25)"] span {
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  letter-spacing: 1.5px !important;
+}
+
+/* ── Hero CTA buttons: enhanced shadow for depth ── */
+[data-homepage-hero] a[href="/apply"][style*="box-shadow"] {
+  box-shadow: 
+    0 4px 20px rgba(37, 99, 235, 0.50),
+    0 2px 8px rgba(0, 0, 0, 0.30) !important;
+  transition: background 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease !important;
+}
+[data-homepage-hero] a[href="/apply"][style*="box-shadow"]:hover {
+  background: var(--color-blue-hover) !important;
+  box-shadow: 
+    0 6px 28px rgba(37, 99, 235, 0.60),
+    0 3px 12px rgba(0, 0, 0, 0.35) !important;
+  transform: translateY(-1px);
+}
+[data-homepage-hero] a[href="/apply"][style*="box-shadow"]:active {
+  transform: translateY(0);
+}
+/* Hero CTA focus state: clear ring */
+[data-homepage-hero] a[href="/apply"]:focus-visible {
+  outline: 2px solid var(--color-blue) !important;
+  outline-offset: 3px !important;
+}
+/* Hero secondary CTA: subtle border button */
+[data-homepage-hero] a[href="/jobs"]:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.6) !important;
+  outline-offset: 3px !important;
 }
 
 /* Dark mode: electric blue circuit lines — #0091FF closer to reference */
@@ -1656,22 +1879,95 @@ body.no-shell {
   stroke-opacity: 0.18;
 }
 
-/* Light mode: soft overlay over image */
+/* Light mode: keep the dark overlay — hero is always a dark-navy photo hero in both modes */
 [data-theme="light"] [data-homepage-hero] .hero-overlay {
-  background: linear-gradient(160deg, rgba(255,255,255,0.28) 0%, rgba(255,255,255,0.10) 40%, rgba(255,255,255,0.40) 100%) !important;
+  /* intentionally not overriding — dark gradient is correct for both modes */
+}
+
+/* ── Homepage ticker: theme-aware strip between hero and body ── */
+.homepage-ticker {
+  background: linear-gradient(to bottom, rgba(2,8,20,0.90) 0%, rgba(3,10,22,0.60) 100%);
+  border-top: 1px solid rgba(59,130,246,0.08) !important;
+}
+/* Dark mode ticker: white text over dark gradient */
+[data-theme="dark"] .homepage-ticker {
+  background: linear-gradient(to bottom, rgba(2,8,20,0.90) 0%, rgba(3,10,22,0.60) 100%);
+}
+[data-theme="dark"] .homepage-ticker [style*="color: rgba(255,255,255"] {
+  color: rgba(255,255,255,0.45) !important;
+}
+[data-theme="dark"] .homepage-ticker [style*="rgba(16,185,129,0.6)"] {
+  background-color: rgba(16,185,129,0.6) !important;
+}
+/* Light mode ticker: adapts to light background */
+[data-theme="light"] .homepage-ticker {
+  background: var(--color-bg-secondary);
+  border-top: 1px solid var(--color-border) !important;
+}
+[data-theme="light"] .homepage-ticker [style*="rgba(255,255,255,0.35)"],
+[data-theme="light"] .homepage-ticker span[style*="color: rgba(255,255,255"],
+[data-theme="light"] .homepage-ticker > div > div > div {
+  color: var(--color-text-muted) !important;
+}
+/* Ticker text: light mode readable */
+[data-theme="light"] .homepage-ticker div[style*="color: rgba(255,255,255"] {
+  color: var(--color-text-muted) !important;
+}
+/* Ticker verified label: accent in light mode */
+[data-theme="light"] .homepage-ticker [style*="rgba(59,130,246,0.70)"] {
+  color: var(--color-blue) !important;
+}
+/* Ticker dots: muted in light mode */
+[data-theme="light"] .homepage-ticker [style*="rgba(16,185,129,0.6)"] {
+  background-color: rgba(16,185,129,0.4) !important;
+}
+
+/* ── Hero bottom fade: refined transition to content below ── */
+.hero-bottom-fade {
+  background: linear-gradient(to bottom, transparent 0%, rgba(2,8,22,0.70) 100%) !important;
+  height: 120px !important;
+}
+[data-theme="light"] .hero-bottom-fade {
+  background: linear-gradient(to bottom, transparent 0%, rgba(3,12,28,0.75) 100%) !important;
 }
 
 /* ── Closing CTA section: premium glow treatment ── */
+.closing-cta-section {
+  position: relative;
+}
 .closing-cta-section::before {
   content: '';
   position: absolute;
-  top: 0;
+  top: 50%;
   left: 50%;
-  transform: translateX(-50%);
-  width: 600px;
-  height: 200px;
-  background: radial-gradient(ellipse, rgba(37,99,235,0.06) 0%, transparent 70%);
+  transform: translate(-50%, -50%);
+  width: 700px;
+  height: 300px;
+  background: radial-gradient(ellipse, rgba(37,99,235,0.08) 0%, transparent 70%);
   pointer-events: none;
+}
+[data-theme="light"] .closing-cta-section::before {
+  background: radial-gradient(ellipse, rgba(37,99,235,0.05) 0%, transparent 70%);
+}
+
+/* ── Closing CTA buttons: enhanced hover ── */
+.closing-cta-section a[href="/apply"] {
+  transition: background 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
+}
+.closing-cta-section a[href="/apply"]:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(37,99,235,0.35) !important;
+}
+.closing-cta-section a[href="/jobs"] {
+  transition: border-color 0.2s ease, color 0.2s ease, transform 0.15s ease;
+}
+.closing-cta-section a[href="/jobs"]:hover {
+  transform: translateY(-1px);
+}
+/* Focus states for closing CTA */
+.closing-cta-section a:focus-visible {
+  outline: 2px solid var(--color-blue) !important;
+  outline-offset: 3px !important;
 }
 
 /* ── Section transition fade bars — create visual breathing room between sections ── */
@@ -1686,7 +1982,10 @@ body.no-shell {
   left: 0;
   right: 0;
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.06) 20%, rgba(255,255,255,0.06) 80%, transparent);
+  background: linear-gradient(90deg, transparent, rgba(37,99,235,0.08) 20%, rgba(37,99,235,0.08) 80%, transparent);
+}
+[data-theme="light"] [data-section-transition]::before {
+  background: linear-gradient(90deg, transparent, rgba(0,0,0,0.04) 20%, rgba(0,0,0,0.04) 80%, transparent);
 }
 
 /* ── Premium card shadow system — used across homepage sections ── */
@@ -1694,6 +1993,114 @@ body.no-shell {
   --ts-shadow-card: 0 2px 8px rgba(0,0,0,0.18);
   --ts-shadow-card-hover: 0 6px 24px rgba(0,0,0,0.28), 0 0 0 1px rgba(37,99,235,0.15);
   --ts-shadow-elevated: 0 0 40px rgba(37,99,235,0.08), 0 16px 40px rgba(0,0,0,0.35);
+}
+
+/* ── Network section cards: refined hover treatment ── */
+.homepage-network-cards [style*="border: 1px solid var(--color-border)"][style*="padding: 28px 32px"][style*="border-radius: 12"] {
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
+}
+.homepage-network-cards [style*="border: 1px solid var(--color-border)"][style*="padding: 28px 32px"][style*="border-radius: 12"]:hover {
+  border-color: rgba(37,99,235,0.30) !important;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+  transform: translateY(-1px);
+}
+/* Light mode: Network cards need proper shadows */
+[data-theme="light"] .homepage-network-cards [style*="border: 1px solid var(--color-border)"][style*="padding: 28px 32px"][style*="border-radius: 12"] {
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 0 1px rgba(0,0,0,0.04) !important;
+}
+[data-theme="light"] .homepage-network-cards [style*="border: 1px solid var(--color-border)"][style*="padding: 28px 32px"][style*="border-radius: 12"]:hover {
+  box-shadow: 0 4px 16px rgba(0,0,0,0.12) !important;
+}
+
+/* ── How it works cards: enhanced hover state ── */
+.homepage-steps-grid > div {
+  transition: border-color 0.2s ease, border-left-color 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
+}
+.homepage-steps-grid > div:hover {
+  border-color: rgba(37,99,235,0.25) !important;
+  border-left-color: rgba(37,99,235,0.70) !important;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.20), 0 0 0 1px rgba(37,99,235,0.15) !important;
+  transform: translateY(-2px);
+}
+
+/* ── Contractor type cards: enhanced hover state ── */
+.homepage-contractors-grid > div {
+  transition: border-top-color 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
+}
+.homepage-contractors-grid > div:hover {
+  border-top-color: rgba(59,130,246,0.85) !important;
+  box-shadow: 0 6px 28px rgba(0,0,0,0.25), 0 0 0 1px rgba(37,99,235,0.10) !important;
+  transform: translateY(-2px);
+}
+/* Light mode: Contractor cards need proper shadows */
+[data-theme="light"] .homepage-contractors-grid > div {
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08) !important;
+}
+[data-theme="light"] .homepage-contractors-grid > div:hover {
+  box-shadow: 0 6px 24px rgba(0,0,0,0.12) !important;
+}
+/* Light mode: Contractor card borders */
+[data-theme="light"] .homepage-contractors-grid > div {
+  border-left: 1px solid var(--color-border) !important;
+  border-right: 1px solid var(--color-border) !important;
+  border-bottom: 1px solid var(--color-border) !important;
+}
+
+/* ── Vetting section cards: enhanced hover state ── */
+/* Targeting the 2x2 grid cards in the vetting section */
+section [style*="grid-template-columns: 1fr 1fr"][style*="gap: 16"] > div:hover {
+  border-color: rgba(16,185,129,0.40) !important;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.10);
+  transform: translateY(-1px);
+}
+/* Light mode: Vetting cards need proper shadows */
+[data-theme="light"] section [style*="grid-template-columns: 1fr 1fr"][style*="gap: 16"] > div {
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08) !important;
+}
+[data-theme="light"] section [style*="grid-template-columns: 1fr 1fr"][style*="gap: 16"] > div:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.12) !important;
+}
+
+/* ── AI scope preview: premium shadow ── */
+.ai-scope-preview {
+  box-shadow: 0 0 60px rgba(37,99,235,0.06), 0 20px 48px rgba(0,0,0,0.18) !important;
+  transition: box-shadow 0.2s ease;
+}
+.ai-scope-preview:hover {
+  box-shadow: 0 0 80px rgba(37,99,235,0.08), 0 24px 56px rgba(0,0,0,0.22) !important;
+}
+
+/* ── Light mode: AI scope preview refinement ── */
+[data-theme="light"] .ai-scope-preview {
+  border-color: rgba(37,99,235,0.15) !important;
+  box-shadow: 0 0 40px rgba(37,99,235,0.04), 0 12px 32px rgba(0,0,0,0.08) !important;
+}
+
+/* ── Light mode: How it works cards need border refinement ── */
+[data-theme="light"] .homepage-steps-grid > div {
+  border-color: rgba(37,99,235,0.12) !important;
+  border-left-color: rgba(37,99,235,0.30) !important;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08) !important;
+}
+[data-theme="light"] .homepage-steps-grid > div:hover {
+  box-shadow: 0 4px 16px rgba(0,0,0,0.10) !important;
+}
+
+/* ── Light mode: how it works cards need border refinement ── */
+[data-theme="light"] .homepage-steps-grid > div {
+  border-color: rgba(37,99,235,0.12) !important;
+  border-left-color: rgba(37,99,235,0.30) !important;
+}
+/* Note: Full styling already in block above */
+
+/* ── Light mode: contractor cards border refinement ── */
+[data-theme="light"] .homepage-contractors-grid > div {
+  border-top-color: rgba(37,99,235,0.40) !important;
+}
+
+/* ── Light mode: network section cards border refinement ── */
+[data-theme="light"] section [style*="border: 1px solid var(--color-border)"][style*="padding: 28px 32px"][style*="border-radius: 12"] {
+  border-color: rgba(0,0,0,0.10) !important;
 }
 
 /* ── AI section unique atmosphere ── */
@@ -1782,15 +2189,80 @@ body.no-shell {
   background: radial-gradient(ellipse, rgba(37,99,235,0.04) 0%, transparent 70%);
 }
 
-/* ── Post-job page: hide left info panel on mobile ── */
-/* ── Post-job: hide left info panel on mobile ── */
+/* ── Light mode: closing CTA section — use primary bg ── */
+[data-theme="light"] .closing-cta-section {
+  background: var(--color-bg-primary) !important;
+}
+
+/* ── Footer: consistent spacing and typography ── */
+footer > div > div:first-child > a[href="/"] {
+  font-size: 18px !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.3px !important;
+}
+footer > div > div:first-child > p {
+  font-size: 13px !important;
+  line-height: 1.6 !important;
+  max-width: 240px !important;
+  color: var(--color-text-muted) !important;
+}
+/* Footer link hover: smooth transition */
+footer a:not([style*="background"]):hover {
+  color: var(--color-text) !important;
+  transition: color 0.2s ease;
+}
+
+/* ── Footer county tags: consistent pill styling with design token ── */
+footer [style*="background: var(--color-blue-soft)"] {
+  border-radius: var(--ts-radius-full) !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  padding: 4px 10px !important;
+  border: 1px solid var(--color-blue-border) !important;
+  background: var(--color-blue-soft) !important;
+  color: var(--color-blue) !important;
+}
+
+/* ── Footer: consistent spacing and typography ── */
+footer > div > div:first-child > a[href="/"] {
+  font-size: 18px !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.3px !important;
+}
+footer > div > div:first-child > p {
+  font-size: 13px !important;
+  line-height: 1.6 !important;
+  max-width: 240px !important;
+  color: var(--color-text-muted) !important;
+}
+
+/* ── Post-job / Apply: hide left info panel on mobile+tablet — form is self-contained ── */
 @media (max-width: 1024px) {
-  [data-postjob-left-panel] {
+  [data-postjob-left-panel],
+  [data-apply-left-panel] {
     display: none !important;
   }
-  [data-postjob-form-panel] {
+  [data-postjob-form-panel],
+  [data-apply-form-panel] {
     width: 100% !important;
+    flex: 1 1 auto !important;
     padding: 24px 16px 80px !important;
+    justify-content: flex-start !important;
+  }
+  [data-apply-form-panel] > div {
+    max-width: 560px !important;
+    width: 100% !important;
+  }
+}
+
+/* ── Apply: true mobile (≤640) — tighter padding for small screens ── */
+@media (max-width: 640px) {
+  [data-apply-form-panel] {
+    padding: 16px 16px 80px !important;
+  }
+  /* Step indicator labels: keep readable on narrow screens */
+  [data-apply-form-panel] .form-card {
+    padding: 18px 16px !important;
   }
 }
 
@@ -2118,6 +2590,13 @@ button,
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(0, 0, 0, 0.25);
 }
+/* Dark mode scrollbar: lighter thumb */
+[data-theme="dark"] ::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+}
+[data-theme="dark"] ::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
 
 /* ── Smooth page transitions ── */
 body {
@@ -2245,4 +2724,767 @@ main,
   height: 1px;
   background-color: var(--color-divider);
   margin: var(--ts-space-6) 0;
+}
+/* ═══════════════════════════════════════════════════════════════════════
+   POLICY PAGES (Privacy / Terms) — theme-aware
+   ═══════════════════════════════════════════════════════════════════════ */
+
+.policy-page {
+  color: var(--color-text);
+}
+/* Decorative constellation: only show in dark mode; light mode keeps it clean */
+[data-theme="light"] .policy-constellation {
+  display: none !important;
+}
+.policy-header {
+  background-color: var(--color-nav);
+  border-bottom: 1px solid var(--color-nav-border);
+  backdrop-filter: saturate(120%) blur(6px);
+}
+.policy-brand { color: var(--color-text); }
+.policy-nav-link { color: var(--color-text-muted); transition: color .15s; }
+.policy-nav-link:hover { color: var(--color-text); text-decoration: none; }
+.policy-title { color: var(--color-text); }
+.policy-muted { color: var(--color-text-muted); }
+.policy-subtle { color: var(--color-text-subtle); }
+
+.policy-card {
+  background-color: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: var(--ts-shadow-card);
+}
+.policy-row-button {
+  background: transparent;
+  border: none;
+  color: var(--color-text);
+  cursor: pointer;
+}
+.policy-row-button:hover { background-color: var(--color-surface); }
+.policy-row-title { color: var(--color-text); }
+.policy-row-plus { color: var(--color-text-subtle); font-weight: 600; }
+.policy-row-body { color: var(--color-text-muted); }
+
+.policy-callout {
+  background-color: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+}
+
+/* Mobile tightening on policy pages */
+@media (max-width: 640px) {
+  .policy-header .max-w-4xl { padding-left: 16px !important; padding-right: 16px !important; }
+  .policy-page .max-w-4xl { padding-left: 16px !important; padding-right: 16px !important; }
+  .policy-title { font-size: 24px !important; }
+  .policy-row-button { padding: 14px 16px !important; }
+  .policy-row-body { padding-left: 16px !important; padding-right: 16px !important; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   JOB DETAIL — mobile nav polish
+   ═══════════════════════════════════════════════════════════════════════ */
+@media (max-width: 480px) {
+  [data-jobdetail-postlink] { display: none !important; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   HOMEPAGE — visual redesign
+   Big type. Hairlines. Whitespace. Alternating light/dark sections.
+   Mobile-first.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+.ts-home {
+  color: var(--color-text);
+  background-color: var(--color-bg);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ─── Nav ──────────────────────────────────────────────────────────── */
+.ts-nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: transparent;
+  border-bottom: 1px solid transparent;
+  transition: background .25s, border-color .25s, backdrop-filter .25s;
+}
+.ts-nav.is-scrolled {
+  background: rgba(10, 16, 30, 0.72);
+  border-bottom-color: rgba(255,255,255,0.06);
+  backdrop-filter: saturate(160%) blur(18px);
+  -webkit-backdrop-filter: saturate(160%) blur(18px);
+}
+[data-theme="light"] .ts-nav.is-scrolled {
+  background: rgba(255,255,255,0.80);
+  border-bottom-color: rgba(0,0,0,0.06);
+}
+.ts-nav-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  height: 68px;
+  padding: 0 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+.ts-nav-brand {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #F8FAFC;
+  text-decoration: none !important;
+}
+.ts-nav-brand span { color: #60A5FA; }
+.ts-nav-links {
+  display: flex;
+  gap: 36px;
+  flex: 1;
+  justify-content: center;
+}
+.ts-nav-links a {
+  font-size: 14px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.65);
+  text-decoration: none !important;
+  transition: color .15s;
+}
+.ts-nav-links a:hover,
+.ts-nav-links a.is-active { color: #fff; }
+.ts-nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.ts-nav-cta {
+  background: #fff;
+  color: #0a1426 !important;
+  padding: 10px 18px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none !important;
+  transition: transform .15s, box-shadow .2s;
+}
+.ts-nav-cta:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(255,255,255,0.12);
+}
+.ts-nav-hamburger {
+  background: none;
+  border: none;
+  color: #F8FAFC;
+  cursor: pointer;
+  width: 44px;
+  height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+}
+.ts-nav-drawer {
+  position: sticky;
+  top: 68px;
+  z-index: 99;
+  background: rgba(10, 16, 30, 0.96);
+  backdrop-filter: saturate(160%) blur(18px);
+  -webkit-backdrop-filter: saturate(160%) blur(18px);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  padding: 8px 20px 24px;
+  display: flex;
+  flex-direction: column;
+}
+.ts-nav-drawer a {
+  padding: 16px 4px;
+  font-size: 16px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.85);
+  text-decoration: none !important;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.ts-nav-drawer-cta {
+  margin-top: 20px;
+  padding: 14px 20px !important;
+  background: #fff;
+  color: #0a1426 !important;
+  border-radius: 999px;
+  font-weight: 600 !important;
+  text-align: center;
+  border-bottom: none !important;
+}
+
+/* When nav is unscrolled over the dark hero, brand stays white */
+.ts-nav:not(.is-scrolled) .ts-nav-brand,
+.ts-nav:not(.is-scrolled) .ts-nav-brand span { color: #F8FAFC; }
+.ts-nav:not(.is-scrolled) .ts-nav-brand span { color: #60A5FA; }
+
+/* ─── Hero ─────────────────────────────────────────────────────────── */
+.ts-hero {
+  position: relative;
+  overflow: hidden;
+  background: #06101F;
+  color: #F8FAFC;
+  padding: 168px 0 0;
+  isolation: isolate;
+  margin-top: -68px;  /* nav floats over hero */
+  padding-top: calc(168px + 68px);
+}
+
+/* Subtle atmospheric layer — gradients + faint grid */
+.ts-hero-bg {
+  position: absolute; inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+.ts-hero-glow {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.55;
+}
+.ts-hero-glow-1 {
+  width: 640px; height: 640px;
+  right: -120px; top: -120px;
+  background: radial-gradient(circle, rgba(59,130,246,0.45) 0%, rgba(59,130,246,0) 70%);
+}
+.ts-hero-glow-2 {
+  width: 520px; height: 520px;
+  left: -80px; bottom: -160px;
+  background: radial-gradient(circle, rgba(16,185,129,0.18) 0%, rgba(16,185,129,0) 70%);
+}
+.ts-hero-grid {
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px);
+  background-size: 64px 64px;
+  mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
+  -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
+}
+
+.ts-hero-inner {
+  position: relative;
+  z-index: 1;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 40px;
+}
+
+.ts-hero-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(147, 197, 253, 0.82);
+  margin-bottom: 44px;
+}
+.ts-hero-label-rule {
+  width: 40px;
+  height: 1px;
+  background: rgba(147, 197, 253, 0.4);
+}
+
+.ts-hero-title {
+  font-size: clamp(44px, 7.4vw, 108px);
+  font-weight: 600;
+  letter-spacing: -0.045em;
+  line-height: 0.98;
+  color: #F8FAFC;
+  margin: 0 0 32px;
+  max-width: 1100px;
+}
+.ts-hero-title em {
+  font-style: normal;
+  background: linear-gradient(180deg, #93C5FD 0%, #60A5FA 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.ts-hero-sub {
+  font-size: clamp(17px, 1.4vw, 21px);
+  line-height: 1.55;
+  color: rgba(230, 240, 255, 0.72);
+  max-width: 620px;
+  margin: 0 0 56px;
+  font-weight: 400;
+}
+
+.ts-hero-actions {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+
+.ts-cta-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: #fff;
+  color: #06101F !important;
+  padding: 16px 28px;
+  border-radius: 999px;
+  font-size: 15px;
+  font-weight: 600;
+  text-decoration: none !important;
+  transition: transform .15s, box-shadow .25s;
+  box-shadow: 0 8px 32px rgba(255,255,255,0.14), 0 2px 6px rgba(0,0,0,0.2);
+}
+.ts-cta-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 14px 40px rgba(255,255,255,0.22), 0 2px 6px rgba(0,0,0,0.2);
+}
+.ts-cta-primary svg { transition: transform .2s; }
+.ts-cta-primary:hover svg { transform: translateX(2px); }
+
+.ts-cta-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: rgba(255,255,255,0.80);
+  padding: 16px 18px;
+  font-size: 15px;
+  font-weight: 500;
+  text-decoration: none !important;
+  transition: color .15s;
+}
+.ts-cta-ghost:hover { color: #fff; }
+.ts-cta-ghost svg { transition: transform .2s; opacity: 0.8; }
+.ts-cta-ghost:hover svg { transform: translateX(3px); }
+
+/* Hero foot — verification strip */
+.ts-hero-foot {
+  position: relative;
+  z-index: 1;
+  margin-top: 120px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  padding: 28px 0 32px;
+}
+.ts-hero-verify {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  flex-wrap: wrap;
+}
+.ts-hero-verify-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(147, 197, 253, 0.75);
+  white-space: nowrap;
+}
+.ts-hero-verify-items {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  flex-wrap: wrap;
+  flex: 1;
+}
+.ts-hero-verify-items span {
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(230, 240, 255, 0.78);
+  padding: 0 20px;
+  border-right: 1px solid rgba(255,255,255,0.08);
+  line-height: 1.4;
+}
+.ts-hero-verify-items span:first-child { padding-left: 0; }
+.ts-hero-verify-items span:last-child { border-right: none; }
+
+/* ─── Section framing ──────────────────────────────────────────────── */
+.ts-section {
+  padding: 140px 0;
+}
+.ts-section-light {
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+.ts-section-dark {
+  background: #06101F;
+  color: #F8FAFC;
+}
+.ts-section-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 40px;
+}
+.ts-section-head {
+  max-width: 760px;
+  margin: 0 0 80px;
+}
+.ts-section-kicker {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-blue);
+  margin-bottom: 20px;
+}
+.ts-section-dark .ts-section-kicker {
+  color: #60A5FA;
+}
+.ts-section-title {
+  font-size: clamp(34px, 4.4vw, 60px);
+  font-weight: 600;
+  letter-spacing: -0.035em;
+  line-height: 1.04;
+  margin: 0;
+}
+.ts-section-title em {
+  font-style: normal;
+  color: var(--color-blue);
+}
+.ts-section-dark .ts-section-title em {
+  color: #93C5FD;
+}
+.ts-section-lede {
+  margin-top: 24px;
+  font-size: 18px;
+  line-height: 1.55;
+  color: var(--color-text-muted);
+  max-width: 560px;
+}
+.ts-section-dark .ts-section-lede {
+  color: rgba(230, 240, 255, 0.68);
+}
+
+/* ─── Steps (How it works) ─────────────────────────────────────────── */
+.ts-steps {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0;
+  border-top: 1px solid var(--color-border);
+}
+.ts-step {
+  padding: 56px 40px 64px;
+  border-right: 1px solid var(--color-border);
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+.ts-step:last-child { border-right: none; }
+.ts-step-num {
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--color-blue);
+  font-variant-numeric: tabular-nums;
+}
+.ts-step-body h3 {
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+  color: var(--color-text);
+  margin: 0 0 14px;
+}
+.ts-step-body p {
+  font-size: 15px;
+  line-height: 1.65;
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+/* ─── Who it's for ─────────────────────────────────────────────────── */
+.ts-who {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0;
+  border-top: 1px solid rgba(255,255,255,0.10);
+}
+.ts-who-item {
+  padding: 56px 40px 64px;
+  border-right: 1px solid rgba(255,255,255,0.10);
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+.ts-who-item:last-child { border-right: none; }
+.ts-who-tag {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #60A5FA;
+}
+.ts-who-title {
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+  color: #F8FAFC;
+  margin: 0;
+}
+.ts-who-body {
+  font-size: 15px;
+  line-height: 1.65;
+  color: rgba(230, 240, 255, 0.70);
+  margin: 0;
+}
+
+/* ─── Trust (numbered spec list) ──────────────────────────────────── */
+.ts-trust-layout {
+  display: grid;
+  grid-template-columns: 0.9fr 1.1fr;
+  gap: 80px;
+  align-items: start;
+}
+.ts-trust-head {
+  position: sticky;
+  top: 100px;
+  align-self: start;
+}
+.ts-trust-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--color-border);
+}
+.ts-trust-row {
+  display: grid;
+  grid-template-columns: 72px 1fr;
+  gap: 24px;
+  padding: 28px 0;
+  border-bottom: 1px solid var(--color-border);
+  align-items: baseline;
+}
+.ts-trust-index {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-blue);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
+  padding-top: 2px;
+}
+.ts-trust-title {
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  color: var(--color-text);
+  margin-bottom: 6px;
+}
+.ts-trust-body {
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--color-text-muted);
+}
+
+/* ─── Closing ─────────────────────────────────────────────────────── */
+.ts-closing {
+  position: relative;
+  overflow: hidden;
+  background: #06101F;
+  color: #F8FAFC;
+  padding: 160px 0;
+  text-align: center;
+  isolation: isolate;
+}
+.ts-closing-bg {
+  position: absolute; inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+.ts-closing-bg .ts-hero-glow-1 {
+  width: 720px; height: 720px;
+  right: auto; left: 50%;
+  top: -240px;
+  transform: translateX(-50%);
+  opacity: 0.5;
+}
+.ts-closing-inner {
+  position: relative;
+  z-index: 1;
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 0 40px;
+}
+.ts-closing-title {
+  font-size: clamp(36px, 5.2vw, 72px);
+  font-weight: 600;
+  letter-spacing: -0.04em;
+  line-height: 1.05;
+  margin: 0 0 24px;
+}
+.ts-closing-sub {
+  font-size: clamp(17px, 1.4vw, 20px);
+  line-height: 1.55;
+  color: rgba(230, 240, 255, 0.72);
+  margin: 0 auto 48px;
+  max-width: 560px;
+}
+.ts-closing-inner .ts-hero-actions {
+  justify-content: center;
+}
+.ts-closing-contact {
+  margin-top: 40px;
+  font-size: 13px;
+  color: rgba(230, 240, 255, 0.50);
+}
+.ts-closing-contact a {
+  color: #93C5FD;
+  text-decoration: none !important;
+}
+.ts-closing-contact a:hover { text-decoration: underline !important; }
+
+/* ─── Tablet ───────────────────────────────────────────────────────── */
+@media (max-width: 1024px) {
+  .ts-nav-inner { padding: 0 28px; }
+  .ts-hero { padding-top: calc(132px + 68px); }
+  .ts-hero-inner,
+  .ts-section-inner,
+  .ts-closing-inner { padding-left: 28px; padding-right: 28px; }
+  .ts-section { padding: 108px 0; }
+  .ts-closing { padding: 128px 0; }
+  .ts-section-head { margin-bottom: 56px; }
+
+  .ts-steps,
+  .ts-who {
+    grid-template-columns: 1fr;
+  }
+  .ts-step,
+  .ts-who-item {
+    border-right: none;
+    border-bottom: 1px solid var(--color-border);
+    padding: 40px 0 44px;
+  }
+  .ts-who-item { border-bottom-color: rgba(255,255,255,0.10); }
+  .ts-step:last-child,
+  .ts-who-item:last-child { border-bottom: none; padding-bottom: 0; }
+
+  .ts-trust-layout {
+    grid-template-columns: 1fr;
+    gap: 48px;
+  }
+  .ts-trust-head { position: static; }
+}
+
+/* ─── Mobile ───────────────────────────────────────────────────────── */
+@media (max-width: 720px) {
+  .ts-nav-inner { height: 60px; padding: 0 20px; }
+  .ts-hero {
+    padding-top: calc(88px + 60px);
+    margin-top: -60px;
+  }
+  .ts-hero-inner,
+  .ts-section-inner,
+  .ts-closing-inner { padding-left: 20px; padding-right: 20px; }
+
+  .ts-hero-label {
+    font-size: 10.5px;
+    margin-bottom: 24px;
+    letter-spacing: 0.16em;
+  }
+  .ts-hero-label-rule { width: 24px; }
+
+  .ts-hero-title {
+    font-size: clamp(40px, 11.5vw, 64px);
+    line-height: 1.02;
+    letter-spacing: -0.035em;
+    margin-bottom: 22px;
+  }
+  .ts-hero-sub {
+    font-size: 16px;
+    line-height: 1.55;
+    margin-bottom: 36px;
+  }
+  .ts-hero-actions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+  .ts-cta-primary {
+    justify-content: center;
+    padding: 16px 24px;
+    width: 100%;
+    box-shadow: 0 8px 24px rgba(255,255,255,0.10), 0 2px 6px rgba(0,0,0,0.2);
+  }
+  .ts-cta-ghost {
+    justify-content: center;
+    padding: 14px 16px;
+  }
+
+  .ts-hero-foot {
+    margin-top: 72px;
+    padding: 22px 0 26px;
+  }
+  .ts-hero-verify {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .ts-hero-verify-items {
+    gap: 0;
+    flex-wrap: wrap;
+    width: 100%;
+  }
+  .ts-hero-verify-items span {
+    font-size: 12.5px;
+    padding: 4px 12px;
+    border-right: 1px solid rgba(255,255,255,0.08);
+  }
+  .ts-hero-verify-items span:first-child { padding-left: 0; }
+  .ts-hero-verify-items span:nth-child(3) { border-right: none; }
+
+  .ts-section { padding: 80px 0; }
+  .ts-closing { padding: 96px 0; }
+
+  .ts-section-head { margin-bottom: 40px; }
+  .ts-section-kicker { font-size: 11px; margin-bottom: 14px; letter-spacing: 0.16em; }
+  .ts-section-title { font-size: clamp(28px, 8vw, 40px); letter-spacing: -0.03em; line-height: 1.08; }
+  .ts-section-lede { font-size: 16px; margin-top: 16px; }
+
+  .ts-step { padding: 32px 0 36px; gap: 16px; }
+  .ts-step-num { font-size: 13px; }
+  .ts-step-body h3 { font-size: 19px; }
+  .ts-step-body p { font-size: 15px; }
+
+  .ts-who-item { padding: 32px 0 36px; gap: 16px; }
+  .ts-who-title { font-size: 19px; }
+  .ts-who-body { font-size: 15px; }
+
+  .ts-trust-row {
+    grid-template-columns: 44px 1fr;
+    gap: 16px;
+    padding: 22px 0;
+  }
+  .ts-trust-title { font-size: 16px; }
+  .ts-trust-body { font-size: 14px; }
+
+  .ts-closing-title {
+    font-size: clamp(32px, 9vw, 48px);
+    letter-spacing: -0.03em;
+  }
+  .ts-closing-sub { font-size: 16px; margin-bottom: 32px; }
+}
+
+/* ─── Light-mode: keep hero + closing dark for brand continuity ─── */
+[data-theme="light"] .ts-nav-brand,
+[data-theme="light"] .ts-nav:not(.is-scrolled) .ts-nav-links a {
+  color: rgba(255,255,255,0.75);
+}
+[data-theme="light"] .ts-nav:not(.is-scrolled) .ts-nav-brand { color: #F8FAFC; }
+[data-theme="light"] .ts-nav.is-scrolled .ts-nav-brand { color: var(--color-text); }
+[data-theme="light"] .ts-nav.is-scrolled .ts-nav-links a { color: var(--color-text-muted); }
+[data-theme="light"] .ts-nav.is-scrolled .ts-nav-links a:hover,
+[data-theme="light"] .ts-nav.is-scrolled .ts-nav-links a.is-active { color: var(--color-text); }
+[data-theme="light"] .ts-nav.is-scrolled .ts-nav-cta {
+  background: var(--color-blue);
+  color: #fff !important;
+  box-shadow: 0 4px 14px rgba(37,99,235,0.3);
+}
+[data-theme="light"] .ts-nav.is-scrolled .ts-nav-hamburger { color: var(--color-text); }
+
+/* In light mode the CTA on the dark hero inverts to blue-on-dark feel
+   — keep the white pill on dark hero; it's always the best contrast. */
+
+/* Hover suppression for touch devices */
+@media (hover: none) {
+  .ts-cta-primary:hover,
+  .ts-nav-cta:hover { transform: none; }
 }

@@ -463,7 +463,7 @@ export default function PostJob() {
               </>
             ) : (
               <>
-                <a href="/founder-login" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '13px 24px', borderRadius: 10, fontSize: 14, fontWeight: 700, backgroundColor: 'var(--color-blue)', color: '#fff', textDecoration: 'none', boxShadow: '0 4px 14px rgba(37,99,235,0.25)' }}>
+                <a href="/signin" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '13px 24px', borderRadius: 10, fontSize: 14, fontWeight: 700, backgroundColor: 'var(--color-blue)', color: '#fff', textDecoration: 'none', boxShadow: '0 4px 14px rgba(37,99,235,0.25)' }}>
                   Sign In
                 </a>
                 <a href="/apply" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '12px 24px', borderRadius: 10, fontSize: 13, fontWeight: 600, backgroundColor: 'var(--color-surface)', color: 'var(--color-text)', border: '1px solid rgba(255,255,255,0.1)', textDecoration: 'none' }}>

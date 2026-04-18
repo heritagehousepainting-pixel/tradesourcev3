@@ -86,6 +86,16 @@ Write only the scope description. No preamble. No follow-up questions.`
 
 export async function POST(request: NextRequest) {
   try {
+    // Auth gate — AI scope builder costs tokens; only approved contractors may call.
+    const { getServerUserAccess } = await import('@/lib/auth/access.server')
+    const access = await getServerUserAccess(request)
+    if (!access.isAuthenticated) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+    if (!access.canAccessContractorApp) {
+      return NextResponse.json({ error: 'Approved contractors only' }, { status: 403 })
+    }
+
     if (!MINIMAX_API_KEY) {
       return NextResponse.json(
         { error: 'Scope assistant is not configured.' },

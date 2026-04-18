@@ -34,7 +34,7 @@ export default function FooterNav() {
       ) : (
         <>
           {/* Show "Sign In" for guests — links to the founder-login page */}
-          <FooterLink href="/founder-login" blue>Sign In</FooterLink>
+          <FooterLink href="/signin" blue>Sign In</FooterLink>
         </>
       )}
     </nav>

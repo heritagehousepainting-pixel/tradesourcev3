@@ -348,13 +348,14 @@ export default function Apply() {
   return (
     <div style={{ backgroundColor: 'var(--color-bg)', minHeight: '100vh', display: 'flex', alignItems: 'stretch' }}>
 
-      {/* ─── Left Panel ─── */}
+      {/* ─── Left Panel (always dark navy — premium brand panel, stays readable in both themes) ─── */}
       <div data-apply-left-panel style={{
         display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
         width: '48%', padding: '48px 56px',
-        backgroundColor: 'var(--color-bg-alt)',
+        backgroundColor: '#0D1B2A',
         backgroundImage: 'repeating-linear-gradient(-45deg, transparent, transparent 8px, rgba(255,255,255,0.012) 8px, rgba(255,255,255,0.012) 9px)',
-        borderRight: '1px solid var(--color-border)',
+        borderRight: '1px solid rgba(255,255,255,0.08)',
+        color: '#F8FAFC',
         position: 'relative', overflow: 'hidden',
       }}>
         <div style={{
@@ -370,16 +371,16 @@ export default function Apply() {
               <path d="M13 10V3L4 14h7v7l9-11h-7z" />
             </svg>
           </div>
-          <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--color-text)' }}>TradeSource</span>
+          <span style={{ fontSize: 14, fontWeight: 700, color: '#F8FAFC' }}>TradeSource</span>
         </div>
 
         {/* Headline */}
         <div>
-          <div style={{ width: 32, height: 3, borderRadius: 2, backgroundColor: 'var(--color-orange)', marginBottom: 20 }} />
-          <h1 style={{ fontSize: 'clamp(28px, 3.5vw, 44px)', fontWeight: 800, color: 'var(--color-text)', letterSpacing: '-0.03em', lineHeight: 1.1, marginBottom: 16, textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>
+          <div style={{ width: 32, height: 3, borderRadius: 2, backgroundColor: '#F97316', marginBottom: 20 }} />
+          <h1 style={{ fontSize: 'clamp(28px, 3.5vw, 44px)', fontWeight: 800, color: '#F8FAFC', letterSpacing: '-0.03em', lineHeight: 1.1, marginBottom: 16 }}>
             Join the TradeSource network.
           </h1>
-          <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.75)', lineHeight: 1.7, marginBottom: 32, textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>
+          <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.78)', lineHeight: 1.7, marginBottom: 32 }}>
             A private network of professional painters in Montgomery, Bucks, Delaware Counties and Philadelphia. Fixed-price overflow work — no bidding, no lead fees.
           </p>
 
@@ -402,7 +403,7 @@ export default function Apply() {
             ].map(req => (
               <div key={req} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 7 }}>
                 <div style={{ width: 5, height: 5, borderRadius: '50%', backgroundColor: '#10b981', flexShrink: 0 }} />
-                <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>{req}</span>
+                <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.72)' }}>{req}</span>
               </div>
             ))}
             {/* Post-job bridge — shown as a different style to signal it's a post-approval benefit */}
@@ -410,9 +411,9 @@ export default function Apply() {
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
                 <path d="M13 10V3L4 14h7v7l9-11h-7z"/>
               </svg>
-              <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>Once approved: post your own overflow work</span>
+              <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.55)' }}>Once approved: post your own overflow work</span>
             </div>
-            <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', marginTop: 10, textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>
+            <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', marginTop: 10 }}>
               Takes 5–10 minutes. Documents uploaded on Step 4.
             </p>
           </div>
@@ -448,23 +449,28 @@ export default function Apply() {
                       <line x1="12" y1="1" x2="12" y2="23" /><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6" />
                     </svg>
                   )}
+                  {icon === 'users' && (
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-blue)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/>
+                    </svg>
+                  )}
                 </div>
                 <div>
-                  <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--color-text)', marginBottom: 2 }}>{title}</div>
-                  <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>{sub}</div>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: '#F8FAFC', marginBottom: 2 }}>{title}</div>
+                  <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.65)' }}>{sub}</div>
                 </div>
               </div>
             ))}
           </div>
         </div>
 
-        <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>
+        <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.55)' }}>
           Phase 1 · Montgomery / Bucks / Delaware / Philadelphia · 5–10 min to apply
         </span>
       </div>
 
       {/* ─── Right Panel — Form ─── */}
-      <div style={{
+      <div data-apply-form-panel style={{
         flex: 1, display: 'flex', alignItems: 'flex-start', justifyContent: 'center',
         padding: '56px 48px', overflowY: 'auto'
       }}>
@@ -1040,7 +1046,7 @@ export default function Apply() {
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-subtle)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <rect x="3" y="11" width="18" height="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0110 0v4" />
             </svg>
-            <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>
+            <span style={{ fontSize: 11, color: 'var(--color-text-subtle)' }}>
               Your documents are private and used only for contractor verification.
             </span>
           </div>

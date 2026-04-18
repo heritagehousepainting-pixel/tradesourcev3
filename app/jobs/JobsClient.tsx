@@ -282,7 +282,7 @@ export default function JobsClient({ initialJobs = [], networkContext, isAuthent
                 <a href="/apply" style={{ color: 'var(--color-blue)', fontWeight: 600, textDecoration: 'none' }}>apply for access</a>{' '}to join the network.
               </p>
             </div>
-            <a href="/founder-login" style={{
+            <a href="/signin" style={{
               padding: '8px 16px',
               borderRadius: 8,
               backgroundColor: 'var(--color-blue)',
@@ -319,7 +319,7 @@ export default function JobsClient({ initialJobs = [], networkContext, isAuthent
                       <div style={{ fontSize: 11, color: 'var(--color-green)', marginTop: 2 }}>{post.trade_type || 'Painter'} · Available</div>
                     </div>
                   </div>
-                  <p style={{ fontSize: 12, color: 'rgba(248,250,252,0.5)', lineHeight: 1.5 }}>{post.description?.slice(0, 100)}{post.description?.length > 100 ? '…' : ''}</p>
+                  <p style={{ fontSize: 12, color: 'var(--color-text-muted)', lineHeight: 1.5 }}>{post.description?.slice(0, 100)}{post.description?.length > 100 ? '…' : ''}</p>
                 </div>
               ))}
             </div>
@@ -442,7 +442,7 @@ export default function JobsClient({ initialJobs = [], networkContext, isAuthent
                 {/* CTA row */}
                 <div style={{ display: 'flex', gap: 10, paddingTop: 16, borderTop: '1px solid var(--color-divider)' }}>
                   <a
-              href={access.isAuthenticated ? `/jobs/${job.id}` : '/founder-login'}
+              href={access.isAuthenticated ? `/jobs/${job.id}` : '/signin'}
               style={{ flex: 1, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', padding: '11px 16px', borderRadius: 10, fontSize: 13, fontWeight: 500, backgroundColor: 'var(--color-bg-alt)', color: 'var(--color-text)', border: '1px solid var(--color-border)', textDecoration: 'none', minHeight: 44, transition: 'background 0.2s, box-shadow 0.2s, border-color 0.2s' }}
               onMouseEnter={e => { const el = e.currentTarget as HTMLElement; el.style.background = 'var(--color-surface-hover)'; el.style.borderColor = 'var(--color-blue-border)'; el.style.boxShadow = 'var(--ts-shadow-card-hover)' }}
               onMouseLeave={e => { const el = e.currentTarget as HTMLElement; el.style.background = 'var(--color-bg-alt)'; el.style.borderColor = 'var(--color-border)'; el.style.boxShadow = 'none' }}
@@ -489,7 +489,7 @@ export default function JobsClient({ initialJobs = [], networkContext, isAuthent
                       Profile pending
                     </span>
                   ) : (
-                    <a href="/founder-login" style={{ flex: 1, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '11px 16px', borderRadius: 10, fontSize: 13, fontWeight: 600, minHeight: 44, backgroundColor: 'var(--color-surface)', color: 'var(--color-text-muted)', border: '1px solid var(--color-border)', textDecoration: 'none' }}>
+                    <a href="/signin" style={{ flex: 1, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '11px 16px', borderRadius: 10, fontSize: 13, fontWeight: 600, minHeight: 44, backgroundColor: 'var(--color-surface)', color: 'var(--color-text-muted)', border: '1px solid var(--color-border)', textDecoration: 'none' }}>
                       Sign in to express interest
                     </a>
                   )}

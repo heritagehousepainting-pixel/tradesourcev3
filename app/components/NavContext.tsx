@@ -162,7 +162,7 @@ export function LayoutHeader() {
                 <nav style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
                   <NavLink href="/jobs">Browse Jobs</NavLink>
                   <NavLink href="/apply">Apply</NavLink>
-                  <NavLink href="/founder-login" button>Sign In</NavLink>
+                  <NavLink href="/signin" button>Sign In</NavLink>
                   <ThemeToggle />
                 </nav>
               )}
@@ -223,7 +223,7 @@ export function LayoutHeader() {
             <>
               <MobileLink href="/jobs" onClick={() => setMobileOpen(false)}>Browse Jobs</MobileLink>
               <MobileLink href="/apply" onClick={() => setMobileOpen(false)}>Apply</MobileLink>
-              <MobileLink href="/founder-login" onClick={() => setMobileOpen(false)}>Sign In</MobileLink>
+              <MobileLink href="/signin" onClick={() => setMobileOpen(false)}>Sign In</MobileLink>
             </>
           ) : (
             <>

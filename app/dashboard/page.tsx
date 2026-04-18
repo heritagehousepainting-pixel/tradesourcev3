@@ -62,7 +62,14 @@ function JobCard({ job, onExpress, expressingId, expressed }: {
                         transition: 'background 0.2s, box-shadow 0.2s' }}
           onMouseEnter={e => { if (!expressed && expressingId !== job.id) { const el = e.currentTarget as HTMLElement; el.style.background = 'var(--color-blue-hover)'; el.style.boxShadow = '0 6px 18px rgba(37,99,235,0.35)' }}}
           onMouseLeave={e => { if (!expressed && expressingId !== job.id) { const el = e.currentTarget as HTMLElement; el.style.background = 'var(--color-blue)'; el.style.boxShadow = '0 4px 14px rgba(37,99,235,0.25)' }}}>
-          {expressed ? '✓ Sent' : expressingId === job.id ? '…' : "I'm Interested"}
+          {expressed ? (
+            <>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 13l4 4L19 7"/></svg>
+              Interest Sent
+            </>
+          ) : expressingId === job.id ? (
+            <span style={{ display: 'inline-block', width: 12, height: 12, borderRadius: '50%', border: '2px solid rgba(255,255,255,0.4)', borderTopColor: '#fff', animation: 'spin 1s linear infinite' }} />
+          ) : "I'm Interested"}
         </button>
       </div>
     </div>
@@ -87,8 +94,9 @@ function PostedJobCard({ job, interests, onAward, awardingId }: { job: any; inte
             {job.scope && <span style={{ fontSize: 10, fontWeight: 600, padding: '2px 8px', borderRadius: 20, backgroundColor: 'var(--color-blue-soft)', color: 'var(--color-blue)' }}>{job.scope}</span>}
           </div>
           {awardedInterest && (
-            <p style={{ fontSize: 11, color: 'var(--color-blue)', marginTop: 4 }}>
-              ✓ Awarded to {awardedInterest.contractors?.name || awardedInterest.contractors?.company || 'contractor'}
+            <p style={{ fontSize: 11, color: 'var(--color-blue)', marginTop: 4, display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 13l4 4L19 7"/></svg>
+              Awarded to {awardedInterest.contractors?.name || awardedInterest.contractors?.company || 'contractor'}
             </p>
           )}
         </div>
@@ -439,7 +447,7 @@ export default function Dashboard() {
           </div>
           <h2 style={{ fontSize: 18, fontWeight: 800, color: 'var(--color-text)', marginBottom: 8, letterSpacing: '-0.02em' }}>Sign in to access your dashboard</h2>
           <p style={{ fontSize: 13, color: 'var(--color-text-muted)', marginBottom: 24, lineHeight: 1.65 }}>View your jobs, manage contractors, and track your work.</p>
-          <a href="/founder-login" style={{ display: 'block', padding: '12px 16px', borderRadius: 10, backgroundColor: 'var(--color-blue)', color: '#fff', fontSize: 14, fontWeight: 700, textDecoration: 'none', marginBottom: 10, boxShadow: '0 4px 14px rgba(37,99,235,0.25)', transition: 'background 0.2s, box-shadow 0.2s' }}
+          <a href="/signin" style={{ display: 'block', padding: '12px 16px', borderRadius: 10, backgroundColor: 'var(--color-blue)', color: '#fff', fontSize: 14, fontWeight: 700, textDecoration: 'none', marginBottom: 10, boxShadow: '0 4px 14px rgba(37,99,235,0.25)', transition: 'background 0.2s, box-shadow 0.2s' }}
             onMouseEnter={e => { const el = e.currentTarget as HTMLElement; el.style.background = 'var(--color-blue-hover)'; el.style.boxShadow = '0 6px 18px rgba(37,99,235,0.35)' }}
             onMouseLeave={e => { const el = e.currentTarget as HTMLElement; el.style.background = 'var(--color-blue)'; el.style.boxShadow = '0 4px 14px rgba(37,99,235,0.25)' }}>Sign In</a>
           <a href="/apply" style={{ display: 'block', padding: '12px 16px', borderRadius: 10, backgroundColor: 'var(--color-surface)', color: 'var(--color-text)', fontSize: 14, fontWeight: 600, textDecoration: 'none', border: '1px solid var(--color-border-strong)', transition: 'background 0.2s, box-shadow 0.2s' }}

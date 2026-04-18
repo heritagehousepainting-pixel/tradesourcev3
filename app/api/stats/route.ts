@@ -68,12 +68,16 @@ export async function GET() {
       rating: r.rating,
     }))
 
+    // Gate: if total approved is 0, suppress counts and send growth framing
+    const isNetworkEmpty = approved === 0
+
     return NextResponse.json({
-      totalPainters: approved,
-      activeToday: open,
-      workingNow: inProgress,
-      jobsCompleted: completed,
-      digest: {
+      totalPainters: isNetworkEmpty ? null : approved,
+      activeToday: isNetworkEmpty ? null : open,
+      workingNow: isNetworkEmpty ? null : inProgress,
+      jobsCompleted: isNetworkEmpty ? null : completed,
+      networkStatus: isNetworkEmpty ? 'growing' : 'live',
+      digest: isNetworkEmpty ? null : {
         jobsThisWeek,
         newContractorsThisWeek,
         completedThisWeek,
@@ -82,6 +86,8 @@ export async function GET() {
       }
     })
   } catch (error) {
-    return NextResponse.json({ totalPainters: 0, activeToday: 0, workingNow: 0, jobsCompleted: 0, digest: null })
+    // On any error (DB unreachable, etc.), suppress counts — don't return 0.
+    // A blank response with no counts is honest; a 0 is not.
+    return NextResponse.json({ totalPainters: null, activeToday: null, workingNow: null, jobsCompleted: null, networkStatus: 'growing', digest: null })
   }
 }

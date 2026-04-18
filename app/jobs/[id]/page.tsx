@@ -173,7 +173,7 @@ export default function JobDetail() {
           <p style={{ fontSize: 13, color: 'var(--color-text-muted)', marginBottom: 24, lineHeight: 1.65 }}>
             TradeSource is a private network — job details and contractor information are only visible to approved members.
           </p>
-          <a href="/founder-login" style={{ display: 'block', padding: '12px 16px', borderRadius: 10, backgroundColor: 'var(--color-blue)', color: '#fff', fontSize: 14, fontWeight: 700, textDecoration: 'none', marginBottom: 10, boxShadow: '0 4px 14px rgba(37,99,235,0.3)' }}>Sign In</a>
+          <a href="/signin" style={{ display: 'block', padding: '12px 16px', borderRadius: 10, backgroundColor: 'var(--color-blue)', color: '#fff', fontSize: 14, fontWeight: 700, textDecoration: 'none', marginBottom: 10, boxShadow: '0 4px 14px rgba(37,99,235,0.3)' }}>Sign In</a>
           <a href="/apply" style={{ display: 'block', padding: '12px 16px', borderRadius: 10, backgroundColor: 'var(--color-surface)', color: 'var(--color-text)', fontSize: 14, fontWeight: 600, textDecoration: 'none', border: '1px solid var(--color-border-strong)' }}>Apply to Join</a>
         </div>
       </div>
@@ -268,7 +268,7 @@ export default function JobDetail() {
           <p style={{ fontSize: 13, color: 'var(--color-text-muted)', marginBottom: 24, lineHeight: 1.65 }}>
             TradeSource is a private network — job details and contractor information are only visible to approved members.
           </p>
-          <a href="/founder-login" style={{ display: 'block', padding: '12px 16px', borderRadius: 10, backgroundColor: 'var(--color-blue)', color: '#fff', fontSize: 14, fontWeight: 700, textDecoration: 'none', marginBottom: 10, boxShadow: '0 4px 14px rgba(37,99,235,0.3)' }}>Sign In</a>
+          <a href="/signin" style={{ display: 'block', padding: '12px 16px', borderRadius: 10, backgroundColor: 'var(--color-blue)', color: '#fff', fontSize: 14, fontWeight: 700, textDecoration: 'none', marginBottom: 10, boxShadow: '0 4px 14px rgba(37,99,235,0.3)' }}>Sign In</a>
           <a href="/apply" style={{ display: 'block', padding: '12px 16px', borderRadius: 10, backgroundColor: 'var(--color-surface)', color: 'var(--color-text)', fontSize: 14, fontWeight: 600, textDecoration: 'none', border: '1px solid var(--color-border-strong)' }}>Apply to Join</a>
         </div>
       </div>
@@ -279,19 +279,19 @@ export default function JobDetail() {
     <div style={{ backgroundColor: 'var(--color-bg)', minHeight: '100vh' }}>
 
       {/* NAV */}
-      <header style={{ backgroundColor: 'var(--color-surface-raised)', borderBottom: '1px solid rgba(255,255,255,0.08)', position: 'sticky', top: 0, zIndex: 20 }}>
-        <div style={{ maxWidth: 1100, margin: '0 auto', padding: '0 32px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 60 }}>
-            <a href="/jobs" style={{ display: 'flex', alignItems: 'center', gap: 8, textDecoration: 'none' }}>
+      <header data-jobdetail-nav style={{ backgroundColor: 'var(--color-surface-raised)', borderBottom: '1px solid var(--color-border)', position: 'sticky', top: 0, zIndex: 20 }}>
+        <div style={{ maxWidth: 1100, margin: '0 auto', padding: '0 16px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 56, gap: 12 }}>
+            <a href="/jobs" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, textDecoration: 'none', minHeight: 44, padding: '6px 4px' }}>
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-muted)" strokeWidth="2">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
               </svg>
-              <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--color-text-muted)' }}>Back to Jobs</span>
+              <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--color-text-muted)' }}>Back</span>
             </a>
-            <nav style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
-              <a href="/post-job" style={{ fontSize: 13, fontWeight: 500, color: 'var(--color-text-muted)', textDecoration: 'none' }}>Post a Job</a>
-              <a href="/apply" style={{ fontSize: 13, fontWeight: 600, padding: '7px 14px', borderRadius: 8, backgroundColor: 'var(--color-blue)', color: '#fff', textDecoration: 'none' }}>
-                Apply to Join
+            <nav style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <a href="/post-job" data-jobdetail-postlink style={{ fontSize: 13, fontWeight: 500, color: 'var(--color-text-muted)', textDecoration: 'none' }}>Post a Job</a>
+              <a href="/apply" style={{ fontSize: 13, fontWeight: 600, padding: '8px 14px', borderRadius: 8, backgroundColor: 'var(--color-blue)', color: '#fff', textDecoration: 'none', whiteSpace: 'nowrap' }}>
+                Apply
               </a>
             </nav>
           </div>
@@ -357,7 +357,7 @@ export default function JobDetail() {
             {/* Description */}
             <div style={{ backgroundColor: 'var(--color-surface-raised)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 14, padding: '24px' }}>
               <h2 style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--color-text-subtle)', marginBottom: 12 }}>Description</h2>
-              <p style={{ fontSize: 14, color: 'rgba(248,250,252,0.65)', lineHeight: 1.75 }}>{job.description}</p>
+              <p style={{ fontSize: 14, color: 'var(--color-text-muted)', lineHeight: 1.75 }}>{job.description}</p>
             </div>
 
             {/* Structured Scope Fields */}
@@ -396,8 +396,8 @@ export default function JobDetail() {
                   <dl style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px 24px', margin: 0 }}>
                     {rows.map(({ label, value }) => (
                       <div key={label}>
-                        <dt style={{ fontSize: 11, fontWeight: 600, color: 'rgba(248,250,252,0.4)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}>{label}</dt>
-                        <dd style={{ fontSize: 13, color: 'rgba(248,250,252,0.85)', lineHeight: 1.5, margin: 0, whiteSpace: 'pre-wrap' }}>{value}</dd>
+                        <dt style={{ fontSize: 11, fontWeight: 600, color: 'var(--color-text-subtle)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}>{label}</dt>
+                        <dd style={{ fontSize: 13, color: 'var(--color-text)', lineHeight: 1.5, margin: 0, whiteSpace: 'pre-wrap' }}>{value}</dd>
                       </div>
                     ))}
                   </dl>
@@ -518,7 +518,7 @@ export default function JobDetail() {
                       <div>
                         <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--color-text)' }}>{poster.name || 'Contractor'}</div>
                         {poster.email && <div style={{ fontSize: 12, color: 'var(--color-text-subtle)' }}>{poster.email}</div>}
-                        <div style={{ fontSize: 11, color: 'rgba(248,250,252,0.3)', marginTop: 2 }}>TradeSource Member</div>
+                        <div style={{ fontSize: 11, color: 'var(--color-text-subtle)', marginTop: 2 }}>TradeSource Member</div>
                       </div>
                     </>
                   ) : (
@@ -642,7 +642,7 @@ export default function JobDetail() {
                         <button
                           onClick={handleSubmitReview}
                           disabled={!reviewForm.rating}
-                          style={{ flex: 1, padding: '10px 12px', borderRadius: 8, fontSize: 13, fontWeight: 600, backgroundColor: reviewForm.rating ? 'var(--color-blue)' : 'var(--color-border)', color: reviewForm.rating ? '#fff' : 'rgba(248,250,252,0.3)', border: 'none', cursor: reviewForm.rating ? 'pointer' : 'default' }}
+                          style={{ flex: 1, padding: '10px 12px', borderRadius: 8, fontSize: 13, fontWeight: 600, backgroundColor: reviewForm.rating ? 'var(--color-blue)' : 'var(--color-border)', color: reviewForm.rating ? '#fff' : 'var(--color-text-subtle)', border: 'none', cursor: reviewForm.rating ? 'pointer' : 'default' }}
                         >
                           Submit
                         </button>
@@ -668,7 +668,7 @@ export default function JobDetail() {
               ) : job.status !== 'open' ? (
                 <div style={{ padding: '20px 24px' }}>
                   <div style={{ fontSize: 13, color: 'var(--color-text-muted)' }}>This job is no longer accepting interest.</div>
-                  {job.contractor_id && <div style={{ fontSize: 12, color: 'rgba(248,250,252,0.3)', marginTop: 4 }}>Awarded to a contractor.</div>}
+                  {job.contractor_id && <div style={{ fontSize: 12, color: 'var(--color-text-subtle)', marginTop: 4 }}>Awarded to a contractor.</div>}
                 </div>
               ) : isOwnJob ? (
                 <div style={{ padding: '20px 24px', display: 'flex', flexDirection: 'column', gap: 10 }}>

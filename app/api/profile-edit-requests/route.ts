@@ -1,17 +1,28 @@
 import { NextResponse } from 'next/server'
 import { getSupabaseAdminClient } from '@/lib/supabase/server'
 import { getServerUserAccess } from '@/lib/auth/access.server'
+import type { NextRequest } from 'next/server'
 
 // GET /api/profile-edit-requests?contractor_id=xxx
-// Fetches any pending (pending_review) edit request for a contractor
+// Fetches any pending edit request — authenticated, self-only (admins may read any).
 export async function GET(request: Request) {
   try {
+    const access = await getServerUserAccess(request as unknown as NextRequest)
+    if (!access.isAuthenticated) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
     const supabase = await getSupabaseAdminClient()
     const { searchParams } = new URL(request.url)
     const contractorId = searchParams.get('contractor_id')
 
     if (!contractorId) {
       return NextResponse.json({ error: 'contractor_id required' }, { status: 400 })
+    }
+
+    // Only allow reading your own edit request unless you're a founder/admin.
+    if (!access.canViewApplicationPortal && access.profile?.id !== contractorId) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
 
     const { data, error } = await supabase

@@ -160,7 +160,7 @@ function FounderForm() {
             </svg>
           </div>
           <div style={{ fontSize: 20, fontWeight: 700, color: 'var(--color-text)', marginBottom: 4 }}>TradeSource</div>
-          <div style={{ fontSize: 12, color: 'var(--color-text-subtle)', fontWeight: 500 }}>Founder Access</div>
+          <div style={{ fontSize: 13, color: 'var(--color-text-muted)', fontWeight: 500 }}>Sign in to your account</div>
         </div>
 
         {/* Card — adapts to theme via globals.css .form-card */}
@@ -300,8 +300,9 @@ function FounderForm() {
           </form>
         </div>
 
-        <p style={{ fontSize: 11, color: 'var(--color-text-subtle)', textAlign: 'center', marginTop: 20, lineHeight: 1.6 }}>
-          Internal access only. TradeSource Phase 1.
+        <p style={{ fontSize: 12, color: 'var(--color-text-subtle)', textAlign: 'center', marginTop: 20, lineHeight: 1.6 }}>
+          Don&apos;t have access yet?{' '}
+          <a href="/apply" style={{ color: 'var(--color-blue)', textDecoration: 'none', fontWeight: 600 }}>Apply to join</a>
         </p>
       </div>
     </div>
