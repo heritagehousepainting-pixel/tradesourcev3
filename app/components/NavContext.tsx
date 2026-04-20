@@ -93,7 +93,7 @@ export function LayoutHeader() {
   // Pages with their own full-page branded header: suppress LayoutHeader
   // to avoid a double top-bar. Each page header provides logo + nav context.
   const pageHasOwnHeader = [
-    '/jobs/',      // job detail: "Back to Jobs" bar with logo + Apply CTA
+    '/jobs',       // browse + detail: both render their own premium nav
     '/admin',     // application portal: branded header with TradeSource logo + breadcrumb
     '/apply',     // apply page: custom mini header with logo + Apply
     '/pending',  // pending page: custom PendingNav header
