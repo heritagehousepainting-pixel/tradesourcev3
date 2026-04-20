@@ -4218,3 +4218,160 @@ main,
   .ts-closing-v2 .ts-closing-sub { font-size: 15px; margin-bottom: 32px; }
   .ts-closing-v2 .ts-cta-primary { width: 100%; max-width: 340px; justify-content: center; }
 }
+
+/* ══════════════════════════════════════════════════════════════════════
+   HOMEPAGE v3 — Codex-aligned pass
+   Final overrides. Keep at bottom of file so they win the cascade.
+   Goals:
+   1. Unified centered hero (kill inherited 2-col grid, tighten balance)
+   2. Richer atmospheric wash across the whole page
+   3. Remove coverage ticker
+   4. Remove eyebrow kickers on story sections
+   ══════════════════════════════════════════════════════════════════════ */
+
+/* Page-wide soft atmosphere so the middle never reads as flat black */
+.ts-home {
+  background:
+    radial-gradient(ellipse 90% 60% at 50% 0%,    rgba(59,130,246,0.18) 0%, transparent 55%),
+    radial-gradient(ellipse 70% 50% at 15% 28%,   rgba(45,212,191,0.08) 0%, transparent 60%),
+    radial-gradient(ellipse 80% 55% at 85% 50%,   rgba(139,92,246,0.09) 0%, transparent 60%),
+    radial-gradient(ellipse 70% 45% at 20% 78%,   rgba(59,130,246,0.09) 0%, transparent 60%),
+    radial-gradient(ellipse 90% 60% at 50% 100%,  rgba(59,130,246,0.14) 0%, transparent 55%),
+    #05080F;
+}
+
+/* ─── HERO: kill inherited split, compose as centered launch hero ──── */
+.ts-hero {
+  min-height: auto;
+  display: block;
+  padding: 148px 24px 72px;
+  text-align: center;
+  background: transparent;           /* let page wash show through */
+  overflow: visible;
+}
+.ts-hero-inner {
+  display: block;
+  grid-template-columns: none;
+  gap: 0;
+  flex: initial;
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 0;
+}
+.ts-hero-kicker {
+  margin: 0 auto 28px;
+}
+.ts-hero-title {
+  max-width: 980px;
+  margin-left: auto;
+  margin-right: auto;
+  font-size: clamp(52px, 8.5vw, 108px);
+  line-height: 0.96;
+  letter-spacing: -0.05em;
+}
+.ts-hero-sub {
+  max-width: 640px;
+  margin: 0 auto 36px;
+}
+.ts-hero-cta {
+  margin-bottom: 72px;
+}
+
+/* Stronger, more premium atmospheric wash behind hero */
+.ts-hero-wash {
+  position: absolute;
+  inset: -220px -10% 0 -10%;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 55% 50% at 50% 18%, rgba(147,197,253,0.35) 0%, transparent 60%),
+    radial-gradient(ellipse 45% 45% at 50% 40%, rgba(59,130,246,0.28) 0%, transparent 65%),
+    radial-gradient(ellipse 40% 40% at 22% 55%, rgba(45,212,191,0.14) 0%, transparent 65%),
+    radial-gradient(ellipse 40% 40% at 80% 50%, rgba(139,92,246,0.15) 0%, transparent 65%);
+  filter: blur(14px);
+  opacity: 0.95;
+}
+.ts-hero::after {
+  /* soft downward fade so hero dissolves into the story sections */
+  content: '';
+  position: absolute;
+  left: 0; right: 0; bottom: -1px;
+  height: 180px;
+  z-index: 0;
+  pointer-events: none;
+  background: linear-gradient(180deg, transparent 0%, rgba(5,8,15,0.6) 100%);
+}
+
+/* Tighten the relationship between headline, subcopy, CTA and screenshot */
+.ts-hero-shot {
+  margin-top: -8px;
+  padding: 0 24px;
+}
+.ts-hero-shot .ts-aurora {
+  padding: 40px 32px;
+  border-radius: 28px;
+  box-shadow:
+    0 40px 120px -30px rgba(59,130,246,0.35),
+    0 20px 60px -20px rgba(0,0,0,0.55);
+}
+
+/* ─── Kill the old coverage ticker (still exported but no longer used) */
+.ts-coverage { display: none; }
+
+/* ─── Story sections — remove eyebrow, add per-section atmosphere ──── */
+.ts-section-kicker { display: none; }
+
+.ts-story {
+  position: relative;
+  padding: 128px 24px;
+  isolation: isolate;
+  background: transparent;
+}
+.ts-story-atmosphere {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.9;
+}
+.ts-story-blue .ts-story-atmosphere {
+  background:
+    radial-gradient(ellipse 50% 65% at 78% 50%, rgba(59,130,246,0.16) 0%, transparent 65%),
+    radial-gradient(ellipse 40% 55% at 18% 50%, rgba(59,130,246,0.06) 0%, transparent 70%);
+}
+.ts-story-teal .ts-story-atmosphere {
+  background:
+    radial-gradient(ellipse 50% 65% at 22% 50%, rgba(45,212,191,0.14) 0%, transparent 65%),
+    radial-gradient(ellipse 40% 55% at 80% 50%, rgba(59,130,246,0.06) 0%, transparent 70%);
+}
+.ts-story-violet .ts-story-atmosphere {
+  background:
+    radial-gradient(ellipse 50% 65% at 78% 50%, rgba(139,92,246,0.16) 0%, transparent 65%),
+    radial-gradient(ellipse 40% 55% at 18% 50%, rgba(99,102,241,0.08) 0%, transparent 70%);
+}
+
+.ts-story-inner { position: relative; z-index: 1; }
+
+/* Typographic breathing room now that the kicker is gone */
+.ts-story-title { margin-top: 0; }
+
+/* Closing — let the page wash carry through, soften its seam */
+.ts-closing-v2 {
+  background: transparent;
+}
+.ts-closing-v2::before {
+  content: '';
+  position: absolute;
+  left: 0; right: 0; top: -1px;
+  height: 180px;
+  z-index: 0;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(5,8,15,0.6) 0%, transparent 100%);
+}
+
+/* Mobile tweaks */
+@media (max-width: 720px) {
+  .ts-hero { padding: 104px 16px 40px; }
+  .ts-hero-title { font-size: clamp(38px, 11vw, 60px); }
+  .ts-story { padding: 80px 16px; }
+}

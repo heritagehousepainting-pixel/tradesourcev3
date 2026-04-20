@@ -340,9 +340,9 @@ function CoverageStrip() {
 }
 
 function StorySection({
-  kicker, title, body, mockup, tint, reverse,
+  title, body, mockup, tint, reverse,
 }: {
-  kicker: string
+  kicker?: string
   title: React.ReactNode
   body: string
   mockup: React.ReactNode
@@ -350,10 +350,10 @@ function StorySection({
   reverse?: boolean
 }) {
   return (
-    <section className={`ts-story ${reverse ? 'is-reverse' : ''}`}>
+    <section className={`ts-story ts-story-${tint ?? 'blue'} ${reverse ? 'is-reverse' : ''}`}>
+      <div className="ts-story-atmosphere" aria-hidden="true"/>
       <div className="ts-story-inner">
         <div className="ts-story-copy">
-          <div className="ts-section-kicker">{kicker}</div>
           <h2 className="ts-story-title">{title}</h2>
           <p className="ts-story-body">{body}</p>
         </div>
@@ -393,10 +393,8 @@ export default function Home() {
     <div className="ts-home">
       <HomepageNav/>
       <HeroSection/>
-      <CoverageStrip/>
 
       <StorySection
-        kicker="Post work"
         title={<>Post overflow <em>at your rate</em>.</>}
         body="You set the price. No bidding, no lead fees. Your scope reaches a private network of vetted painting contractors — not the open internet."
         mockup={<MockPostJob/>}
@@ -404,7 +402,6 @@ export default function Home() {
       />
 
       <StorySection
-        kicker="Review"
         title={<>See who's <em>interested</em>, then choose.</>}
         body="Approved contractors express interest at your price. Review their profile, experience, and reviews. Award directly. No surprises."
         mockup={<MockInterests/>}
@@ -413,7 +410,6 @@ export default function Home() {
       />
 
       <StorySection
-        kicker="Trust"
         title={<>Verified <em>before</em> access.</>}
         body="Every contractor clears five checks before they can post, browse, or respond to work. License, insurance, W-9, documented trade experience, and an external review."
         mockup={<MockVerifiedProfile/>}
@@ -421,7 +417,6 @@ export default function Home() {
       />
 
       <StorySection
-        kicker="Built in"
         title={<>An <em>AI scope builder</em> writes the clean scope.</>}
         body="Describe the job in plain language. TradeSource writes a complete, professional scope contractors can actually use. Fewer missed items. Fewer callbacks. Faster quotes."
         mockup={<MockScopeBuilder/>}
