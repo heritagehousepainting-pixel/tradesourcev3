@@ -94,6 +94,8 @@ export function LayoutHeader() {
   // to avoid a double top-bar. Each page header provides logo + nav context.
   const pageHasOwnHeader = [
     '/jobs',       // browse + detail: both render their own premium nav
+    '/founder-login', // sign-in surface — premium standalone, no site nav
+    '/signin',     // alias (redirects to /founder-login)
     '/admin',     // application portal: branded header with TradeSource logo + breadcrumb
     '/apply',     // apply page: custom mini header with logo + Apply
     '/pending',  // pending page: custom PendingNav header

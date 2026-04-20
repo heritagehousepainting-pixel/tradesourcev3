@@ -5,17 +5,14 @@ import { useSearchParams } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import { signIn } from '@/lib/auth/client'
 
-/** The page shell — required export. The actual form is in FounderForm below. */
+/** Page shell — handles the authenticated-redirect and Suspense boundary. */
 export default function FounderLoginPage() {
-  // Redirect already-authenticated users away from founder-login.
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
       if (!data.session?.user) return
       const userEmail = data.session.user.email || ''
       const founderEmails = (process.env.NEXT_PUBLIC_FOUNDER_EMAILS || '')
-        .split(',')
-        .map((e: string) => e.trim().toLowerCase())
-        .filter(Boolean)
+        .split(',').map((e: string) => e.trim().toLowerCase()).filter(Boolean)
       const isFounderEmail = founderEmails.includes(userEmail.toLowerCase())
       let isJwtAdmin = false
       try {
@@ -33,45 +30,24 @@ export default function FounderLoginPage() {
   }, [])
 
   return (
-    <Suspense fallback={
-      <div style={{
-        minHeight: '100vh',
-        backgroundColor: 'var(--color-bg)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        gap: 10,
-        flexDirection: 'column',
-        padding: 24,
-      }}>
-        {/* Brand mark */}
-        <div style={{
-          width: 44, height: 44, borderRadius: 12,
-          backgroundColor: 'var(--color-blue)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          marginBottom: 8,
-          opacity: 0.9,
-        }}>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M13 10V3L4 14h7v7l9-11h-7z" />
-          </svg>
-        </div>
-        {/* Spinner */}
-        <div style={{
-          width: 16, height: 16, borderRadius: '50%',
-          border: '2px solid var(--color-border)',
-          borderTopColor: 'var(--color-blue)',
-          animation: 'spin 0.8s linear infinite',
-        }} />
-        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
-      </div>
-    }>
+    <Suspense fallback={<SigninLoading />}>
       <FounderForm />
     </Suspense>
   )
 }
 
-/** Inner form — uses useSearchParams; safe inside Suspense boundary. */
+function SigninLoading() {
+  return (
+    <div className="ts-signin">
+      <div className="ts-signin-wash" aria-hidden="true" />
+      <div className="ts-signin-center">
+        <div className="ts-signin-brand"><a href="/" className="ts-nav-brand">Trade<span>Source</span></a></div>
+        <div className="ts-signin-spinner" />
+      </div>
+    </div>
+  )
+}
+
 function FounderForm() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -81,24 +57,22 @@ function FounderForm() {
 
   const adminRequired = searchParams.get('reason') === 'admin_required'
   const redirectTo = searchParams.get('redirect')
+  const suspended = searchParams.get('reason') === 'account_suspended'
+  const revoked = searchParams.get('reason') === 'account_revoked'
+
+  const canSubmit = !loading && email.trim() && password
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!email.trim() || !password) return
-
-    setLoading(true)
-    setError('')
+    setLoading(true); setError('')
 
     try {
-      // Check if this is the founder/admin email — use server-side auth
       const founderEmails = (process.env.NEXT_PUBLIC_FOUNDER_EMAILS || '')
-        .split(',')
-        .map((e: string) => e.trim().toLowerCase())
-        .filter(Boolean)
+        .split(',').map((e: string) => e.trim().toLowerCase()).filter(Boolean)
       const isFounderEmail = founderEmails.includes(email.trim().toLowerCase())
 
       if (isFounderEmail) {
-        // Use our server-side endpoint for founder accounts
         const res = await fetch('/api/auth/login', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -107,26 +81,19 @@ function FounderForm() {
         const data = await res.json()
         if (!res.ok) {
           setError(data.error || 'Sign in failed. Please try again.')
-          setLoading(false)
-          return
+          setLoading(false); return
         }
         window.location.href = data.redirectTo || '/admin'
         return
       }
 
-      // Regular contractor login via Supabase Auth
       const { error: authError } = await signIn(email.trim(), password)
       if (authError) {
         const msg = authError.message?.toLowerCase()
-        if (msg?.includes('invalid login')) {
-          setError('Invalid email or password.')
-        } else if (msg?.includes('email not confirmed')) {
-          setError('Please confirm your email address before signing in.')
-        } else {
-          setError(authError.message || 'Sign in failed. Please try again.')
-        }
-        setLoading(false)
-        return
+        if (msg?.includes('invalid login')) setError('Invalid email or password.')
+        else if (msg?.includes('email not confirmed')) setError('Please confirm your email address before signing in.')
+        else setError(authError.message || 'Sign in failed. Please try again.')
+        setLoading(false); return
       }
       window.location.href = '/dashboard'
     } catch (err: any) {
@@ -136,173 +103,83 @@ function FounderForm() {
   }
 
   return (
-    <div style={{
-      minHeight: '100vh',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      backgroundColor: 'var(--color-bg)',
-      padding: 24,
-    }}>
-      <div style={{ width: '100%', maxWidth: 360 }}>
+    <div className="ts-signin">
+      <div className="ts-signin-wash" aria-hidden="true" />
 
-        {/* Brand */}
-        <div style={{ textAlign: 'center', marginBottom: 32 }}>
-          <div style={{
-            width: 44, height: 44, borderRadius: 12,
-            backgroundColor: 'var(--color-blue)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            margin: '0 auto 14px',
-            boxShadow: '0 4px 20px var(--color-blue)',
-          }}>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M13 10V3L4 14h7v7l9-11h-7z" />
-            </svg>
-          </div>
-          <div style={{ fontSize: 20, fontWeight: 700, color: 'var(--color-text)', marginBottom: 4 }}>TradeSource</div>
-          <div style={{ fontSize: 13, color: 'var(--color-text-muted)', fontWeight: 500 }}>Sign in to your account</div>
+      <div className="ts-signin-center">
+        <div className="ts-signin-brand">
+          <a href="/" className="ts-nav-brand">Trade<span>Source</span></a>
         </div>
 
-        {/* Card — adapts to theme via globals.css .form-card */}
-        <div className="form-card" style={{ padding: '28px 24px' }}>
-          <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-            <div>
-              <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--color-text-muted)', marginBottom: 6 }}>
-                Email address
-              </label>
-              <input
-                type="email"
-                value={email}
-                onChange={e => { setEmail(e.target.value); setError('') }}
-                placeholder="info@tradesource.app"
-                required
-                autoComplete="email"
-                style={{
-                  width: '100%',
-                  padding: '10px 12px',
-                  borderRadius: 8,
-                  border: '1.5px solid var(--color-input-border)',
-                  backgroundColor: 'var(--color-input-bg)',
-                  color: 'var(--color-input-text)',
-                  fontSize: 14,
-                  fontFamily: 'inherit',
-                  outline: 'none',
-                  boxSizing: 'border-box',
-                  transition: 'border-color 0.15s',
-                }}
-                onFocus={e => (e.target.style.borderColor = 'var(--color-blue)')}
-                onBlur={e => (e.target.style.borderColor = 'var(--color-input-border)')}
-              />
-            </div>
-
-            <div>
-              <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--color-text-muted)', marginBottom: 6 }}>
-                Password
-              </label>
-              <input
-                type="password"
-                value={password}
-                onChange={e => { setPassword(e.target.value); setError('') }}
-                placeholder="\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022"
-                required
-                autoComplete="current-password"
-                style={{
-                  width: '100%',
-                  padding: '10px 12px',
-                  borderRadius: 8,
-                  border: '1.5px solid var(--color-input-border)',
-                  backgroundColor: 'var(--color-input-bg)',
-                  color: 'var(--color-input-text)',
-                  fontSize: 14,
-                  fontFamily: 'inherit',
-                  outline: 'none',
-                  boxSizing: 'border-box',
-                  transition: 'border-color 0.15s',
-                }}
-                onFocus={e => (e.target.style.borderColor = 'var(--color-blue)')}
-                onBlur={e => (e.target.style.borderColor = 'var(--color-input-border)')}
-              />
-            </div>
-
-            {(adminRequired || redirectTo) && (
-              <div style={{
-                padding: '8px 12px',
-                borderRadius: 6,
-                backgroundColor: 'var(--color-blue-soft)',
-                border: '1px solid var(--color-blue)',
-                color: 'var(--color-blue)',
-                fontSize: 12,
-                fontWeight: 500,
-              }}>
-                {adminRequired
-                  ? 'Admin access required. Sign in with your founder account.'
-                  : 'Please sign in to continue.'}
-              </div>
-            )}
-
-            {(() => {
-              const suspended = searchParams.get('reason') === 'account_suspended'
-              const revoked = searchParams.get('reason') === 'account_revoked'
-              if (!suspended && !revoked) return null
-              return (
-                <div style={{
-                  padding: '8px 12px',
-                  borderRadius: 6,
-                  backgroundColor: suspended ? 'var(--color-orange)' : 'var(--color-red-soft)',
-                  border: `1px solid ${suspended ? 'var(--color-orange)' : 'var(--color-red)'}`,
-                  color: suspended ? '#fff' : 'var(--color-red)',
-                  fontSize: 12,
-                  fontWeight: 500,
-                }}>
-                  {suspended
-                    ? 'Your account has been suspended. Contact support for assistance.'
-                    : 'Your account access has been revoked.'}
-                </div>
-              )
-            })()}
-
-            {error && (
-              <div style={{
-                padding: '8px 12px',
-                borderRadius: 6,
-                backgroundColor: 'var(--color-red-soft)',
-                border: '1px solid var(--color-red)',
-                color: 'var(--color-red)',
-                fontSize: 12,
-                fontWeight: 500,
-              }}>
-                {error}
-              </div>
-            )}
-
-            <button
-              type="submit"
-              disabled={loading || !email.trim() || !password}
-              style={{
-                width: '100%',
-                padding: '11px 16px',
-                borderRadius: 8,
-                backgroundColor: 'var(--color-blue)',
-                color: '#fff',
-                border: 'none',
-                fontSize: 14,
-                fontWeight: 600,
-                cursor: (loading || !email.trim() || !password) ? 'not-allowed' : 'pointer',
-                opacity: (loading || !email.trim() || !password) ? 0.6 : 1,
-                transition: 'opacity 0.15s, background-color 0.15s',
-                marginTop: 4,
-              }}
-              onMouseEnter={e => { if (!loading && email.trim() && password) (e.target as HTMLButtonElement).style.backgroundColor = 'var(--color-blue-hover)' }}
-              onMouseLeave={e => { (e.target as HTMLButtonElement).style.backgroundColor = 'var(--color-blue)' }}
-            >
-              {loading ? 'Signing in\u2026' : 'Sign in'}
-            </button>
-          </form>
+        <div className="ts-signin-header">
+          <div className="ts-hero-kicker">Sign in</div>
+          <h1 className="ts-signin-title">Welcome back.</h1>
+          <p className="ts-signin-sub">Access the private network.</p>
         </div>
 
-        <p style={{ fontSize: 12, color: 'var(--color-text-subtle)', textAlign: 'center', marginTop: 20, lineHeight: 1.6 }}>
-          Don&apos;t have access yet?{' '}
-          <a href="/apply" style={{ color: 'var(--color-blue)', textDecoration: 'none', fontWeight: 600 }}>Apply to join</a>
+        <form onSubmit={handleLogin} className="ts-signin-form">
+          <label className="ts-signin-field">
+            <span className="ts-signin-label">Email</span>
+            <input
+              type="email"
+              value={email}
+              onChange={e => { setEmail(e.target.value); setError('') }}
+              placeholder="you@company.com"
+              required
+              autoComplete="email"
+              className="ts-signin-input"
+            />
+          </label>
+
+          <label className="ts-signin-field">
+            <span className="ts-signin-label">Password</span>
+            <input
+              type="password"
+              value={password}
+              onChange={e => { setPassword(e.target.value); setError('') }}
+              placeholder="\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022"
+              required
+              autoComplete="current-password"
+              className="ts-signin-input"
+            />
+          </label>
+
+          {(adminRequired || redirectTo) && (
+            <div className="ts-signin-info">
+              {adminRequired
+                ? 'Admin access required. Sign in with your founder account.'
+                : 'Please sign in to continue.'}
+            </div>
+          )}
+
+          {suspended && (
+            <div className="ts-signin-warn">
+              Your account has been suspended. Contact support for assistance.
+            </div>
+          )}
+          {revoked && (
+            <div className="ts-signin-error">Your account access has been revoked.</div>
+          )}
+          {error && <div className="ts-signin-error">{error}</div>}
+
+          <button
+            type="submit"
+            disabled={!canSubmit}
+            className="ts-signin-submit"
+          >
+            {loading ? (
+              <span className="ts-spinner" />
+            ) : (
+              <>
+                Sign in
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+              </>
+            )}
+          </button>
+        </form>
+
+        <p className="ts-signin-foot">
+          Don&apos;t have access yet? <a href="/apply">Apply to join</a>
         </p>
       </div>
     </div>

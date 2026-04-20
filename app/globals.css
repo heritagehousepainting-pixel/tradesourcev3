@@ -4796,3 +4796,213 @@ main,
   .ts-job-title { font-size: 16px; }
   .ts-job-price { font-size: 18px; }
 }
+
+/* ══════════════════════════════════════════════════════════════════════
+   SIGN IN — Premium standalone (matches homepage language)
+   Full-bleed dark atmospheric surface, no nav, centered minimal form.
+   ══════════════════════════════════════════════════════════════════════ */
+
+.ts-signin {
+  position: relative;
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 72px 24px;
+  color: #F8FAFC;
+  isolation: isolate;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse 70% 60% at 50% 0%,  rgba(59,130,246,0.22) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 50% at 15% 80%, rgba(45,212,191,0.10) 0%, transparent 65%),
+    radial-gradient(ellipse 60% 50% at 85% 80%, rgba(139,92,246,0.12) 0%, transparent 65%),
+    radial-gradient(ellipse 80% 70% at 50% 100%, rgba(59,130,246,0.14) 0%, transparent 55%),
+    #05080F;
+}
+.ts-signin-wash {
+  position: absolute;
+  inset: -20% -10% -20% -10%;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 40% 35% at 50% 35%, rgba(147,197,253,0.22) 0%, transparent 65%),
+    radial-gradient(ellipse 35% 30% at 50% 55%, rgba(59,130,246,0.18) 0%, transparent 70%);
+  filter: blur(16px);
+}
+
+.ts-signin-center {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.ts-signin-brand {
+  margin-bottom: 48px;
+}
+.ts-signin-brand .ts-nav-brand {
+  font-size: 18px;
+}
+
+.ts-signin-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+.ts-signin-header .ts-hero-kicker {
+  margin: 0 0 18px;
+}
+.ts-signin-title {
+  font-size: clamp(36px, 5vw, 52px);
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  line-height: 1.02;
+  color: #F8FAFC;
+  margin: 0 0 12px;
+}
+.ts-signin-sub {
+  font-size: 15px;
+  color: rgba(220,235,255,0.60);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.ts-signin-form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 32px 28px;
+  border-radius: 20px;
+  background: rgba(10,16,30,0.55);
+  border: 1px solid rgba(255,255,255,0.07);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow:
+    0 30px 80px -20px rgba(0,0,0,0.55),
+    0 12px 40px -12px rgba(59,130,246,0.18);
+}
+
+.ts-signin-field {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+.ts-signin-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(220,235,255,0.45);
+}
+.ts-signin-input {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  color: #F8FAFC;
+  font-family: inherit;
+  font-size: 14px;
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color .15s, background .15s, box-shadow .15s;
+}
+.ts-signin-input::placeholder { color: rgba(220,235,255,0.32); }
+.ts-signin-input:focus {
+  border-color: rgba(147,197,253,0.45);
+  background: rgba(255,255,255,0.06);
+  box-shadow: 0 0 0 4px rgba(59,130,246,0.12);
+}
+
+.ts-signin-info,
+.ts-signin-warn,
+.ts-signin-error {
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.ts-signin-info {
+  background: rgba(59,130,246,0.10);
+  border: 1px solid rgba(59,130,246,0.25);
+  color: #BFDBFE;
+}
+.ts-signin-warn {
+  background: rgba(245,158,11,0.10);
+  border: 1px solid rgba(245,158,11,0.30);
+  color: #FCD34D;
+}
+.ts-signin-error {
+  background: rgba(220,38,38,0.10);
+  border: 1px solid rgba(220,38,38,0.30);
+  color: #FCA5A5;
+}
+
+.ts-signin-submit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  margin-top: 8px;
+  padding: 13px 20px;
+  border-radius: 999px;
+  border: none;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  background: #fff;
+  color: #06101F;
+  cursor: pointer;
+  box-shadow: 0 8px 32px rgba(255,255,255,0.10), 0 4px 12px rgba(0,0,0,0.25);
+  transition: transform .2s ease, box-shadow .25s ease, opacity .2s;
+  min-height: 48px;
+}
+.ts-signin-submit:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 40px rgba(255,255,255,0.18), 0 4px 16px rgba(0,0,0,0.30);
+}
+.ts-signin-submit svg { transition: transform .15s; }
+.ts-signin-submit:hover:not(:disabled) svg { transform: translateX(2px); }
+.ts-signin-submit:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.ts-signin-submit .ts-spinner {
+  border-color: rgba(6,16,31,0.25);
+  border-top-color: #06101F;
+}
+
+.ts-signin-foot {
+  margin-top: 24px;
+  font-size: 13px;
+  color: rgba(220,235,255,0.50);
+  text-align: center;
+}
+.ts-signin-foot a {
+  color: #93C5FD;
+  text-decoration: none;
+  font-weight: 500;
+}
+.ts-signin-foot a:hover { text-decoration: underline; }
+
+.ts-signin-spinner {
+  width: 20px; height: 20px; border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.18);
+  border-top-color: #93C5FD;
+  animation: spin 0.9s linear infinite;
+  margin-top: 20px;
+}
+
+/* Mobile */
+@media (max-width: 720px) {
+  .ts-signin { padding: 48px 20px; }
+  .ts-signin-brand { margin-bottom: 36px; }
+  .ts-signin-header { margin-bottom: 28px; }
+  .ts-signin-title { font-size: clamp(30px, 9vw, 44px); }
+  .ts-signin-form { padding: 24px 20px; border-radius: 16px; }
+}
