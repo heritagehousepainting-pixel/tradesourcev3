@@ -176,6 +176,7 @@ export default function MessagesPage() {
       {/* Main content */}
       <div
         data-messages-container="true"
+        data-has-active={activeThread ? 'true' : 'false'}
         style={{
           flex: 1, display: 'flex', overflow: 'hidden',
           padding: '16px 24px', gap: 16, maxWidth: 1400, margin: '0 auto', width: '100%',
@@ -316,13 +317,28 @@ export default function MessagesPage() {
               {/* Thread header */}
               <div style={{ paddingBottom: 12, marginBottom: 12, borderBottom: '1px solid var(--color-divider)', flexShrink: 0 }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
-                  <div>
-                    <h3 style={{ fontSize: 14, fontWeight: 700, color: 'var(--color-text)', marginBottom: 2 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0, flex: 1 }}>
+                    {/* Mobile-only back button to thread list */}
+                    <button
+                      className="ts-msg-back"
+                      onClick={() => setActiveThread(null)}
+                      aria-label="Back to conversations"
+                      style={{
+                        display: 'none', alignItems: 'center', justifyContent: 'center',
+                        width: 36, height: 36, borderRadius: 10, flexShrink: 0,
+                        background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)',
+                        color: 'var(--color-text)', cursor: 'pointer', padding: 0,
+                      }}>
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+                    </button>
+                    <div style={{ minWidth: 0, flex: 1 }}>
+                    <h3 style={{ fontSize: 14, fontWeight: 700, color: 'var(--color-text)', marginBottom: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       {activeThread.jobs?.title || `Job ${activeThread.job_id?.slice(0, 8)}`}
                     </h3>
                     <p style={{ fontSize: 11, color: 'var(--color-text-subtle)' }}>
                       {[activeThread.jobs?.area, activeThread.jobs?.status?.replace('_', ' ')].filter(Boolean).join(' · ')}
                     </p>
+                    </div>
                   </div>
                   {activeThread.unread_count > 0 && (
                     <span style={{ padding: '2px 10px', borderRadius: 9999, fontSize: 11, fontWeight: 700, backgroundColor: 'var(--color-blue)', color: '#fff', flexShrink: 0 }}>

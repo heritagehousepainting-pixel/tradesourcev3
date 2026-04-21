@@ -6561,3 +6561,134 @@ main,
   }
   .ts-site-footer-bottom p { font-size: 12px !important; line-height: 1.6 !important; }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   HALF-B MOBILE POLISH PASS — mobile-only, desktop untouched
+   Brings /messages, /jobs/[id], /apply, /jobs, /my-jobs, /profile, /reviews
+   into the same mobile rhythm as the .ts-* surfaces without TSX rewrites.
+   All rules inside @media (max-width: 640px) / (max-width: 480px).
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 640px) {
+
+  /* ─── /messages — CRITICAL fix: split-view collapse ───────────────────── */
+  [data-messages-container] {
+    padding: 10px 14px !important;
+    gap: 0 !important;
+    flex-direction: column !important;
+    max-width: 100% !important;
+  }
+  [data-messages-thread-list] {
+    width: 100% !important;
+    border-radius: 14px !important;
+    padding: 14px !important;
+    max-height: none !important;
+  }
+  /* When a thread is selected on mobile: show pane only, hide list */
+  [data-messages-container][data-has-active="true"] [data-messages-thread-list] {
+    display: none !important;
+  }
+  [data-messages-container][data-has-active="true"] > div:last-child {
+    border-radius: 14px !important;
+    padding: 14px !important;
+  }
+  /* When no thread selected on mobile: show list full width, hide empty pane */
+  [data-messages-container][data-has-active="false"] > div:last-child {
+    display: none !important;
+  }
+  /* Mobile back button in thread header — reveal */
+  .ts-msg-back { display: inline-flex !important; }
+
+  /* Thread list items — larger tap target */
+  [data-messages-thread-list] button {
+    padding: 14px 14px !important;
+    min-height: 64px;
+  }
+  [data-messages-thread-list] button > div:first-of-type {
+    font-size: 14px !important;
+  }
+
+  /* Message bubble list tightening */
+  [data-messages-container] div[style*="overflowY"][style*="flex: 1"] {
+    gap: 8px !important;
+  }
+  /* Message input row */
+  [data-messages-container] textarea {
+    font-size: 16px !important;  /* stop iOS zoom */
+    min-height: 44px !important;
+    padding: 10px 12px !important;
+  }
+
+  /* ─── Half-B wrappers — broad inline-style sweep (mobile only) ────────── */
+  /* Any content wrapper with desktop 32px gutter drops to 18px on mobile. */
+  div[style*="padding: '32px 32px'"],
+  div[style*="padding: 32px 32px"],
+  div[style*="padding: '28px 32px'"],
+  div[style*="padding: '32px 32px 64px'"],
+  div[style*="padding: '32px 32px 24px'"],
+  div[style*="padding: '28px 32px 64px'"],
+  div[style*="padding: '28px 32px 24px'"],
+  div[style*="padding: '0 32px'"],
+  div[style*="padding: '80px 32px'"],
+  div[style*="padding: '64px 32px'"],
+  div[style*="padding: '36px 32px 28px'"] {
+    padding-left: 18px !important;
+    padding-right: 18px !important;
+  }
+  /* Narrow panels (40-48px) used as auth/sign-in cards: tighter on mobile */
+  div[style*="padding: '40px 32px'"],
+  div[style*="padding: 40px 32px"],
+  div[style*="padding: '40px 28px'"] {
+    padding: 30px 22px !important;
+  }
+  div[style*="padding: '48px 32px'"],
+  div[style*="padding: 48px 32px"] {
+    padding: 34px 22px !important;
+  }
+  /* Hard-coded wide maxWidth containers collapse to 100% on mobile */
+  div[style*="maxWidth: 1100"],
+  div[style*="maxWidth: 1200"],
+  div[style*="maxWidth: 1400"],
+  div[style*="maxWidth: 960"],
+  div[style*="maxWidth: 880"] {
+    max-width: 100% !important;
+  }
+
+  /* ─── /jobs/[id] custom "Back to Jobs" header — slim to 52px ──────────── */
+  header[style*="position: sticky"] div[style*="height: 60"] {
+    height: 52px !important;
+  }
+  /* Any sticky page header inside Half-B slims */
+  header[style*="position: sticky"][style*="height: 60"] {
+    height: 52px !important;
+  }
+
+  /* ─── Form inputs globally: kill iOS auto-zoom, consistent pad ─────────── */
+  input[type="text"],
+  input[type="email"],
+  input[type="tel"],
+  input[type="number"],
+  input[type="url"],
+  input[type="search"],
+  input[type="password"],
+  input[type="date"],
+  input:not([type]),
+  textarea,
+  select {
+    font-size: max(16px, 1em) !important;
+    min-height: 46px;
+    box-sizing: border-box;
+  }
+  textarea { min-height: 96px; }
+
+  /* ─── Submit buttons: 44px min tap target on mobile ───────────────────── */
+  button[type="submit"] {
+    min-height: 46px;
+  }
+}
+
+@media (max-width: 480px) {
+  /* Extra-tight phones: drop gutters another 4px */
+  [data-messages-container] { padding: 8px 12px !important; }
+  [data-messages-thread-list] { padding: 12px !important; }
+}
