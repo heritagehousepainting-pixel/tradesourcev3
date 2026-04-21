@@ -5757,3 +5757,433 @@ main,
 /* ─── Date/number inputs inherit ts-input focus state ─────────── */
 .ts-input[type="date"], .ts-input[type="number"] { cursor: pointer; }
 
+
+/* ══════════════════════════════════════════════════════════════════════
+   AUTHED SURFACES — HOMEPAGE PARITY PASS (v2)
+   Monumental centered hero, inline meta (replaces stat-rows),
+   aurora mockup halos, framed job list, segmented pill control.
+   ══════════════════════════════════════════════════════════════════════ */
+
+/* ─── Centered hero (matches homepage .ts-hero spec) ───────────── */
+.ts-app-hero {
+  max-width: 920px;
+  margin: 0 auto;
+  padding: 56px 24px 40px;
+  text-align: center;
+  position: relative;
+}
+.ts-app-hero-kicker {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(147,197,253,0.85);
+  padding: 7px 16px;
+  border: 1px solid rgba(147,197,253,0.25);
+  border-radius: 999px;
+  background: rgba(59,130,246,0.08);
+  margin-bottom: 28px;
+}
+[data-theme="light"] .ts-app-hero-kicker {
+  color: #2563EB;
+  border-color: rgba(37,99,235,0.25);
+  background: rgba(37,99,235,0.06);
+}
+.ts-app-hero-title {
+  font-size: clamp(44px, 7vw, 96px);
+  font-weight: 700;
+  letter-spacing: -0.045em;
+  line-height: 0.98;
+  margin: 0 0 22px;
+  color: #F8FAFC;
+}
+.ts-app-hero-title em {
+  font-style: italic;
+  font-weight: 500;
+  font-family: 'Iowan Old Style', 'Source Serif Pro', Georgia, serif;
+  background: linear-gradient(135deg, #93C5FD 0%, #60A5FA 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+[data-theme="light"] .ts-app-hero-title { color: #0F172A; }
+.ts-app-hero-sub {
+  font-size: clamp(16px, 1.3vw, 19px);
+  line-height: 1.55;
+  color: rgba(220,235,255,0.72);
+  max-width: 620px;
+  margin: 0 auto 36px;
+}
+[data-theme="light"] .ts-app-hero-sub { color: #64748B; }
+.ts-app-hero-cta {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+.ts-app-hero-meta {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  font-size: 13px;
+  color: rgba(220,235,255,0.55);
+  margin-top: 28px;
+  font-variant-numeric: tabular-nums;
+}
+[data-theme="light"] .ts-app-hero-meta { color: #64748B; }
+.ts-app-hero-meta b {
+  font-weight: 600;
+  color: rgba(248,250,252,0.9);
+}
+[data-theme="light"] .ts-app-hero-meta b { color: #0F172A; }
+.ts-app-hero-meta .sep {
+  width: 3px; height: 3px; border-radius: 50%;
+  background: currentColor; opacity: 0.4;
+  display: inline-block;
+}
+
+/* ─── Aurora halo wrap for product mockups (matches homepage) ─── */
+.ts-mk-halo {
+  position: relative;
+  border-radius: 28px;
+  padding: clamp(20px, 3vw, 44px);
+  overflow: hidden;
+  isolation: isolate;
+  margin: 0 auto;
+  max-width: 1080px;
+}
+.ts-mk-halo--blue {
+  background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #93c5fd 100%);
+}
+.ts-mk-halo--green {
+  background: linear-gradient(135deg, #0f766e 0%, #2dd4bf 50%, #a7f3d0 100%);
+}
+.ts-mk-halo--violet {
+  background: linear-gradient(135deg, #5b21b6 0%, #8b5cf6 50%, #c4b5fd 100%);
+}
+.ts-mk-halo::before {
+  content: '';
+  position: absolute;
+  width: 380px; height: 380px;
+  top: -120px; left: -80px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.32);
+  filter: blur(60px);
+  opacity: 0.55;
+  z-index: 0;
+  pointer-events: none;
+}
+.ts-mk-halo::after {
+  content: '';
+  position: absolute;
+  width: 320px; height: 320px;
+  bottom: -100px; right: -60px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.22);
+  filter: blur(60px);
+  opacity: 0.5;
+  z-index: 0;
+  pointer-events: none;
+}
+.ts-mk-halo > * {
+  position: relative;
+  z-index: 1;
+}
+.ts-mk-halo .mk-frame {
+  box-shadow:
+    0 40px 100px -20px rgba(0,0,0,0.55),
+    0 20px 40px -10px rgba(0,0,0,0.4),
+    inset 0 1px 0 rgba(255,255,255,0.06);
+}
+
+/* ─── Framed job list (single window, borderless rows) ─────────── */
+.ts-joblist-frame {
+  background: #0B1424;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow:
+    0 30px 80px -20px rgba(0,0,0,0.55),
+    0 10px 30px -10px rgba(0,0,0,0.35),
+    inset 0 1px 0 rgba(255,255,255,0.04);
+}
+[data-theme="light"] .ts-joblist-frame {
+  background: #FFFFFF;
+  border-color: rgba(15,23,42,0.08);
+  box-shadow: 0 30px 70px -20px rgba(15,23,42,0.15), 0 10px 30px -10px rgba(15,23,42,0.08);
+}
+.ts-joblist-rows > * + * {
+  border-top: 1px solid rgba(255,255,255,0.05);
+}
+[data-theme="light"] .ts-joblist-rows > * + * {
+  border-top-color: rgba(15,23,42,0.06);
+}
+.ts-joblist-row {
+  display: flex; align-items: center; gap: 18px;
+  padding: 18px 22px;
+  text-decoration: none !important;
+  color: inherit;
+  transition: background .15s ease;
+  cursor: pointer;
+  background: transparent;
+  border: 0; width: 100%; text-align: left;
+}
+.ts-joblist-row:hover {
+  background: rgba(255,255,255,0.03);
+}
+[data-theme="light"] .ts-joblist-row:hover {
+  background: rgba(15,23,42,0.03);
+}
+.ts-joblist-main { flex: 1; min-width: 0; }
+.ts-joblist-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #F8FAFC;
+  letter-spacing: -0.005em;
+  margin-bottom: 4px;
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+}
+[data-theme="light"] .ts-joblist-title { color: #0F172A; }
+.ts-joblist-meta {
+  font-size: 12.5px;
+  color: rgba(248,250,252,0.5);
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+}
+[data-theme="light"] .ts-joblist-meta { color: #64748B; }
+.ts-joblist-meta .sep {
+  width: 3px; height: 3px; border-radius: 50%;
+  background: currentColor; opacity: 0.5;
+  display: inline-block;
+}
+.ts-joblist-price {
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #34D399;
+  font-variant-numeric: tabular-nums;
+  flex-shrink: 0;
+}
+[data-theme="light"] .ts-joblist-price { color: #059669; }
+.ts-joblist-chev {
+  width: 18px; height: 18px;
+  color: rgba(248,250,252,0.4);
+  flex-shrink: 0;
+  transition: transform .15s, color .15s;
+}
+.ts-joblist-row:hover .ts-joblist-chev {
+  color: rgba(248,250,252,0.85);
+  transform: translateX(2px);
+}
+[data-theme="light"] .ts-joblist-chev { color: #94A3B8; }
+[data-theme="light"] .ts-joblist-row:hover .ts-joblist-chev { color: #0F172A; }
+
+/* ─── Segmented single-row pill (replaces stacked radio-cards) ── */
+.ts-segbar {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 999px;
+  width: 100%;
+}
+[data-theme="light"] .ts-segbar {
+  background: rgba(15,23,42,0.035);
+  border-color: rgba(15,23,42,0.07);
+}
+.ts-segbar-opt {
+  flex: 1;
+  padding: 10px 14px;
+  border-radius: 999px;
+  border: 0;
+  background: transparent;
+  color: rgba(248,250,252,0.65);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background .15s, color .15s;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ts-segbar-opt:hover { color: #F8FAFC; }
+.ts-segbar-opt.is-on {
+  background: rgba(255,255,255,0.92);
+  color: #06101F;
+  font-weight: 600;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.18);
+}
+[data-theme="light"] .ts-segbar-opt { color: #64748B; }
+[data-theme="light"] .ts-segbar-opt:hover { color: #0F172A; }
+[data-theme="light"] .ts-segbar-opt.is-on {
+  background: #0F172A;
+  color: #F8FAFC;
+}
+@media (max-width: 640px) {
+  .ts-segbar { flex-direction: column; border-radius: 14px; }
+  .ts-segbar-opt { flex: unset; width: 100%; text-align: left; border-radius: 10px; padding: 12px 14px; }
+}
+
+/* ─── Hide segtab counts (homepage has no count pills on tabs) ─ */
+.ts-segtab-count { display: none !important; }
+
+/* ─── Section count chip: soften to muted inline number ───────── */
+.ts-section-count {
+  background: transparent !important;
+  border: 0 !important;
+  color: rgba(248,250,252,0.4) !important;
+  font-weight: 500 !important;
+  padding: 0 !important;
+  font-size: 13px !important;
+}
+[data-theme="light"] .ts-section-count { color: #94A3B8 !important; }
+
+/* ─── Post-job: bleed aurora across whole page (remove seam) ──── */
+.ts-postjob {
+  background:
+    radial-gradient(1200px 700px at 20% -10%, rgba(59,130,246,0.18), transparent 55%),
+    radial-gradient(900px 600px at 110% 40%, rgba(139,92,246,0.12), transparent 55%),
+    radial-gradient(700px 500px at 50% 110%, rgba(45,212,191,0.08), transparent 60%),
+    #05080F;
+}
+.ts-postjob-left {
+  background: transparent !important;
+  border-right: 1px solid rgba(255,255,255,0.04) !important;
+}
+.ts-postjob-right {
+  background: transparent !important;
+}
+[data-theme="light"] .ts-postjob {
+  background:
+    radial-gradient(1200px 700px at 20% -10%, rgba(59,130,246,0.10), transparent 55%),
+    radial-gradient(900px 600px at 110% 40%, rgba(139,92,246,0.06), transparent 55%),
+    #F8FAFC;
+}
+[data-theme="light"] .ts-postjob-left {
+  border-right-color: rgba(15,23,42,0.06) !important;
+}
+
+/* Preview mockup halo tuning */
+.ts-postjob-preview.is-haloed {
+  padding: clamp(18px, 2.5vw, 32px);
+  border-radius: 22px;
+  border: 0;
+  background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 55%, #93c5fd 100%);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 40px 100px -20px rgba(30,58,138,0.5);
+}
+.ts-postjob-preview.is-haloed::before {
+  content: '';
+  position: absolute; width: 300px; height: 300px;
+  top: -100px; left: -60px; border-radius: 50%;
+  background: rgba(255,255,255,0.35);
+  filter: blur(60px); opacity: 0.6; z-index: 0; pointer-events: none;
+}
+.ts-postjob-preview.is-haloed .mk-frame,
+.ts-postjob-preview.is-haloed > .mk-chrome {
+  position: relative; z-index: 1;
+}
+.ts-postjob-preview.is-haloed > * { position: relative; z-index: 1; }
+
+/* ─── Dropdown menu (authed nav avatar) ────────────────────────── */
+.ts-nav-avatar {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #60A5FA 0%, #3B82F6 100%);
+  color: #06101F;
+  border: 0;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center;
+  transition: transform .15s, box-shadow .2s;
+  box-shadow: 0 2px 8px rgba(59,130,246,0.25);
+}
+.ts-nav-avatar:hover { transform: translateY(-1px); box-shadow: 0 4px 14px rgba(59,130,246,0.4); }
+.ts-nav-menu-wrap {
+  position: relative;
+  display: inline-flex;
+}
+.ts-nav-menu {
+  position: absolute; top: calc(100% + 10px); right: 0;
+  min-width: 200px;
+  background: rgba(10,16,30,0.96);
+  border: 1px solid rgba(255,255,255,0.08);
+  backdrop-filter: blur(18px) saturate(180%);
+  -webkit-backdrop-filter: blur(18px) saturate(180%);
+  border-radius: 14px;
+  padding: 6px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+  z-index: 120;
+  display: flex; flex-direction: column; gap: 2px;
+}
+[data-theme="light"] .ts-nav-menu {
+  background: rgba(255,255,255,0.98);
+  border-color: rgba(15,23,42,0.08);
+  box-shadow: 0 20px 40px rgba(15,23,42,0.12);
+}
+.ts-nav-menu a,
+.ts-nav-menu button {
+  display: flex; align-items: center;
+  padding: 9px 12px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(248,250,252,0.8);
+  text-decoration: none !important;
+  background: none;
+  border: 0;
+  text-align: left;
+  cursor: pointer;
+  transition: background .12s, color .12s;
+  width: 100%;
+}
+.ts-nav-menu a:hover,
+.ts-nav-menu button:hover {
+  background: rgba(255,255,255,0.06);
+  color: #fff;
+}
+[data-theme="light"] .ts-nav-menu a,
+[data-theme="light"] .ts-nav-menu button { color: #334155; }
+[data-theme="light"] .ts-nav-menu a:hover,
+[data-theme="light"] .ts-nav-menu button:hover {
+  background: rgba(15,23,42,0.05);
+  color: #0F172A;
+}
+.ts-nav-menu .divider {
+  height: 1px;
+  background: rgba(255,255,255,0.06);
+  margin: 4px 2px;
+}
+[data-theme="light"] .ts-nav-menu .divider { background: rgba(15,23,42,0.06); }
+
+/* ─── Mobile responsive for v2 primitives ─────────────────────── */
+@media (max-width: 820px) {
+  .ts-app-hero { padding: 40px 20px 28px; }
+  .ts-app-hero-title { font-size: clamp(36px, 10vw, 54px); line-height: 1.02; }
+  .ts-app-hero-sub { font-size: 15px; }
+  .ts-mk-halo { padding: 16px; border-radius: 20px; }
+  .ts-joblist-row { padding: 14px 16px; gap: 12px; }
+  .ts-joblist-title { font-size: 14px; }
+  .ts-joblist-price { font-size: 15px; }
+}
+
+/* ─── Global authed layout nav (LayoutHeader) ───────────────────── */
+.ts-layout-nav {
+  position: sticky; top: 0; z-index: 60;
+  background: rgba(6, 16, 31, 0.78);
+  backdrop-filter: saturate(180%) blur(18px);
+  -webkit-backdrop-filter: saturate(180%) blur(18px);
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+[data-theme="light"] .ts-layout-nav {
+  background: rgba(255,255,255,0.82);
+  border-bottom-color: rgba(15,23,42,0.06);
+}

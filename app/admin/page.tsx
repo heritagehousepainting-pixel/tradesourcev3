@@ -175,50 +175,25 @@ export default function AdminPage() {
         }}>{toast.msg}</div>
       )}
 
-      {/* Top nav */}
-      <header className="ts-app-nav">
-        <div className="ts-app-nav-inner">
-          <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-            <a href="/" className="ts-app-brand">Trade<span>Source</span></a>
-            <span className="ts-app-crumb">Application portal</span>
-          </div>
-          <div className="ts-app-nav-right">
-            <span className="ts-app-nav-id">{access.email}</span>
-            <a href="/dashboard" className="ts-app-nav-link">Dashboard →</a>
-          </div>
+      {/* Centered hero (homepage-matched scale) */}
+      <div className="ts-app-hero">
+        <div className="ts-app-hero-kicker">Operator · Phase 1</div>
+        <h1 className="ts-app-hero-title">Review who joins <em>the network</em>.</h1>
+        <p className="ts-app-hero-sub">
+          Every contractor clears five checks before they can post, browse, or respond to work. Approve with intent.
+        </p>
+        <div className="ts-app-hero-meta">
+          <span><b>{users.length}</b> applicants</span>
+          <span className="sep" />
+          <span><b>{pending.length}</b> pending</span>
+          <span className="sep" />
+          <span><b>{approved.length}</b> approved</span>
+          {rejected.length > 0 && <><span className="sep" /><span><b>{rejected.length}</b> rejected</span></>}
         </div>
-      </header>
+      </div>
 
       {/* Shell */}
       <div className="ts-app-shell">
-        {/* Heading */}
-        <div className="ts-page-head">
-          <div className="ts-page-kicker">Operator · phase 1</div>
-          <h1 className="ts-page-title">Review who joins <em>the network</em>.</h1>
-          <p className="ts-page-sub">
-            Every contractor clears five checks before they can post, browse, or respond to work. Approve with intent.
-          </p>
-        </div>
-
-        {/* Stats */}
-        <div className="ts-stat-row" style={{ marginBottom: 32 }}>
-          <div className="ts-stat">
-            <div className="ts-stat-label">Total applicants</div>
-            <div className="ts-stat-value">{users.length}</div>
-          </div>
-          <div className="ts-stat">
-            <div className="ts-stat-label">Pending review</div>
-            <div className="ts-stat-value ts-stat-value--warn">{pending.length}</div>
-          </div>
-          <div className="ts-stat">
-            <div className="ts-stat-label">Approved</div>
-            <div className="ts-stat-value ts-stat-value--ok">{approved.length}</div>
-          </div>
-          <div className="ts-stat">
-            <div className="ts-stat-label">Rejected</div>
-            <div className="ts-stat-value ts-stat-value--err">{rejected.length}</div>
-          </div>
-        </div>
 
         {/* Tabs */}
         <div className="ts-segtabs" style={{ marginBottom: 20 }}>

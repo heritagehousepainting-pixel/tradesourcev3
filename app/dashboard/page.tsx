@@ -484,89 +484,31 @@ export default function Dashboard() {
         </div>
       )}
 
-      {/* Top nav */}
-      <header className="ts-app-nav">
-        <div className="ts-app-nav-inner">
-          <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-            <a href="/" className="ts-app-brand">Trade<span>Source</span></a>
-            <span className="ts-app-crumb">Dashboard</span>
-          </div>
-          <div className="ts-app-nav-right">
-            <span className="ts-chip ts-chip--ok">Verified</span>
-            {myRating ? (
-              <span className="ts-chip ts-chip--warn">★ {myRating}/5 · {myReviews.length} review{myReviews.length !== 1 ? 's' : ''}</span>
-            ) : (
-              <span className="ts-chip ts-chip--neutral">Not rated yet</span>
-            )}
-          </div>
+      {/* Centered hero (homepage-matched scale, CTA below) */}
+      <div className="ts-app-hero">
+        <div className="ts-app-hero-kicker">Your workspace</div>
+        <h1 className="ts-app-hero-title">
+          Welcome back, <em>{(user.name || user.full_name || user.company || 'Contractor').split(' ')[0]}</em>.
+        </h1>
+        <p className="ts-app-hero-sub">
+          Browse open work, manage what you’ve posted, and keep conversations moving.
+        </p>
+        <div className="ts-app-hero-cta">
+          <a href="/post-job" className="ts-action ts-action--primary ts-action--lg">
+            Post a job
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </a>
+          <a href="/jobs" className="ts-action ts-action--ghost">Browse all jobs</a>
         </div>
-      </header>
-
-      {/* Page heading */}
-      <div className="ts-app-shell" style={{ paddingTop: 40, paddingBottom: 24 }}>
-        <div className="ts-page-head" style={{ marginBottom: 0 }}>
-          <div className="ts-page-kicker">Your workspace</div>
-          <div className="ts-page-head-row">
-            <div>
-              <h1 className="ts-page-title">Welcome back, <em>{(user.name || user.full_name || user.company || 'Contractor').split(' ')[0]}</em>.</h1>
-              <p className="ts-page-sub">Browse open work, manage what you’ve posted, and keep conversations moving.</p>
-            </div>
-            <a href="/post-job" className="ts-action ts-action--primary">
-              Post a job
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-            </a>
-          </div>
+        <div className="ts-app-hero-meta">
+          <span><b>{availableJobs.length}</b> open</span>
+          <span className="sep" />
+          <span><b>{jobsInProgress.length}</b> in progress</span>
+          <span className="sep" />
+          <span><b>{myPostedJobs.length}</b> posted</span>
+          {myRating && <><span className="sep" /><span><b>★ {myRating.toFixed(1)}</b> rating</span></>}
         </div>
       </div>
-
-      {/* ── Your Reputation widget ── */}
-      {!newlyAwardedJob && (
-        <div className="ts-app-shell" style={{ paddingTop: 0, paddingBottom: 0, marginBottom: 24 }}>
-          <div className="ts-panel" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap', padding: '18px 22px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 18 }}>
-              {myRating ? (
-                <>
-                  <div style={{ display: 'flex', alignItems: 'baseline', gap: 10 }}>
-                    <span style={{ fontSize: 32, fontWeight: 800, color: '#FBBF24', letterSpacing: '-0.035em', lineHeight: 1, fontVariantNumeric: 'tabular-nums' }}>{myRating.toFixed(1)}</span>
-                    <div>
-                      <div style={{ display: 'flex', gap: 1 }}>
-                        {[1,2,3,4,5].map(s => (
-                          <span key={s} style={{ fontSize: 13, color: myRating >= s ? '#FBBF24' : 'rgba(255,255,255,0.15)' }}>★</span>
-                        ))}
-                      </div>
-                      <div style={{ fontSize: 10, color: 'rgba(248,250,252,0.4)', marginTop: 2, textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-                        {myReviews.length} review{myReviews.length !== 1 ? 's' : ''}
-                      </div>
-                    </div>
-                  </div>
-                  <div style={{ height: 32, width: 1, background: 'rgba(255,255,255,0.08)' }} />
-                  <div>
-                    <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--color-text)' }}>
-                      {myRating >= 4.5 ? 'Outstanding reputation' : myRating >= 4.0 ? 'Strong reputation' : myRating >= 3.0 ? 'Building reputation' : 'Actively improving'}
-                    </div>
-                    <div style={{ fontSize: 11, color: 'rgba(248,250,252,0.45)' }}>
-                      Rated by contractors you’ve worked with.
-                    </div>
-                  </div>
-                </>
-              ) : (
-                <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-                  <div style={{ width: 40, height: 40, borderRadius: 12, background: 'rgba(251,191,36,0.1)', border: '1px solid rgba(251,191,36,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#FBBF24', fontSize: 18, opacity: 0.85 }}>★</div>
-                  <div>
-                    <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--color-text)' }}>No reputation yet</div>
-                    <div style={{ fontSize: 11, color: 'rgba(248,250,252,0.45)' }}>Finish your first awarded job to start earning reviews.</div>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            <a href="/reviews" className="ts-action ts-action--ghost ts-action--sm">
-              {myRating ? 'See your reviews' : 'How it works'}
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-            </a>
-          </div>
-        </div>
-      )}
 
       {/* ── Awarded-job guidance card — contractor side ── */}
       {newlyAwardedJob && (
@@ -800,15 +742,14 @@ export default function Dashboard() {
         <div style={{ maxWidth: 1160, margin: '0 auto', padding: '14px 28px' }}>
           <div className="ts-segtabs">
             {[
-              { key: 'browse', label: 'Browse jobs', count: availableJobs.length },
-              { key: 'posted', label: 'My posted jobs', count: myPostedJobs.length },
-              { key: 'messages', label: 'Messages', count: messageThreads.length },
-              { key: 'profile', label: 'Profile', count: 0 },
+              { key: 'browse', label: 'Browse jobs' },
+              { key: 'posted', label: 'My posted jobs' },
+              { key: 'messages', label: 'Messages' },
+              { key: 'profile', label: 'Profile' },
             ].map(tab => (
               <button key={tab.key} onClick={() => setView(tab.key as typeof view)}
                 className={`ts-segtab ${view === tab.key ? 'is-active' : ''}`}>
                 {tab.label}
-                {tab.count > 0 && <span className="ts-segtab-count">{tab.count}</span>}
               </button>
             ))}
           </div>
@@ -821,13 +762,6 @@ export default function Dashboard() {
         {/* BROWSE */}
         {view === 'browse' && (
           <div>
-            <div className="ts-stat-row" style={{ marginBottom: 32 }}>
-              <StatCard value={availableJobs.length} label="Open jobs" tone={availableJobs.length > 0 ? 'ok' : undefined} />
-              <StatCard value={jobsInProgress.length} label="In progress" tone="accent" />
-              <StatCard value={myPostedJobs.length} label="My posted" />
-              <StatCard value={myRating ? `${myRating} ★` : '—'} label={myRating ? `${myReviews.length} review${myReviews.length !== 1 ? 's' : ''}` : 'No rating'} tone={myRating ? 'warn' : undefined} />
-            </div>
-
             {dashboardError && <div className="ts-chip ts-chip--err" style={{ padding: '10px 14px', borderRadius: 10, fontSize: 13, fontWeight: 500, marginBottom: 20 }}>{dashboardError}</div>}
 
             {/* Active Work */}
@@ -945,9 +879,9 @@ export default function Dashboard() {
               </div>
             )}
 
-            {/* Open Jobs */}
+            {/* Open Jobs — single framed window, borderless rows (homepage parity) */}
             <div>
-              <div className="ts-section-head-row" style={{ margin: '0 0 16px' }}>
+              <div className="ts-section-head-row" style={{ margin: '0 0 18px' }}>
                 <span className="ts-section-eyebrow">Open jobs</span>
                 <span className="ts-section-count">{availableJobs.length}</span>
               </div>
@@ -958,15 +892,37 @@ export default function Dashboard() {
                   <div className="ts-empty-cta"><a href="/jobs" className="ts-action ts-action--blue">Browse all jobs</a></div>
                 </div>
               ) : (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                  {availableJobs.slice(0, 8).map(job => (
-                    <JobCard key={job.id} job={job} onExpress={handleExpressInterest} expressingId={expressingId} expressed={expressedJobs.has(job.id)} />
-                  ))}
-                  {availableJobs.length > 8 && (
-                    <a href="/jobs" style={{ display: 'block', textAlign: 'center', padding: '12px 16px', borderRadius: 10, fontSize: 13, fontWeight: 600, backgroundColor: 'var(--color-surface-raised)', color: 'var(--color-blue)', border: '1px solid var(--color-border)', textDecoration: 'none' }}>
-                      +{availableJobs.length - 8} more jobs →
-                    </a>
-                  )}
+                <div className="ts-mk-halo ts-mk-halo--blue">
+                  <div className="ts-joblist-frame">
+                    <div className="mk-chrome">
+                      <div className="mk-dots"><span/><span/><span/></div>
+                      <div className="mk-chrome-title">TradeSource · Open jobs</div>
+                    </div>
+                    <div className="ts-joblist-rows">
+                      {availableJobs.slice(0, 8).map((job: any) => (
+                        <a key={job.id} href={`/jobs/${job.id}`} className="ts-joblist-row">
+                          <div className="ts-joblist-main">
+                            <div className="ts-joblist-title">
+                              {job.title}
+                              {expressedJobs.has(job.id) && <span className="ts-chip ts-chip--ok ts-chip--plain">Interest sent</span>}
+                            </div>
+                            <div className="ts-joblist-meta">
+                              {job.area && <span>{job.area}</span>}
+                              {job.scope && <><span className="sep" /><span>{job.scope}</span></>}
+                              {job.created_at && <><span className="sep" /><span>{timeAgo(job.created_at)}</span></>}
+                            </div>
+                          </div>
+                          {job.budget_min && <div className="ts-joblist-price">${job.budget_min.toLocaleString()}</div>}
+                          <svg className="ts-joblist-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+                        </a>
+                      ))}
+                    </div>
+                    {availableJobs.length > 8 && (
+                      <a href="/jobs" style={{ display: 'block', textAlign: 'center', padding: '14px 18px', fontSize: 13, fontWeight: 600, color: '#93C5FD', textDecoration: 'none', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+                        View all {availableJobs.length} open jobs →
+                      </a>
+                    )}
+                  </div>
                 </div>
               )}
             </div>

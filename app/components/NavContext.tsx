@@ -1,6 +1,6 @@
 'use client'
 
-import { createContext, useContext, useState, useEffect } from 'react'
+import { createContext, useContext, useState, useEffect, useRef } from 'react'
 import { useUserAccess } from '@/lib/auth/access.client'
 import { signOut } from '@/lib/auth/client'
 import type { UserAccess } from '@/lib/auth/access.types'
@@ -96,7 +96,6 @@ export function LayoutHeader() {
     '/jobs',       // browse + detail: both render their own premium nav
     '/founder-login', // sign-in surface — premium standalone, no site nav
     '/signin',     // alias (redirects to /founder-login)
-    '/admin',     // application portal: branded header with TradeSource logo + breadcrumb
     '/apply',     // apply page: custom mini header with logo + Apply
     '/pending',  // pending page: custom PendingNav header
     '/terms',     // terms page: wordmark header
@@ -116,46 +115,21 @@ export function LayoutHeader() {
   useEffect(() => { setMobileOpen(false) }, [pathname])
 
   return (
-    <header
-      style={{
-        backgroundColor: 'var(--color-nav)',
-        borderBottom: '1px solid var(--color-nav-border)',
-        position: 'sticky',
-        top: 0,
-        zIndex: 30,
-      }}
-    >
-      <div style={{ maxWidth: 1100, margin: '0 auto', padding: isMobile ? '0 16px' : '0 32px' }}>
+    <header className="ts-layout-nav">
+      <div style={{ maxWidth: 1280, margin: '0 auto', padding: isMobile ? '0 18px' : '0 40px' }}>
         <div
           style={{
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            height: 48,
+            height: 64,
           }}
           className="mobile-nav-inner"
         >
-          {/* ─ Brand ─ */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <div
-              style={{
-                width: 24,
-                height: 24,
-                borderRadius: 5,
-                backgroundColor: 'var(--color-blue)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M13 10V3L4 14h7v7l9-11h-7z" />
-              </svg>
-            </div>
-            <Link href="/" style={{ fontSize: 14, fontWeight: 700, color: 'var(--color-text)', textDecoration: 'none', letterSpacing: '-0.01em' }}>
-              TradeSource
-            </Link>
-          </div>
+          {/* ─ Brand (wordmark only, matches homepage) ─ */}
+          <Link href="/" className="ts-nav-brand" style={{ fontSize: 17, fontWeight: 800, letterSpacing: '-0.02em' }}>
+            Trade<span>Source</span>
+          </Link>
 
           {/* ─ Desktop nav ─ */}
           {!isMobile && (
@@ -169,13 +143,16 @@ export function LayoutHeader() {
                 </nav>
               )}
               {!showPublicNav && (
-                <nav style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
-                  <NavLink href={access.vettingStatus === 'approved' ? '/dashboard?view=browse' : '/jobs'}>Browse Jobs</NavLink>
-                  {access.canPostJobs && <NavLink href="/post-job">Post a Job</NavLink>}
+                <nav style={{ display: 'flex', alignItems: 'center', gap: 28 }}>
+                  <NavLink href={access.vettingStatus === 'approved' ? '/dashboard?view=browse' : '/jobs'}>Browse jobs</NavLink>
                   <NavLink href="/dashboard">Dashboard</NavLink>
-                  {access.canViewApplicationPortal && <NavLink href="/admin" muted>Application Portal</NavLink>}
-                  <button onClick={handleSignOut} style={{ fontSize: 13, fontWeight: 500, color: 'var(--color-text-muted)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>Sign Out</button>
+                  {access.canPostJobs && (
+                    <Link href="/post-job" className="ts-nav-cta" style={{ padding: '8px 16px', fontSize: 13 }}>
+                      Post a job
+                    </Link>
+                  )}
                   <ThemeToggle />
+                  <AvatarMenu access={access} onSignOut={handleSignOut} />
                 </nav>
               )}
             </>
@@ -252,6 +229,53 @@ export function LayoutHeader() {
         </div>
       )}
     </header>
+  )
+}
+
+// ─── AvatarMenu (authed users) ────────────────────────────────────────────────
+
+function AvatarMenu({ access, onSignOut }: { access: UserAccess; onSignOut: () => Promise<void> }) {
+  const [open, setOpen] = useState(false)
+  const ref = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!open) return
+    const onDoc = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false)
+    }
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setOpen(false) }
+    document.addEventListener('mousedown', onDoc)
+    document.addEventListener('keydown', onKey)
+    return () => { document.removeEventListener('mousedown', onDoc); document.removeEventListener('keydown', onKey) }
+  }, [open])
+
+  const name = (access as any).profile?.name || (access as any).profile?.full_name || (access as any).profile?.company || access.email || 'U'
+  const initial = String(name).trim().charAt(0).toUpperCase() || 'U'
+
+  return (
+    <div ref={ref} className="ts-nav-menu-wrap">
+      <button aria-label="Account menu" aria-expanded={open} onClick={() => setOpen(o => !o)} className="ts-nav-avatar">
+        {initial}
+      </button>
+      {open && (
+        <div className="ts-nav-menu" role="menu">
+          <div style={{ padding: '6px 12px 10px', borderBottom: '1px solid rgba(255,255,255,0.06)', marginBottom: 4 }}>
+            <div style={{ fontSize: 12, fontWeight: 600, color: 'rgba(248,250,252,0.9)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{name}</div>
+            {access.email && <div style={{ fontSize: 11, color: 'rgba(248,250,252,0.45)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{access.email}</div>}
+          </div>
+          <Link href="/dashboard" onClick={() => setOpen(false)}>Dashboard</Link>
+          <Link href="/dashboard?view=profile" onClick={() => setOpen(false)}>Profile</Link>
+          {access.canViewApplicationPortal && (
+            <>
+              <div className="divider" />
+              <Link href="/admin" onClick={() => setOpen(false)}>Application portal</Link>
+            </>
+          )}
+          <div className="divider" />
+          <button onClick={async () => { setOpen(false); await onSignOut() }}>Sign out</button>
+        </div>
+      )}
+    </div>
   )
 }
 

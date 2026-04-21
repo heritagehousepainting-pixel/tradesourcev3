@@ -331,7 +331,7 @@ export default function PostJob() {
         </div>
 
         {/* Live preview mockup — mirrors homepage mk-* language */}
-        <div className="ts-postjob-preview">
+        <div className="ts-postjob-preview is-haloed">
           <div className="mk-chrome">
             <div className="mk-dots"><span/><span/><span/></div>
             <div className="mk-chrome-title">Post overflow work · preview</div>
@@ -388,7 +388,7 @@ export default function PostJob() {
 
             {/* Section 1 — Basics */}
             <div>
-              <div className="ts-section-eyebrow" style={{ marginBottom: 14 }}>1 · Job basics</div>
+              <div className="ts-section-eyebrow" style={{ marginBottom: 14 }}>Basics</div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
                 <div className="ts-field">
                   <label className="ts-field-label" htmlFor="job-title">Title <span className="ts-field-req">*</span></label>
@@ -425,7 +425,7 @@ export default function PostJob() {
 
             {/* Section 2 — Price + materials */}
             <div>
-              <div className="ts-section-eyebrow" style={{ marginBottom: 14 }}>2 · Price &amp; materials</div>
+              <div className="ts-section-eyebrow" style={{ marginBottom: 14 }}>Price &amp; materials</div>
               <div className="ts-field" style={{ marginBottom: 18 }}>
                 <label className="ts-field-label">Fixed price <span className="ts-field-req">*</span></label>
                 <div className="ts-field-hint">One price. No bidding. Contractors accept at this amount.</div>
@@ -442,32 +442,27 @@ export default function PostJob() {
               <div className="ts-field">
                 <label className="ts-field-label">Materials <span className="ts-field-req">*</span></label>
                 <div className="ts-field-hint">Who is providing paint and supplies?</div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                  {MATERIALS_OPTIONS.map(opt => {
+                <div className="ts-segbar" role="radiogroup" aria-label="Materials">
+                  {[
+                    { value: 'poster_provides',        label: 'Poster provides' },
+                    { value: 'subcontractor_provides', label: 'Sub-contractor provides' },
+                    { value: 'to_discuss',             label: 'Discuss after interest' },
+                  ].map(opt => {
                     const active = form.materials === opt.value
                     return (
-                      <button key={opt.value} type="button"
+                      <button key={opt.value} type="button" role="radio" aria-checked={active}
                         onClick={() => setForm(prev => ({ ...prev, materials: opt.value }))}
-                        style={{
-                          display: 'flex', alignItems: 'flex-start', gap: 12,
-                          padding: '14px 16px', borderRadius: 12, cursor: 'pointer', textAlign: 'left',
-                          border: active ? '1px solid rgba(96,165,250,0.45)' : '1px solid rgba(255,255,255,0.08)',
-                          background: active ? 'rgba(96,165,250,0.08)' : 'rgba(255,255,255,0.025)',
-                          transition: 'all .15s',
-                        }}>
-                        <div style={{ width: 18, height: 18, borderRadius: 6, flexShrink: 0, marginTop: 2,
-                          border: active ? '1px solid #60A5FA' : '1px solid rgba(255,255,255,0.2)',
-                          background: active ? '#60A5FA' : 'transparent',
-                          display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                          {active && <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth={3.5}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>}
-                        </div>
-                        <div>
-                          <div style={{ fontSize: 13, fontWeight: 600, color: active ? '#93C5FD' : 'var(--color-text)' }}>{opt.label}</div>
-                          <div style={{ fontSize: 12, color: 'rgba(248,250,252,0.5)', marginTop: 2 }}>{opt.sub}</div>
-                        </div>
+                        className={`ts-segbar-opt ${active ? 'is-on' : ''}`}>
+                        {opt.label}
                       </button>
                     )
                   })}
+                </div>
+                <div className="ts-field-hint" style={{ marginTop: 10 }}>
+                  {form.materials === 'poster_provides' && 'You supply paint and materials for the job.'}
+                  {form.materials === 'subcontractor_provides' && 'Price should include paint and all supplies.'}
+                  {form.materials === 'to_discuss' && 'Finalize once a sub-contractor expresses interest.'}
+                  {!form.materials && 'Select who is providing materials.'}
                 </div>
               </div>
             </div>
@@ -475,7 +470,7 @@ export default function PostJob() {
             {/* Section 3 — Scope */}
             <div>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
-                <div className="ts-section-eyebrow">3 · Scope</div>
+                <div className="ts-section-eyebrow">Scope</div>
                 {form.description && (
                   <span className={`ts-chip ${scopeSource === 'assistant' ? 'ts-chip--info' : 'ts-chip--ok'}`}>
                     {scopeSource === 'assistant' ? 'AI generated' : 'Manual'}
@@ -510,7 +505,7 @@ export default function PostJob() {
 
             {/* Section 4 — Photos */}
             <div>
-              <div className="ts-section-eyebrow" style={{ marginBottom: 14 }}>4 · Photos</div>
+              <div className="ts-section-eyebrow" style={{ marginBottom: 14 }}>Photos</div>
               <div className="ts-panel">
                 <PhotoUploader photos={photos} onChange={setPhotos} />
               </div>
@@ -519,7 +514,7 @@ export default function PostJob() {
             {/* Contact (guests only) */}
             {!loggedInContractor && (
               <div>
-                <div className="ts-section-eyebrow" style={{ marginBottom: 14 }}>5 · Contact</div>
+                <div className="ts-section-eyebrow" style={{ marginBottom: 14 }}>Contact</div>
                 <div className="ts-panel" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
                   <div className="ts-field">
                     <label className="ts-field-label">Your name</label>
