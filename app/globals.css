@@ -6692,3 +6692,275 @@ main,
   [data-messages-container] { padding: 8px 12px !important; }
   [data-messages-thread-list] { padding: 12px !important; }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   /apply — MOBILE-FIRST REBUILD
+   Desktop split-view preserved. Mobile/tablet stacks with premium rhythm.
+   Kicks in at ≤820px (covers phones + tablet portrait).
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 820px) {
+
+  /* ─── Layout: two-column → stacked single column ───────────────────────── */
+  .ts-apply {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    min-height: 100vh;
+  }
+
+  /* ─── Hero (left panel) becomes a compact top header on mobile ─────────── */
+  .ts-apply-hero {
+    width: 100% !important;
+    padding: 36px 22px 28px !important;
+    border-right: none !important;
+    border-bottom: 1px solid rgba(255,255,255,0.08) !important;
+    text-align: left;
+    background-position: center !important;
+  }
+  /* Compact the hero: keep logo + headline + sub + one-line credentials row;
+     hide dense feature grid + "what you need" card on mobile.          */
+  .ts-apply-hero > div:nth-child(1) { /* decorative radial blur */
+    display: none !important;
+  }
+  .ts-apply-hero > div:nth-child(2) { /* logo row */
+    margin-bottom: 20px;
+  }
+  .ts-apply-hero > div:nth-child(3) > div:first-child { /* orange accent bar */
+    margin-bottom: 14px !important;
+  }
+  .ts-apply-hero h1 {
+    font-size: clamp(28px, 8vw, 38px) !important;
+    line-height: 1.1 !important;
+    margin-bottom: 12px !important;
+  }
+  .ts-apply-hero p {
+    font-size: 14px !important;
+    line-height: 1.6 !important;
+    margin-bottom: 18px !important;
+  }
+  /* Hide the "What you need to apply" card + feature grid on mobile.
+     They return users up to a big pitch block before they even start. */
+  .ts-apply-hero > div:nth-child(3) > div:nth-child(4), /* "What you need" card */
+  .ts-apply-hero > div:nth-child(3) > div:nth-child(5) { /* feature grid */
+    display: none !important;
+  }
+  .ts-apply-hero > span:last-child {
+    font-size: 12px !important;
+    color: rgba(255,255,255,0.55) !important;
+    display: block;
+    margin-top: 4px;
+  }
+
+  /* ─── Form panel: full-width with calm gutter ──────────────────────────── */
+  .ts-apply-form {
+    padding: 32px 18px 48px !important;
+    display: block !important;
+  }
+  .ts-apply-form > div {
+    max-width: 640px !important;
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  /* Page header inside form */
+  .ts-apply-form h2 {
+    font-size: 24px !important;
+    margin-bottom: 8px !important;
+  }
+  .ts-apply-form > div > div:first-child > p {
+    font-size: 14px !important;
+  }
+
+  /* ─── Form card: reduce padding, subtler border ────────────────────────── */
+  .ts-apply-card {
+    border-radius: 16px !important;
+    box-shadow: none !important;
+    border: 1px solid var(--color-border);
+  }
+  .ts-apply-card > div:nth-child(2) {
+    padding: 22px 18px !important;
+  }
+
+  /* ─── Step progress: readable, not ornamental ──────────────────────────── */
+  .ts-apply-progress {
+    margin-bottom: 24px !important;
+  }
+  .ts-apply-progress > div:first-child {
+    flex-direction: row;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 12px !important;
+  }
+  .ts-apply-progress > div:first-child > div > span:first-child {
+    font-size: 13px !important;
+  }
+  .ts-apply-progress > div:first-child > div > span:nth-child(2) {
+    font-size: 13px !important;
+    display: block;
+    margin-left: 0 !important;
+    margin-top: 2px;
+  }
+  /* Segment bars */
+  .ts-apply-progress > div:nth-child(2) > div {
+    height: 5px !important;
+    border-radius: 3px !important;
+  }
+  /* Step labels: keep only current step visible on mobile, hide the 4-col
+     9px-uppercase row which is unreadable on phones */
+  .ts-apply-progress > div:nth-child(3) {
+    display: none !important;
+  }
+
+  /* ─── Form body: more vertical breathing room between fields ───────────── */
+  .ts-apply-formbody {
+    gap: 22px !important;
+  }
+
+  /* ─── 2-col grids → 1-col (Name/Email, Phone/Business, License/Ins, Docs) */
+  .ts-apply-form div[style*="grid-template-columns: 1fr 1fr"],
+  .ts-apply-form div[style*="gridTemplateColumns: '1fr 1fr'"] {
+    grid-template-columns: 1fr !important;
+    gap: 18px !important;
+  }
+
+  /* ─── Inputs: unified mobile rhythm ────────────────────────────────────── */
+  .ts-apply-form input[type="text"],
+  .ts-apply-form input[type="email"],
+  .ts-apply-form input[type="tel"],
+  .ts-apply-form input[type="url"],
+  .ts-apply-form input[type="password"],
+  .ts-apply-form input[type="number"],
+  .ts-apply-form textarea {
+    width: 100% !important;
+    padding: 14px 14px !important;
+    font-size: 16px !important;       /* no iOS zoom */
+    border-radius: 12px !important;
+    border: 1.5px solid var(--color-input-border) !important;
+    min-height: 50px !important;
+    box-sizing: border-box;
+  }
+  .ts-apply-form textarea { min-height: 110px !important; }
+
+  /* Labels: calmer, tighter to field */
+  .ts-apply-form label {
+    font-size: 12px !important;
+    margin-bottom: 8px !important;
+    letter-spacing: 0.05em !important;
+  }
+  .ts-apply-form fieldset legend { font-size: 12px !important; }
+  .ts-apply-form fieldset p { font-size: 13px !important; line-height: 1.55 !important; }
+
+  /* Field-level helper text */
+  .ts-apply-formbody > div > p { font-size: 12px !important; line-height: 1.55 !important; margin-top: 8px !important; }
+
+  /* ─── Chip buttons (service areas, trade types): full-width column ─────── */
+  .ts-apply-form fieldset > div:last-child {
+    flex-direction: column !important;
+    gap: 8px !important;
+  }
+  .ts-apply-form fieldset button[type="button"] {
+    width: 100% !important;
+    justify-content: flex-start !important;
+    min-height: 48px !important;
+    padding: 12px 16px !important;
+    font-size: 14px !important;
+    text-align: left !important;
+    border-radius: 12px !important;
+  }
+
+  /* ─── File upload cards: single column, larger tap target ──────────────── */
+  .ts-apply-form [role="presentation"],
+  .ts-apply-form label[for$="-upload"] + p + div {
+    padding: 18px 16px !important;
+    min-height: 84px;
+  }
+
+  /* ─── Save-progress row: stack vertically on mobile ────────────────────── */
+  .ts-apply-save {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 10px !important;
+    padding: 14px !important;
+    border-radius: 12px !important;
+  }
+  .ts-apply-save > svg { display: none !important; }
+  .ts-apply-save > span:first-of-type {
+    font-size: 13px !important;
+    color: var(--color-text-muted) !important;
+  }
+  .ts-apply-save input[type="email"] {
+    width: 100% !important;
+    font-size: 16px !important;
+    padding: 12px 14px !important;
+    min-height: 46px !important;
+    border-radius: 10px !important;
+  }
+  .ts-apply-save button {
+    width: 100% !important;
+    font-size: 13px !important;
+    padding: 12px 14px !important;
+    min-height: 44px !important;
+    border-radius: 10px !important;
+  }
+
+  /* ─── Nav buttons: full-width, Back as subtle ghost above Continue ─────── */
+  .ts-apply-nav {
+    flex-direction: column-reverse !important;
+    gap: 12px !important;
+    padding-top: 12px !important;
+  }
+  .ts-apply-nav button {
+    width: 100% !important;
+    padding: 15px 18px !important;
+    min-height: 52px !important;
+    font-size: 15px !important;
+    border-radius: 12px !important;
+  }
+  /* Back button: make it a quiet ghost, not a card-style button */
+  .ts-apply-nav button[type="button"]:not([disabled]):first-child {
+    background: transparent !important;
+    border: none !important;
+    color: var(--color-text-muted) !important;
+    min-height: 40px !important;
+    padding: 6px !important;
+    font-size: 14px !important;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    opacity: 0.8;
+  }
+
+  /* ─── Trust line below card ────────────────────────────────────────────── */
+  .ts-apply-form > div > div:last-child {
+    margin-top: 22px !important;
+    padding: 0 8px;
+    line-height: 1.5;
+  }
+  .ts-apply-form > div > div:last-child span {
+    font-size: 12px !important;
+    line-height: 1.55 !important;
+  }
+
+  /* Resume-banner + error boxes: tighter */
+  .ts-apply-form > div > div[style*="rgba(16,185,129,0.06)"] {
+    padding: 14px !important;
+    font-size: 13px !important;
+    border-radius: 12px !important;
+  }
+
+  /* Reassurance notices between steps */
+  .ts-apply-formbody > div[style*="rgba(37,99,235,0.06)"] {
+    padding: 14px !important;
+    font-size: 13px !important;
+    line-height: 1.6 !important;
+    border-radius: 12px !important;
+  }
+}
+
+/* Ultra-narrow phones — further tighten */
+@media (max-width: 420px) {
+  .ts-apply-hero { padding: 30px 18px 24px !important; }
+  .ts-apply-hero h1 { font-size: clamp(26px, 9vw, 32px) !important; }
+  .ts-apply-form { padding: 24px 14px 44px !important; }
+  .ts-apply-card > div:nth-child(2) { padding: 20px 14px !important; }
+  .ts-apply-formbody { gap: 20px !important; }
+}

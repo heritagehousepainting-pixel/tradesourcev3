@@ -346,10 +346,10 @@ export default function Apply() {
   }
 
   return (
-    <div style={{ backgroundColor: 'var(--color-bg)', minHeight: '100vh', display: 'flex', alignItems: 'stretch' }}>
+    <div className="ts-apply" style={{ backgroundColor: 'var(--color-bg)', minHeight: '100vh', display: 'flex', alignItems: 'stretch' }}>
 
       {/* ─── Left Panel (always dark navy — premium brand panel, stays readable in both themes) ─── */}
-      <div data-apply-left-panel style={{
+      <div data-apply-left-panel className="ts-apply-hero" style={{
         display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
         width: '48%', padding: '48px 56px',
         backgroundColor: '#0D1B2A',
@@ -470,7 +470,7 @@ export default function Apply() {
       </div>
 
       {/* ─── Right Panel — Form ─── */}
-      <div data-apply-form-panel style={{
+      <div data-apply-form-panel className="ts-apply-form" style={{
         flex: 1, display: 'flex', alignItems: 'flex-start', justifyContent: 'center',
         padding: '56px 48px', overflowY: 'auto'
       }}>
@@ -502,7 +502,7 @@ export default function Apply() {
             )}
 
           {/* Form card */}
-          <div className="form-card" style={{
+          <div className="form-card ts-apply-card" style={{
             borderRadius: 14,
             overflow: 'hidden',
             boxShadow: 'var(--ts-shadow-card-hover)',
@@ -524,7 +524,7 @@ export default function Apply() {
               )}
 
               {/* ── Step progress indicator ── */}
-              <div style={{ marginBottom: 20 }}>
+              <div className="ts-apply-progress" style={{ marginBottom: 20 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
                   <div>
                     <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--color-text)', letterSpacing: '0.02em' }}>
@@ -580,7 +580,7 @@ export default function Apply() {
                 )}
               </div>
 
-              <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+              <form onSubmit={handleSubmit} className="ts-apply-formbody" style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
 
                 {/* ── STEP 1: Contact Info ── */}
                 {currentStep === 1 && <>
@@ -883,7 +883,7 @@ export default function Apply() {
 
                 {/* ── Save progress — shown on every step ── */}
                 {currentStep < TOTAL_STEPS && !saveEmailSent && (
-                  <div style={{
+                  <div className="ts-apply-save" style={{
                     display: 'flex', alignItems: 'center', gap: 10,
                     padding: '10px 14px',
                     borderRadius: 10,
@@ -975,7 +975,7 @@ export default function Apply() {
                     <strong style={{ color: 'var(--color-text)', fontWeight: 600 }}>Step 3 is quick.</strong> Just a short bio and your external review link — your documents come next on Step 4.
                   </div>
                 )}
-                <div style={{ display: 'flex', gap: 10, paddingTop: 4 }}>
+                <div className="ts-apply-nav" style={{ display: 'flex', gap: 10, paddingTop: 4 }}>
                   {currentStep > 1 && (
                     <button
                       type="button"
