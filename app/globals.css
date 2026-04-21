@@ -6507,3 +6507,57 @@ main,
   .ts-joblist-row { padding: 14px 12px !important; }
   .ts-chip { font-size: 10.5px !important; padding: 3px 8px !important; }
 }
+
+/* ─── Mobile-only fixes: hero mockup pill + meta + site footer ──────────── */
+@media (max-width: 640px) {
+
+  /* Fix: "NEW" pill squishing into vertical stacked letters (N/E/W).
+     Root cause: .mk-pill inside a flex row with a wrapping title was
+     flex-shrinking to fit. Lock it. */
+  .mk-pill {
+    flex-shrink: 0 !important;
+    white-space: nowrap !important;
+    align-self: flex-start;
+  }
+
+  /* Fix: meta row dots stranded on their own line when text wraps.
+     Hide bullet dots on mobile, use column-gap to space fragments,
+     and make each text fragment itself nowrap so it wraps as a unit. */
+  .mk-job-meta { column-gap: 10px !important; row-gap: 2px !important; }
+  .mk-job-meta > .mk-dot { display: none !important; }
+  .mk-job-meta > span:not(.mk-dot) { white-space: nowrap; }
+  .mk-sub-meta { column-gap: 10px !important; row-gap: 2px !important; }
+  .mk-sub-meta > .mk-dot { display: none !important; }
+  .mk-sub-meta > span:not(.mk-dot) { white-space: nowrap; }
+
+  /* Extra breathing room inside each job row so price doesn't visually
+     collide with the NEW pill / title when title wraps to 3 lines. */
+  .mk-job { align-items: flex-start !important; padding: 13px 14px !important; }
+  .mk-job-top { gap: 8px !important; row-gap: 4px !important; flex-wrap: wrap; }
+  .mk-job-main { padding-right: 4px; }
+  .mk-job-price { align-self: center; margin-left: auto; }
+
+  /* ── Site footer (global <footer> in app/layout.tsx) ─────────────────── */
+  .ts-site-footer-inner {
+    padding: 40px 20px 32px !important;
+  }
+  .ts-site-footer-grid {
+    grid-template-columns: 1fr !important;
+    gap: 32px !important;
+    margin-bottom: 28px !important;
+  }
+  .ts-site-footer-grid > div { max-width: 100%; }
+  .ts-site-footer-grid p[style*="maxWidth: 240"],
+  .ts-site-footer-grid p {
+    max-width: none !important;
+    line-height: 1.7;
+  }
+  .ts-site-footer-bottom {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 10px !important;
+    padding-top: 22px !important;
+    line-height: 1.55;
+  }
+  .ts-site-footer-bottom p { font-size: 12px !important; line-height: 1.6 !important; }
+}

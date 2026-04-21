@@ -35,10 +35,10 @@ export default function RootLayout({
           </NavProvider>
         </ThemeProvider>
 
-        <footer style={{ backgroundColor: 'var(--color-footer-bg)', borderTop: '1px solid var(--color-footer-border)' }}>
-          <div style={{ maxWidth: 960, margin: '0 auto', padding: '48px 24px 40px' }}>
+        <footer className="ts-site-footer" style={{ backgroundColor: 'var(--color-footer-bg)', borderTop: '1px solid var(--color-footer-border)' }}>
+          <div className="ts-site-footer-inner" style={{ maxWidth: 960, margin: '0 auto', padding: '48px 24px 40px' }}>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1.5fr', gap: 32, marginBottom: 36 }}>
+            <div className="ts-site-footer-grid" style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1.5fr', gap: 32, marginBottom: 36 }}>
 
               <div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
@@ -91,7 +91,7 @@ export default function RootLayout({
 
             </div>
 
-            <div style={{ borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: 20, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 8 }}>
+            <div className="ts-site-footer-bottom" style={{ borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: 20, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 8 }}>
               <p style={{ fontSize: 12, color: '#F8FAFC' }}>
                 © {new Date().getFullYear()} TradeSource. All rights reserved.
               </p>
