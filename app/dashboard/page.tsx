@@ -18,11 +18,11 @@ function timeAgo(dateStr: string): string {
   return `${days}d ago`
 }
 
-function StatCard({ value, label, accent }: { value: string | number; label: string; accent?: string }) {
+function StatCard({ value, label, tone }: { value: string | number; label: string; tone?: 'ok' | 'warn' | 'err' | 'accent' }) {
   return (
-    <div style={{ backgroundColor: 'var(--color-surface-raised)', border: '1px solid var(--color-border)', borderRadius: 14, padding: '20px 24px', textAlign: 'center' }}>
-      <div style={{ fontSize: 28, fontWeight: 800, color: accent || 'var(--color-text)', letterSpacing: '-0.03em', lineHeight: 1.1 }}>{value}</div>
-      <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--color-text-subtle)', letterSpacing: '0.05em', textTransform: 'uppercase', marginTop: 6 }}>{label}</div>
+    <div className="ts-stat">
+      <div className="ts-stat-label">{label}</div>
+      <div className={`ts-stat-value${tone ? ' ts-stat-value--' + tone : ''}`}>{value}</div>
     </div>
   )
 }
@@ -34,42 +34,42 @@ function JobCard({ job, onExpress, expressingId, expressed }: {
   expressed: boolean
 }) {
   return (
-    <div style={{ backgroundColor: 'var(--color-surface-raised)', border: '1px solid var(--color-border)', borderRadius: 14, padding: '20px 22px', boxShadow: '0 2px 12px var(--color-shadow)' }}>
+    <div className="ts-panel ts-panel--hover">
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 16, marginBottom: 12 }}>
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', marginBottom: 6 }}>
-            <h3 style={{ fontSize: 14, fontWeight: 700, color: 'var(--color-text)', letterSpacing: '-0.01em' }}>{job.title}</h3>
-            <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 9px', borderRadius: 20, backgroundColor: 'var(--color-green-soft)', color: 'var(--color-green)' }}>Open</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap', marginBottom: 6 }}>
+            <h3 style={{ fontSize: 15, fontWeight: 600, color: 'var(--color-text)', letterSpacing: '-0.005em' }}>{job.title}</h3>
+            <span className="ts-chip ts-chip--ok">Open</span>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
-            {job.area && <span style={{ fontSize: 12, color: 'var(--color-text-muted)' }}>{job.area}</span>}
-            {job.scope && <span style={{ fontSize: 10, fontWeight: 600, padding: '2px 8px', borderRadius: 20, backgroundColor: 'var(--color-blue-soft)', color: 'var(--color-blue)' }}>{job.scope}</span>}
-            {job.created_at && <span style={{ fontSize: 11, color: 'var(--color-text-subtle)' }}>{timeAgo(job.created_at)}</span>}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap', fontSize: 12, color: 'rgba(248,250,252,0.5)' }}>
+            {job.area && <span>{job.area}</span>}
+            {job.scope && <><span className="ts-dot" style={{ width: 3, height: 3, borderRadius: '50%', background: 'currentColor', display: 'inline-block' }}/><span>{job.scope}</span></>}
+            {job.created_at && <><span className="ts-dot" style={{ width: 3, height: 3, borderRadius: '50%', background: 'currentColor', display: 'inline-block' }}/><span>{timeAgo(job.created_at)}</span></>}
           </div>
         </div>
         {job.budget_min && (
-          <div style={{ flexShrink: 0 }}>
-            <div style={{ fontSize: 17, fontWeight: 800, color: 'var(--color-green)', letterSpacing: '-0.02em' }}>${job.budget_min.toLocaleString()}</div>
+          <div style={{ flexShrink: 0, textAlign: 'right' }}>
+            <div style={{ fontSize: 20, fontWeight: 800, color: '#34D399', letterSpacing: '-0.03em', fontVariantNumeric: 'tabular-nums' }}>${job.budget_min.toLocaleString()}</div>
+            <div style={{ fontSize: 10, color: 'rgba(248,250,252,0.4)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Fixed price</div>
           </div>
         )}
       </div>
       {job.description && (
-        <p style={{ fontSize: 12, color: 'var(--color-text-muted)', lineHeight: 1.6, marginBottom: 14 }}>{job.description.length > 160 ? job.description.slice(0, 160) + '…' : job.description}</p>
+        <p style={{ fontSize: 13, color: 'rgba(248,250,252,0.65)', lineHeight: 1.65, marginBottom: 16 }}>{job.description.length > 160 ? job.description.slice(0, 160) + '…' : job.description}</p>
       )}
-      <div style={{ display: 'flex', gap: 8, paddingTop: 14, borderTop: '1px solid var(--color-divider)' }}>
-        <a href={`/jobs/${job.id}`} style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '10px 16px', borderRadius: 10, fontSize: 12, fontWeight: 600, backgroundColor: 'var(--color-surface)', color: 'var(--color-text)', border: '1px solid var(--color-border-strong)', textDecoration: 'none', minHeight: 40 }}>View Details</a>
-        <button onClick={() => onExpress(job.id)} disabled={expressingId === job.id || expressed} style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '10px 16px', borderRadius: 10, fontSize: 12, fontWeight: 700, minHeight: 40, cursor: expressed || expressingId === job.id ? 'default' : 'pointer', backgroundColor: expressed ? 'var(--color-green-soft)' : 'var(--color-blue)', color: expressed ? 'var(--color-green)' : '#fff', border: '1px solid transparent', boxShadow: expressed ? 'none' : '0 4px 14px rgba(37,99,235,0.25)',
-                        transition: 'background 0.2s, box-shadow 0.2s' }}
-          onMouseEnter={e => { if (!expressed && expressingId !== job.id) { const el = e.currentTarget as HTMLElement; el.style.background = 'var(--color-blue-hover)'; el.style.boxShadow = '0 6px 18px rgba(37,99,235,0.35)' }}}
-          onMouseLeave={e => { if (!expressed && expressingId !== job.id) { const el = e.currentTarget as HTMLElement; el.style.background = 'var(--color-blue)'; el.style.boxShadow = '0 4px 14px rgba(37,99,235,0.25)' }}}>
+      <div style={{ display: 'flex', gap: 10, paddingTop: 14, borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+        <a href={`/jobs/${job.id}`} className="ts-action ts-action--ghost ts-action--sm" style={{ flex: 1 }}>View details</a>
+        <button onClick={() => onExpress(job.id)} disabled={expressingId === job.id || expressed}
+          className={expressed ? 'ts-action ts-action--sm' : 'ts-action ts-action--blue ts-action--sm'}
+          style={{ flex: 1, ...(expressed ? { background: 'rgba(16,185,129,0.12)', color: '#34D399', border: '1px solid rgba(16,185,129,0.25)' } : {}) }}>
           {expressed ? (
             <>
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 13l4 4L19 7"/></svg>
-              Interest Sent
+              Interest sent
             </>
           ) : expressingId === job.id ? (
             <span style={{ display: 'inline-block', width: 12, height: 12, borderRadius: '50%', border: '2px solid rgba(255,255,255,0.4)', borderTopColor: '#fff', animation: 'spin 1s linear infinite' }} />
-          ) : "I'm Interested"}
+          ) : (<>I&apos;m interested <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></>)}
         </button>
       </div>
     </div>
@@ -79,74 +79,68 @@ function JobCard({ job, onExpress, expressingId, expressed }: {
 function PostedJobCard({ job, interests, onAward, awardingId }: { job: any; interests: any[]; onAward: (jobId: string, contractorId: string, name: string) => void; awardingId: string | null }) {
   const awardedInterest = interests.find((i: any) => i.awarded)
   return (
-    <div style={{ backgroundColor: 'var(--color-surface-raised)', border: '1px solid var(--color-border)', borderRadius: 14, padding: '20px 22px' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12, marginBottom: 14 }}>
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', marginBottom: 6 }}>
-            <h3 style={{ fontSize: 14, fontWeight: 700, color: 'var(--color-text)', letterSpacing: '-0.01em' }}>{job.title}</h3>
-            <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 9px', borderRadius: 20, backgroundColor: job.status === 'open' ? 'var(--color-green-soft)' : 'var(--color-blue-soft)', color: job.status === 'open' ? 'var(--color-green)' : 'var(--color-blue)' }}>
+    <div className="ts-panel" style={{ padding: '20px 22px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 16, marginBottom: 14, flexWrap: 'wrap' }}>
+        <div style={{ flex: 1, minWidth: 200 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap', marginBottom: 6 }}>
+            <h3 style={{ fontSize: 15, fontWeight: 600, color: 'var(--color-text)', letterSpacing: '-0.005em' }}>{job.title}</h3>
+            <span className={`ts-chip ${job.status === 'open' ? 'ts-chip--ok' : job.status === 'awarded' ? 'ts-chip--info' : 'ts-chip--neutral'}`}>
               {job.status === 'open' ? 'Open' : job.status === 'awarded' ? 'Awarded' : job.status}
             </span>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
-            {job.area && <span style={{ fontSize: 12, color: 'var(--color-text-muted)' }}>{job.area}</span>}
-            {job.budget_min && <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--color-green)' }}>${job.budget_min.toLocaleString()}</span>}
-            {job.scope && <span style={{ fontSize: 10, fontWeight: 600, padding: '2px 8px', borderRadius: 20, backgroundColor: 'var(--color-blue-soft)', color: 'var(--color-blue)' }}>{job.scope}</span>}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap', fontSize: 12, color: 'rgba(248,250,252,0.55)' }}>
+            {job.area && <span>{job.area}</span>}
+            {job.budget_min && <><span style={{ width: 3, height: 3, borderRadius: '50%', background: 'currentColor', display: 'inline-block' }}/><span style={{ color: '#34D399', fontWeight: 700, fontVariantNumeric: 'tabular-nums' }}>${job.budget_min.toLocaleString()}</span></>}
+            {job.scope && <><span style={{ width: 3, height: 3, borderRadius: '50%', background: 'currentColor', display: 'inline-block' }}/><span>{job.scope}</span></>}
           </div>
           {awardedInterest && (
-            <p style={{ fontSize: 11, color: 'var(--color-blue)', marginTop: 4, display: 'inline-flex', alignItems: 'center', gap: 4 }}>
-              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 13l4 4L19 7"/></svg>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, marginTop: 8, fontSize: 11, color: '#93C5FD' }}>
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round"><path d="M5 13l4 4L19 7"/></svg>
               Awarded to {awardedInterest.contractors?.name || awardedInterest.contractors?.company || 'contractor'}
-            </p>
+            </div>
           )}
         </div>
-        <a href={`/jobs/${job.id}`} style={{ padding: '7px 14px', borderRadius: 8, fontSize: 12, fontWeight: 600, backgroundColor: 'var(--color-surface)', color: 'var(--color-text-muted)', border: '1px solid var(--color-border)', textDecoration: 'none', flexShrink: 0 }}>View</a>
+        <a href={`/jobs/${job.id}`} className="ts-action ts-action--ghost ts-action--sm">View</a>
       </div>
-      <div style={{ borderTop: '1px solid var(--color-divider)', paddingTop: 14 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-blue)" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-          </svg>
-          <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--color-text-muted)' }}>Interested Contractors</span>
-          {interests.length > 0 && <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 7px', borderRadius: 20, backgroundColor: 'var(--color-green-soft)', color: 'var(--color-green)' }}>{interests.length}</span>}
+      <div style={{ borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: 14 }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+          <span className="ts-section-eyebrow">Interested contractors</span>
+          {interests.length > 0 && <span className="ts-section-count">{interests.length}</span>}
         </div>
         {job.status !== 'open' ? (
-          <p style={{ fontSize: 12, color: 'var(--color-text-subtle)' }}>{awardedInterest ? 'Job has been awarded.' : `Status: ${job.status}`}</p>
+          <p style={{ fontSize: 12, color: 'rgba(248,250,252,0.45)' }}>{awardedInterest ? 'Job has been awarded.' : `Status: ${job.status}`}</p>
         ) : interests.length === 0 ? (
-          <p style={{ fontSize: 12, color: 'var(--color-text-subtle)' }}>No contractors have expressed interest yet.</p>
+          <p style={{ fontSize: 12, color: 'rgba(248,250,252,0.45)' }}>No contractors have expressed interest yet.</p>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             {interests.map((interest: any) => (
-              <div key={interest.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 14px', borderRadius: 10, backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                  <div style={{ width: 36, height: 36, borderRadius: '50%', backgroundColor: 'var(--color-blue-soft)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 700, color: 'var(--color-blue)', flexShrink: 0 }}>
-                    {(interest.contractors?.name || interest.contractors?.company || 'C').charAt(0).toUpperCase()}
-                  </div>
-                  <div>
-                    <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--color-text)' }}>{interest.contractors?.name || interest.contractors?.company || 'Contractor'}</div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 3, flexWrap: 'wrap' }}>
-                      {interest.contractors?.verified_license && <span style={{ fontSize: 10, fontWeight: 600, padding: '1px 7px', borderRadius: 20, backgroundColor: 'var(--color-green-soft)', color: 'var(--color-green)' }}>License ✓</span>}
-                      {interest.contractors?.verified_insurance && <span style={{ fontSize: 10, fontWeight: 600, padding: '1px 7px', borderRadius: 20, backgroundColor: 'var(--color-green-soft)', color: 'var(--color-green)' }}>Insurance ✓</span>}
-                      {interest.contractors?.reviews_avg_rating && (
-                        <span style={{ fontSize: 11, fontWeight: 700, color: '#F59E0B', display: 'flex', alignItems: 'center', gap: 4 }}>
-                          <span style={{ color: '#F59E0B' }}>★</span>
-                          <span>{interest.contractors.reviews_avg_rating}/5</span>
-                          {interest.contractors?.reviews_count > 0 && (
-                            <span style={{ fontSize: 10, color: 'var(--color-text-subtle)', fontWeight: 500 }}>({interest.contractors.reviews_count})</span>
-                          )}
-                        </span>
-                      )}
-                    </div>
+              <div key={interest.id} className="ts-row" style={{ padding: '12px 14px' }}>
+                <div className="ts-row-avatar" style={{ width: 38, height: 38, fontSize: 13 }}>
+                  {(interest.contractors?.name || interest.contractors?.company || 'C').charAt(0).toUpperCase()}
+                </div>
+                <div className="ts-row-main">
+                  <div className="ts-row-title">{interest.contractors?.name || interest.contractors?.company || 'Contractor'}</div>
+                  <div className="ts-row-meta" style={{ gap: 6 }}>
+                    {interest.contractors?.verified_license && <span className="ts-chip ts-chip--ok ts-chip--plain">License</span>}
+                    {interest.contractors?.verified_insurance && <span className="ts-chip ts-chip--ok ts-chip--plain">Insurance</span>}
+                    {interest.contractors?.reviews_avg_rating && (
+                      <span style={{ fontSize: 11, fontWeight: 700, color: '#FBBF24', display: 'inline-flex', alignItems: 'center', gap: 3 }}>
+                        ★ {interest.contractors.reviews_avg_rating}/5
+                        {interest.contractors?.reviews_count > 0 && (
+                          <span style={{ fontSize: 10, color: 'rgba(248,250,252,0.4)', fontWeight: 500 }}>({interest.contractors.reviews_count})</span>
+                        )}
+                      </span>
+                    )}
                   </div>
                 </div>
-                <div style={{ flexShrink: 0 }}>
+                <div className="ts-row-actions">
                   {interest.awarded ? (
-                    <span style={{ padding: '6px 12px', borderRadius: 8, fontSize: 11, fontWeight: 700, backgroundColor: 'var(--color-green-soft)', color: 'var(--color-green)' }}>✓ Awarded</span>
+                    <span className="ts-chip ts-chip--ok">Awarded</span>
                   ) : (
-                    <button onClick={() => onAward(job.id, interest.contractor_id, interest.contractors?.name || interest.contractors?.company || 'this contractor')} disabled={awardingId === job.id} style={{ padding: '6px 12px', borderRadius: 8, fontSize: 11, fontWeight: 700, backgroundColor: 'var(--color-blue)', color: '#fff', border: 'none', cursor: awardingId === job.id ? 'default' : 'pointer', boxShadow: '0 4px 14px rgba(37,99,235,0.25)', transition: 'background 0.2s, box-shadow 0.2s' }}
-                    onMouseEnter={e => { if (awardingId !== job.id) { const el = e.currentTarget as HTMLElement; el.style.background = 'var(--color-blue-hover)'; el.style.boxShadow = '0 6px 18px rgba(37,99,235,0.35)' }}}
-                    onMouseLeave={e => { const el = e.currentTarget as HTMLElement; el.style.background = 'var(--color-blue)'; el.style.boxShadow = '0 4px 14px rgba(37,99,235,0.25)' }}>
-                      {awardingId === job.id ? 'Awarding…' : 'Award Job'}
+                    <button onClick={() => onAward(job.id, interest.contractor_id, interest.contractors?.name || interest.contractors?.company || 'this contractor')}
+                      disabled={awardingId === job.id}
+                      className="ts-action ts-action--blue ts-action--sm">
+                      {awardingId === job.id ? 'Awarding…' : 'Award job'}
                     </button>
                   )}
                 </div>
@@ -438,21 +432,15 @@ export default function Dashboard() {
   // Auth gate — canonical access.canAccessContractorApp covers all contractor states.
   if (!access.canAccessContractorApp) {
     return (
-      <div style={{ backgroundColor: 'var(--color-bg)', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <div style={{ maxWidth: 380, width: '100%', backgroundColor: 'var(--color-surface-raised)', border: '1px solid var(--color-border)', borderRadius: 14, padding: '40px 32px', boxShadow: 'var(--ts-shadow-card)', textAlign: 'center' }}>
-          <div style={{ width: 52, height: 52, borderRadius: 14, backgroundColor: 'var(--color-blue-soft)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--color-blue)" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-            </svg>
+      <div className="ts-app" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '48px 20px' }}>
+        <div style={{ maxWidth: 440, width: '100%' }}>
+          <div className="ts-page-kicker">Contractor access</div>
+          <h1 className="ts-page-title" style={{ marginBottom: 14 }}>Sign in to <em>your dashboard</em>.</h1>
+          <p className="ts-page-sub" style={{ marginBottom: 28 }}>Review open work, track your posted jobs, message contractors, and manage your profile.</p>
+          <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+            <a href="/signin" className="ts-action ts-action--primary ts-action--lg">Sign in</a>
+            <a href="/apply" className="ts-action ts-action--ghost ts-action--lg">Apply to join</a>
           </div>
-          <h2 style={{ fontSize: 18, fontWeight: 800, color: 'var(--color-text)', marginBottom: 8, letterSpacing: '-0.02em' }}>Sign in to access your dashboard</h2>
-          <p style={{ fontSize: 13, color: 'var(--color-text-muted)', marginBottom: 24, lineHeight: 1.65 }}>View your jobs, manage contractors, and track your work.</p>
-          <a href="/signin" style={{ display: 'block', padding: '12px 16px', borderRadius: 10, backgroundColor: 'var(--color-blue)', color: '#fff', fontSize: 14, fontWeight: 700, textDecoration: 'none', marginBottom: 10, boxShadow: '0 4px 14px rgba(37,99,235,0.25)', transition: 'background 0.2s, box-shadow 0.2s' }}
-            onMouseEnter={e => { const el = e.currentTarget as HTMLElement; el.style.background = 'var(--color-blue-hover)'; el.style.boxShadow = '0 6px 18px rgba(37,99,235,0.35)' }}
-            onMouseLeave={e => { const el = e.currentTarget as HTMLElement; el.style.background = 'var(--color-blue)'; el.style.boxShadow = '0 4px 14px rgba(37,99,235,0.25)' }}>Sign In</a>
-          <a href="/apply" style={{ display: 'block', padding: '12px 16px', borderRadius: 10, backgroundColor: 'var(--color-surface)', color: 'var(--color-text)', fontSize: 14, fontWeight: 600, textDecoration: 'none', border: '1px solid var(--color-border-strong)', transition: 'background 0.2s, box-shadow 0.2s' }}
-            onMouseEnter={e => { const el = e.currentTarget as HTMLElement; el.style.background = 'var(--color-surface-hover)'; el.style.boxShadow = 'var(--ts-shadow-card-hover)' }}
-            onMouseLeave={e => { const el = e.currentTarget as HTMLElement; el.style.background = 'var(--color-surface)'; el.style.boxShadow = 'none' }}>Apply to Join</a>
         </div>
       </div>
     )
@@ -460,12 +448,12 @@ export default function Dashboard() {
 
   if (loading) {
     return (
-      <div style={{ backgroundColor: 'var(--color-bg)', minHeight: '100vh' }}>
-        <div style={{ maxWidth: 1100, margin: '0 auto', padding: '48px 32px' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 14, marginBottom: 40 }}>
-            {[1,2,3,4].map(i => <div key={i} style={{ height: 100, borderRadius: 14, backgroundColor: 'var(--color-surface-raised)', border: '1px solid var(--color-border)', animation: 'pulse 2s ease-in-out infinite' }} />)}
+      <div className="ts-app">
+        <div className="ts-app-shell">
+          <div className="ts-stat-row" style={{ marginBottom: 32 }}>
+            {[1,2,3,4].map(i => <div key={i} className="ts-stat" style={{ height: 84, animation: 'pulse 2s ease-in-out infinite' }} />)}
           </div>
-          {[1,2,3].map(i => <div key={i} style={{ height: 120, borderRadius: 14, backgroundColor: 'var(--color-surface-raised)', border: '1px solid var(--color-border)', marginBottom: 14, animation: 'pulse 2s ease-in-out infinite' }} />)}
+          {[1,2,3].map(i => <div key={i} className="ts-panel" style={{ height: 120, marginBottom: 14, animation: 'pulse 2s ease-in-out infinite' }} />)}
         </div>
       </div>
     )
@@ -473,248 +461,180 @@ export default function Dashboard() {
 
   if (!user) {
     return (
-      <div style={{ backgroundColor: 'var(--color-bg)', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <div style={{ maxWidth: 380, width: '100%', backgroundColor: 'var(--color-surface-raised)', border: '1px solid var(--color-border)', borderRadius: 14, padding: '40px 32px', boxShadow: 'var(--ts-shadow-card)', textAlign: 'center' }}>
-          <div style={{ width: 52, height: 52, borderRadius: 14, backgroundColor: 'var(--color-blue-soft)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--color-blue)" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-            </svg>
+      <div className="ts-app" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '48px 20px' }}>
+        <div style={{ maxWidth: 440, width: '100%' }}>
+          <div className="ts-page-kicker">Session required</div>
+          <h1 className="ts-page-title" style={{ marginBottom: 14 }}>Sign in to <em>continue</em>.</h1>
+          <p className="ts-page-sub" style={{ marginBottom: 28 }}>View your jobs, manage contractors, and track your work.</p>
+          <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+            <a href="/login" className="ts-action ts-action--primary ts-action--lg">Sign in</a>
+            <a href="/apply" className="ts-action ts-action--ghost ts-action--lg">Apply to join</a>
           </div>
-          <h2 style={{ fontSize: 18, fontWeight: 800, color: 'var(--color-text)', marginBottom: 8, letterSpacing: '-0.02em' }}>Sign in to access your dashboard</h2>
-          <p style={{ fontSize: 13, color: 'var(--color-text-muted)', marginBottom: 24, lineHeight: 1.65 }}>View your jobs, manage contractors, and track your work.</p>
-          <a href="/login" style={{ display: 'block', padding: '12px 16px', borderRadius: 10, backgroundColor: 'var(--color-blue)', color: '#fff', fontSize: 14, fontWeight: 700, textDecoration: 'none', marginBottom: 10, boxShadow: '0 4px 14px rgba(37,99,235,0.25)', transition: 'background 0.2s, box-shadow 0.2s' }}
-            onMouseEnter={e => { const el = e.currentTarget as HTMLElement; el.style.background = 'var(--color-blue-hover)'; el.style.boxShadow = '0 6px 18px rgba(37,99,235,0.35)' }}
-            onMouseLeave={e => { const el = e.currentTarget as HTMLElement; el.style.background = 'var(--color-blue)'; el.style.boxShadow = '0 4px 14px rgba(37,99,235,0.25)' }}>Sign In</a>
-          <a href="/apply" style={{ display: 'block', padding: '12px 16px', borderRadius: 10, backgroundColor: 'var(--color-surface)', color: 'var(--color-text)', fontSize: 14, fontWeight: 600, textDecoration: 'none', border: '1px solid var(--color-border-strong)', transition: 'background 0.2s, box-shadow 0.2s' }}
-            onMouseEnter={e => { const el = e.currentTarget as HTMLElement; el.style.background = 'var(--color-surface-hover)'; el.style.boxShadow = 'var(--ts-shadow-card-hover)' }}
-            onMouseLeave={e => { const el = e.currentTarget as HTMLElement; el.style.background = 'var(--color-surface)'; el.style.boxShadow = 'none' }}>Apply to Join</a>
         </div>
       </div>
     )
   }
 
   return (
-    <div style={{ backgroundColor: 'var(--color-bg)', minHeight: '100vh' }}>
+    <div className="ts-app">
       {toastVisible && (
-        <div style={{ position: 'fixed', top: 24, right: 24, zIndex: 99, padding: '14px 20px', borderRadius: 12, backgroundColor: 'var(--color-surface-raised)', border: '1px solid var(--color-border)', boxShadow: '0 8px 32px var(--color-shadow-lg)', display: 'flex', alignItems: 'center', gap: 10, fontSize: 13, fontWeight: 600, color: 'var(--color-text)' }}>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-green)" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
+        <div style={{ position: 'fixed', top: 24, right: 24, zIndex: 99, padding: '12px 18px', borderRadius: 12, background: 'rgba(10,19,35,0.95)', border: '1px solid rgba(16,185,129,0.3)', boxShadow: '0 14px 40px rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', gap: 10, fontSize: 13, fontWeight: 600, color: '#F8FAFC' }}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#34D399" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
           {toastMsg}
         </div>
       )}
 
-      {/* Header */}
-      <div style={{ backgroundColor: 'var(--color-bg-alt)', borderBottom: '1px solid var(--color-border)', padding: '36px 32px 28px' }}>
-        <div style={{ maxWidth: 1100, margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
-          <div>
-            <h1 style={{ fontSize: 24, fontWeight: 800, color: 'var(--color-text)', letterSpacing: '-0.03em', marginBottom: 4 }}>Contractor Dashboard</h1>
-            <p style={{ fontSize: 13, color: 'var(--color-text-muted)' }}>{user.name || user.full_name || user.company || 'Contractor'} · Manage your work</p>
+      {/* Top nav */}
+      <header className="ts-app-nav">
+        <div className="ts-app-nav-inner">
+          <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+            <a href="/" className="ts-app-brand">Trade<span>Source</span></a>
+            <span className="ts-app-crumb">Dashboard</span>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <span style={{ fontSize: 10, fontWeight: 700, padding: '3px 10px', borderRadius: 20, backgroundColor: 'var(--color-green-soft)', color: 'var(--color-green)', border: '1px solid rgba(16,185,129,0.2)' }}>✓ Verified</span>
+          <div className="ts-app-nav-right">
+            <span className="ts-chip ts-chip--ok">Verified</span>
             {myRating ? (
-              <span style={{ fontSize: 12, fontWeight: 700, padding: '3px 10px', borderRadius: 20, backgroundColor: 'rgba(245,158,11,0.12)', color: '#F59E0B', border: '1px solid rgba(245,158,11,0.2)' }}>
-                ★ {myRating}/5 · {myReviews.length} review{myReviews.length !== 1 ? 's' : ''}
-              </span>
+              <span className="ts-chip ts-chip--warn">★ {myRating}/5 · {myReviews.length} review{myReviews.length !== 1 ? 's' : ''}</span>
             ) : (
-              <span style={{ fontSize: 12, fontWeight: 600, padding: '3px 10px', borderRadius: 20, backgroundColor: 'var(--color-surface)', color: 'var(--color-text-subtle)', border: '1px solid var(--color-border)' }}>
-                ★ Not yet rated
-              </span>
+              <span className="ts-chip ts-chip--neutral">Not rated yet</span>
             )}
+          </div>
+        </div>
+      </header>
+
+      {/* Page heading */}
+      <div className="ts-app-shell" style={{ paddingTop: 40, paddingBottom: 24 }}>
+        <div className="ts-page-head" style={{ marginBottom: 0 }}>
+          <div className="ts-page-kicker">Your workspace</div>
+          <div className="ts-page-head-row">
+            <div>
+              <h1 className="ts-page-title">Welcome back, <em>{(user.name || user.full_name || user.company || 'Contractor').split(' ')[0]}</em>.</h1>
+              <p className="ts-page-sub">Browse open work, manage what you’ve posted, and keep conversations moving.</p>
+            </div>
+            <a href="/post-job" className="ts-action ts-action--primary">
+              Post a job
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </a>
           </div>
         </div>
       </div>
 
       {/* ── Your Reputation widget ── */}
       {!newlyAwardedJob && (
-        <div style={{ backgroundColor: 'var(--color-bg-alt)', borderBottom: '1px solid var(--color-border)', padding: '16px 32px' }}>
-          <div style={{ maxWidth: 1100, margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
-            {/* Left: rating display */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                {myRating ? (
-                  <>
-                    <span style={{ fontSize: 28, fontWeight: 800, color: '#F59E0B', letterSpacing: '-0.03em', lineHeight: 1 }}>{myRating.toFixed(1)}</span>
+        <div className="ts-app-shell" style={{ paddingTop: 0, paddingBottom: 0, marginBottom: 24 }}>
+          <div className="ts-panel" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap', padding: '18px 22px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 18 }}>
+              {myRating ? (
+                <>
+                  <div style={{ display: 'flex', alignItems: 'baseline', gap: 10 }}>
+                    <span style={{ fontSize: 32, fontWeight: 800, color: '#FBBF24', letterSpacing: '-0.035em', lineHeight: 1, fontVariantNumeric: 'tabular-nums' }}>{myRating.toFixed(1)}</span>
                     <div>
                       <div style={{ display: 'flex', gap: 1 }}>
                         {[1,2,3,4,5].map(s => (
-                          <span key={s} style={{ fontSize: 14, color: myRating >= s ? '#F59E0B' : 'var(--color-border-strong)' }}>★</span>
+                          <span key={s} style={{ fontSize: 13, color: myRating >= s ? '#FBBF24' : 'rgba(255,255,255,0.15)' }}>★</span>
                         ))}
                       </div>
-                      <div style={{ fontSize: 10, color: 'var(--color-text-subtle)', marginTop: 2 }}>
+                      <div style={{ fontSize: 10, color: 'rgba(248,250,252,0.4)', marginTop: 2, textTransform: 'uppercase', letterSpacing: '0.1em' }}>
                         {myReviews.length} review{myReviews.length !== 1 ? 's' : ''}
                       </div>
                     </div>
-                  </>
-                ) : (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                    <div style={{ width: 36, height: 36, borderRadius: 10, backgroundColor: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      <span style={{ fontSize: 16, color: '#F59E0B', opacity: 0.5 }}>★</span>
+                  </div>
+                  <div style={{ height: 32, width: 1, background: 'rgba(255,255,255,0.08)' }} />
+                  <div>
+                    <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--color-text)' }}>
+                      {myRating >= 4.5 ? 'Outstanding reputation' : myRating >= 4.0 ? 'Strong reputation' : myRating >= 3.0 ? 'Building reputation' : 'Actively improving'}
                     </div>
-                    <div>
-                      <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--color-text)' }}>No reputation yet</div>
-                      <div style={{ fontSize: 11, color: 'var(--color-text-subtle)' }}>Complete jobs to earn your first review</div>
+                    <div style={{ fontSize: 11, color: 'rgba(248,250,252,0.45)' }}>
+                      Rated by contractors you’ve worked with.
                     </div>
                   </div>
-                )}
-              </div>
-              {myRating && (
-                <div style={{ height: 32, width: 1, backgroundColor: 'var(--color-border)', flexShrink: 0 }} />
-              )}
-              {myRating ? (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                  <span style={{ fontSize: 11, color: 'var(--color-text-subtle)' }}>
-                    {myReviews.length > 0 ? (
-                      myRating >= 4.5 ? 'Outstanding reputation' : myRating >= 4.0 ? 'Strong reputation' : myRating >= 3.0 ? 'Building reputation' : 'Actively improving'
-                    ) : ''}
-                  </span>
-                  <span style={{ fontSize: 12, color: 'var(--color-text-muted)' }}>
-                    Rated by homeowners you've worked with
-                  </span>
-                </div>
+                </>
               ) : (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                  <span style={{ fontSize: 11, color: 'var(--color-text-muted)' }}>Finish your first awarded job to start receiving reviews.</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+                  <div style={{ width: 40, height: 40, borderRadius: 12, background: 'rgba(251,191,36,0.1)', border: '1px solid rgba(251,191,36,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#FBBF24', fontSize: 18, opacity: 0.85 }}>★</div>
+                  <div>
+                    <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--color-text)' }}>No reputation yet</div>
+                    <div style={{ fontSize: 11, color: 'rgba(248,250,252,0.45)' }}>Finish your first awarded job to start earning reviews.</div>
+                  </div>
                 </div>
               )}
             </div>
 
-            {/* Right: CTA */}
-            <a
-              href="/reviews"
-              style={{
-                display: 'flex', alignItems: 'center', gap: 6,
-                padding: '8px 16px', borderRadius: 10,
-                backgroundColor: 'var(--color-surface)',
-                border: '1px solid var(--color-border)',
-                textDecoration: 'none',
-                fontSize: 12, fontWeight: 600, color: 'var(--color-blue)',
-                transition: 'background 0.15s, border-color 0.15s, box-shadow 0.15s',
-                boxShadow: 'var(--ts-shadow-card)',
-              }}
-              onMouseEnter={e => { const el = e.currentTarget as HTMLElement; el.style.background = 'var(--color-blue-soft)'; el.style.borderColor = 'rgba(37,99,235,0.3)'; el.style.boxShadow = 'var(--ts-shadow-card-hover)' }}
-              onMouseLeave={e => { const el = e.currentTarget as HTMLElement; el.style.background = 'var(--color-surface)'; el.style.borderColor = 'var(--color-border)'; el.style.boxShadow = 'var(--ts-shadow-card)' }}
-            >
-              {myRating ? 'See Your Reviews' : 'How it works'}
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M5 12h14M12 5l7 7-7 7"/>
-              </svg>
+            <a href="/reviews" className="ts-action ts-action--ghost ts-action--sm">
+              {myRating ? 'See your reviews' : 'How it works'}
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
             </a>
           </div>
         </div>
       )}
 
-      {/* ── Awarded-job guidance card — highest priority, shown when contractor has a newly awarded job ── */}
+      {/* ── Awarded-job guidance card — contractor side ── */}
       {newlyAwardedJob && (
-        <div style={{ backgroundColor: 'var(--color-bg-alt)', borderBottom: '1px solid var(--color-border)', padding: '24px 32px' }}>
-          <div style={{ maxWidth: 1100, margin: '0 auto' }}>
-            <div style={{
-              background: 'linear-gradient(135deg, rgba(37,99,235,0.12) 0%, rgba(37,99,235,0.06) 100%)',
-              border: '1px solid rgba(37,99,235,0.2)',
-              borderRadius: 14, padding: '24px 28px',
-            }}>
-              {/* Header row */}
-              <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16, marginBottom: 16, flexWrap: 'wrap' }}>
-                <div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4 }}>
-                    <div style={{ width: 32, height: 32, borderRadius: 8, backgroundColor: 'var(--color-blue-soft)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-blue)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" />
-                      </svg>
-                    </div>
-                    <span style={{ fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--color-blue)' }}>
-                      Job Awarded
-                    </span>
-                  </div>
-                  <h2 style={{ fontSize: 18, fontWeight: 800, color: 'var(--color-text)', letterSpacing: '-0.02em', marginBottom: 4 }}>
-                    {newlyAwardedJob.title}
-                  </h2>
-                  {newlyAwardedJob.area && (
-                    <p style={{ fontSize: 13, color: 'var(--color-text-muted)' }}>{newlyAwardedJob.area}</p>
-                  )}
-                </div>
-                {newlyAwardedJob.budget_min && (
-                  <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                    <div style={{ fontSize: 24, fontWeight: 800, color: 'var(--color-green)', letterSpacing: '-0.03em' }}>
-                      ${newlyAwardedJob.budget_min.toLocaleString()}
-                    </div>
-                    <div style={{ fontSize: 11, color: 'var(--color-text-muted)' }}>Fixed rate</div>
-                  </div>
+        <div className="ts-app-shell" style={{ paddingTop: 0, paddingBottom: 0, marginBottom: 24 }}>
+          <div className="ts-feature">
+            <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16, marginBottom: 22, flexWrap: 'wrap' }}>
+              <div style={{ flex: 1, minWidth: 240 }}>
+                <div className="ts-page-kicker" style={{ marginBottom: 8 }}>Job awarded · you</div>
+                <h2 style={{ fontSize: 22, fontWeight: 800, color: 'var(--color-text)', letterSpacing: '-0.03em', marginBottom: 4, lineHeight: 1.15 }}>
+                  {newlyAwardedJob.title}
+                </h2>
+                {newlyAwardedJob.area && (
+                  <p style={{ fontSize: 13, color: 'rgba(248,250,252,0.55)' }}>{newlyAwardedJob.area}</p>
                 )}
               </div>
-
-              {/* Next steps */}
-              <div style={{ backgroundColor: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 10, padding: '16px 20px', marginBottom: 16 }}>
-                <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--color-text-muted)', marginBottom: 12 }}>
-                  Your next steps
+              {newlyAwardedJob.budget_min && (
+                <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                  <div style={{ fontSize: 28, fontWeight: 800, color: '#34D399', letterSpacing: '-0.035em', fontVariantNumeric: 'tabular-nums', lineHeight: 1 }}>
+                    ${newlyAwardedJob.budget_min.toLocaleString()}
+                  </div>
+                  <div style={{ fontSize: 10, color: 'rgba(248,250,252,0.5)', marginTop: 4, textTransform: 'uppercase', letterSpacing: '0.1em' }}>Fixed rate</div>
                 </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                  {[
-                    {
-                      num: 1,
-                      label: 'Confirm the job',
-                      detail: awardedThread ? 'Message the poster to confirm timeline and details' : 'The poster will message you shortly',
-                      action: awardedThread
-                        ? { label: 'Message Now', onClick: () => { setActiveThread(awardedThread); setView('messages') } }
-                        : null,
-                    },
-                    {
-                      num: 2,
-                      label: 'Start work',
-                      detail: 'Once confirmed, update the job status to In Progress',
-                      action: {
-                        label: 'Mark Started',
-                        onClick: async () => {
-                          const r = await fetch(`/api/jobs/${newlyAwardedJob.id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ status: 'in_progress' }) })
-                          if (r.ok) { setJobs(prev => prev.map(j => j.id === newlyAwardedJob.id ? { ...j, status: 'in_progress' } : j)); showToast('Job marked as in progress!') }
-                        },
-                      },
-                    },
-                    {
-                      num: 3,
-                      label: 'Complete and get rated',
-                      detail: 'Mark done when finished. Both parties can leave reviews.',
-                      action: null,
-                    },
-                  ].map(step => (
-                    <div key={step.num} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                      <div style={{
-                        width: 24, height: 24, borderRadius: '50%',
-                        backgroundColor: 'rgba(37,99,235,0.12)',
-                        border: '1px solid rgba(37,99,235,0.2)',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        fontSize: 11, fontWeight: 700, color: 'var(--color-blue)', flexShrink: 0,
-                      }}>
-                        {step.num}
-                      </div>
-                      <div style={{ flex: 1 }}>
-                        <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--color-text)' }}>{step.label}</div>
-                        <div style={{ fontSize: 12, color: 'var(--color-text-muted)' }}>{step.detail}</div>
-                      </div>
-                      {step.action && (
-                        <button
-                          onClick={step.action.onClick as any}
-                          style={{ padding: '7px 14px', borderRadius: 8, fontSize: 12, fontWeight: 700, backgroundColor: 'var(--color-blue)', color: '#fff', border: 'none', cursor: 'pointer', flexShrink: 0, boxShadow: '0 2px 8px rgba(37,99,235,0.25)' }}
-                        >
-                          {step.action.label}
-                        </button>
-                      )}
+              )}
+            </div>
+
+            <div style={{ background: 'rgba(10,19,35,0.45)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 14, padding: '18px 22px', marginBottom: 16 }}>
+              <div className="ts-section-eyebrow" style={{ marginBottom: 14 }}>Your next steps</div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+                {[
+                  { num: 1, label: 'Confirm the job',
+                    detail: awardedThread ? 'Message the poster to confirm timeline and details.' : 'The poster will reach out shortly.',
+                    action: awardedThread ? { label: 'Message now', onClick: () => { setActiveThread(awardedThread); setView('messages') } } : null },
+                  { num: 2, label: 'Start work',
+                    detail: 'Once confirmed, update the job status to In Progress.',
+                    action: { label: 'Mark started', onClick: async () => {
+                      const r = await fetch(`/api/jobs/${newlyAwardedJob.id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ status: 'in_progress' }) })
+                      if (r.ok) { setJobs(prev => prev.map(j => j.id === newlyAwardedJob.id ? { ...j, status: 'in_progress' } : j)); showToast('Job marked as in progress!') }
+                    } } },
+                  { num: 3, label: 'Complete and get rated',
+                    detail: 'Mark done when finished. Both parties can leave reviews.',
+                    action: null },
+                ].map(step => (
+                  <div key={step.num} style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+                    <div style={{ width: 26, height: 26, borderRadius: '50%', background: 'rgba(96,165,250,0.14)', border: '1px solid rgba(96,165,250,0.3)', color: '#93C5FD', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700, flexShrink: 0 }}>
+                      {step.num}
                     </div>
-                  ))}
-                </div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--color-text)' }}>{step.label}</div>
+                      <div style={{ fontSize: 12, color: 'rgba(248,250,252,0.5)' }}>{step.detail}</div>
+                    </div>
+                    {step.action && (
+                      <button onClick={step.action.onClick as any} className="ts-action ts-action--blue ts-action--sm">
+                        {step.action.label}
+                      </button>
+                    )}
+                  </div>
+                ))}
               </div>
+            </div>
 
-              {/* Dismiss */}
-              <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                <button
-                  onClick={async () => {
-                    const r = await fetch(`/api/jobs/${newlyAwardedJob.id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ status: 'in_progress' }) })
-                    if (r.ok) { setJobs(prev => prev.map(j => j.id === newlyAwardedJob.id ? { ...j, status: 'in_progress' } : j)); showToast('Job marked as in progress!') }
-                  }}
-                  style={{ padding: '6px 14px', borderRadius: 8, fontSize: 11, fontWeight: 600, backgroundColor: 'transparent', color: 'var(--color-text-muted)', border: '1px solid var(--color-border)', cursor: 'pointer' }}
-                >
-                  Dismiss
-                </button>
-              </div>
+            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+              <button className="ts-action ts-action--ghost ts-action--sm"
+                onClick={async () => {
+                  const r = await fetch(`/api/jobs/${newlyAwardedJob.id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ status: 'in_progress' }) })
+                  if (r.ok) { setJobs(prev => prev.map(j => j.id === newlyAwardedJob.id ? { ...j, status: 'in_progress' } : j)); showToast('Job marked as in progress!') }
+                }}>
+                Dismiss
+              </button>
             </div>
           </div>
         </div>
@@ -728,117 +648,73 @@ export default function Dashboard() {
           const lastDismissed = localStorage.getItem('ts_poster_awarded_dismissed')
           if (lastDismissed === newlyAwardedToPoster.id) return null
         } catch {}
-        // Hide when poster is already on the posted jobs tab
         if (view === 'posted') return null
         return (
-        <div style={{ backgroundColor: 'var(--color-bg-alt)', borderBottom: '1px solid var(--color-border)', padding: '24px 32px' }}>
-          <div style={{ maxWidth: 1100, margin: '0 auto' }}>
-            <div style={{
-              background: 'linear-gradient(135deg, rgba(245,158,11,0.12) 0%, rgba(245,158,11,0.05) 100%)',
-              border: '1px solid rgba(245,158,11,0.2)',
-              borderRadius: 14, padding: '24px 28px',
-            }}>
-              {/* Header row */}
-              <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16, marginBottom: 16, flexWrap: 'wrap' }}>
-                <div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4 }}>
-                    <div style={{ width: 32, height: 32, borderRadius: 8, backgroundColor: 'rgba(245,158,11,0.15)', border: '1px solid rgba(245,158,11,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" />
-                      </svg>
-                    </div>
-                    <span style={{ fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#F59E0B' }}>
-                      Job Awarded
-                    </span>
-                  </div>
-                  <h2 style={{ fontSize: 18, fontWeight: 800, color: 'var(--color-text)', letterSpacing: '-0.02em', marginBottom: 4 }}>
-                    {newlyAwardedToPoster.title}
-                  </h2>
-                  {newlyAwardedToPoster.area && (
-                    <p style={{ fontSize: 13, color: 'var(--color-text-muted)' }}>{newlyAwardedToPoster.area}</p>
-                  )}
-                  {awardedToContractor && (
-                    <p style={{ fontSize: 12, color: 'var(--color-text-muted)', marginTop: 2 }}>
-                      Awarded to <strong style={{ color: 'var(--color-text)', fontWeight: 600 }}>{awardedToContractor}</strong>
-                    </p>
-                  )}
-                </div>
-                {newlyAwardedToPoster.budget_min && (
-                  <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                    <div style={{ fontSize: 24, fontWeight: 800, color: 'var(--color-green)', letterSpacing: '-0.03em' }}>
-                      ${newlyAwardedToPoster.budget_min.toLocaleString()}
-                    </div>
-                    <div style={{ fontSize: 11, color: 'var(--color-text-muted)' }}>Fixed rate</div>
-                  </div>
+        <div className="ts-app-shell" style={{ paddingTop: 0, paddingBottom: 0, marginBottom: 24 }}>
+          <div className="ts-feature ts-feature--warn">
+            <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16, marginBottom: 22, flexWrap: 'wrap' }}>
+              <div style={{ flex: 1, minWidth: 240 }}>
+                <div className="ts-page-kicker" style={{ color: '#FBBF24', marginBottom: 8 }}>Job awarded · poster</div>
+                <h2 style={{ fontSize: 22, fontWeight: 800, color: 'var(--color-text)', letterSpacing: '-0.03em', marginBottom: 4, lineHeight: 1.15 }}>
+                  {newlyAwardedToPoster.title}
+                </h2>
+                {newlyAwardedToPoster.area && (
+                  <p style={{ fontSize: 13, color: 'rgba(248,250,252,0.55)' }}>{newlyAwardedToPoster.area}</p>
+                )}
+                {awardedToContractor && (
+                  <p style={{ fontSize: 12, color: 'rgba(248,250,252,0.5)', marginTop: 4 }}>
+                    Awarded to <strong style={{ color: 'var(--color-text)', fontWeight: 600 }}>{awardedToContractor}</strong>
+                  </p>
                 )}
               </div>
-
-              {/* Next steps */}
-              <div style={{ backgroundColor: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 10, padding: '16px 20px', marginBottom: 16 }}>
-                <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--color-text-muted)', marginBottom: 12 }}>
-                  Your next steps as poster
+              {newlyAwardedToPoster.budget_min && (
+                <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                  <div style={{ fontSize: 28, fontWeight: 800, color: '#34D399', letterSpacing: '-0.035em', fontVariantNumeric: 'tabular-nums', lineHeight: 1 }}>
+                    ${newlyAwardedToPoster.budget_min.toLocaleString()}
+                  </div>
+                  <div style={{ fontSize: 10, color: 'rgba(248,250,252,0.5)', marginTop: 4, textTransform: 'uppercase', letterSpacing: '0.1em' }}>Fixed rate</div>
                 </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                  {[
-                    {
-                      num: 1,
-                      label: 'Confirm the details',
-                      detail: posterAwardedThread
-                        ? 'Message the contractor to confirm timeline, start date, and scope'
-                        : 'The contractor will reach out to confirm timeline and scheduling',
-                      action: posterAwardedThread
-                        ? { label: 'Message Now', onClick: () => { setActiveThread(posterAwardedThread); setView('messages') } }
-                        : null,
-                    },
-                    {
-                      num: 2,
-                      label: 'Track the job',
-                      detail: 'Update the job status to In Progress once work begins. Keep an eye on messages.',
-                      action: null,
-                    },
-                    {
-                      num: 3,
-                      label: 'Leave a review',
-                      detail: 'After completion, both parties can leave reviews. Your review builds network trust.',
-                      action: null,
-                    },
-                  ].map(step => (
-                    <div key={step.num} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                      <div style={{
-                        width: 24, height: 24, borderRadius: '50%',
-                        backgroundColor: 'rgba(245,158,11,0.12)',
-                        border: '1px solid rgba(245,158,11,0.2)',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        fontSize: 11, fontWeight: 700, color: '#F59E0B', flexShrink: 0,
-                      }}>
-                        {step.num}
-                      </div>
-                      <div style={{ flex: 1 }}>
-                        <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--color-text)' }}>{step.label}</div>
-                        <div style={{ fontSize: 12, color: 'var(--color-text-muted)' }}>{step.detail}</div>
-                      </div>
-                      {step.action && (
-                        <button
-                          onClick={step.action.onClick as any}
-                          style={{ padding: '7px 14px', borderRadius: 8, fontSize: 12, fontWeight: 700, backgroundColor: '#F59E0B', color: '#fff', border: 'none', cursor: 'pointer', flexShrink: 0, boxShadow: '0 2px 8px rgba(245,158,11,0.25)' }}
-                        >
-                          {step.action.label}
-                        </button>
-                      )}
+              )}
+            </div>
+
+            <div style={{ background: 'rgba(10,19,35,0.45)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 14, padding: '18px 22px', marginBottom: 16 }}>
+              <div className="ts-section-eyebrow" style={{ marginBottom: 14 }}>Your next steps as poster</div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+                {[
+                  { num: 1, label: 'Confirm the details',
+                    detail: posterAwardedThread ? 'Message the contractor to confirm timeline, start date, and scope.' : 'The contractor will reach out to confirm timeline and scheduling.',
+                    action: posterAwardedThread ? { label: 'Message now', onClick: () => { setActiveThread(posterAwardedThread); setView('messages') } } : null },
+                  { num: 2, label: 'Track the job',
+                    detail: 'Update the job status to In Progress once work begins. Keep an eye on messages.',
+                    action: null },
+                  { num: 3, label: 'Leave a review',
+                    detail: 'After completion, both parties can leave reviews. Your review builds network trust.',
+                    action: null },
+                ].map(step => (
+                  <div key={step.num} style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+                    <div style={{ width: 26, height: 26, borderRadius: '50%', background: 'rgba(251,191,36,0.14)', border: '1px solid rgba(251,191,36,0.3)', color: '#FBBF24', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700, flexShrink: 0 }}>
+                      {step.num}
                     </div>
-                  ))}
-                </div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--color-text)' }}>{step.label}</div>
+                      <div style={{ fontSize: 12, color: 'rgba(248,250,252,0.5)' }}>{step.detail}</div>
+                    </div>
+                    {step.action && (
+                      <button onClick={step.action.onClick as any}
+                        className="ts-action ts-action--sm"
+                        style={{ background: '#FBBF24', color: '#06101F', boxShadow: '0 6px 20px rgba(251,191,36,0.3)' }}>
+                        {step.action.label}
+                      </button>
+                    )}
+                  </div>
+                ))}
               </div>
+            </div>
 
-              {/* Dismiss */}
-              <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                <button
-                  onClick={dismissPosterAwardCard}
-                  style={{ padding: '6px 14px', borderRadius: 8, fontSize: 11, fontWeight: 600, backgroundColor: 'transparent', color: 'var(--color-text-muted)', border: '1px solid var(--color-border)', cursor: 'pointer' }}
-                >
-                  Dismiss
-                </button>
-              </div>
+            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+              <button onClick={dismissPosterAwardCard} className="ts-action ts-action--ghost ts-action--sm">
+                Dismiss
+              </button>
             </div>
           </div>
         </div>
@@ -846,104 +722,73 @@ export default function Dashboard() {
 
       {/* ── First-job guidance card — shown to newly approved contractors with no history ── */}
       {!newlyAwardedJob && isApproved && myPostedJobs.length === 0 && jobsInProgress.length === 0 && showWelcomeBanner && (
-        <div style={{ backgroundColor: 'var(--color-bg-alt)', borderBottom: '1px solid var(--color-border)', padding: '24px 32px' }}>
-          <div style={{ maxWidth: 1100, margin: '0 auto' }}>
-            <div style={{
-              background: 'linear-gradient(135deg, rgba(16,185,129,0.1) 0%, rgba(16,185,129,0.04) 100%)',
-              border: '1px solid rgba(16,185,129,0.2)',
-              borderRadius: 14, padding: '24px 28px',
-              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-              gap: 20, flexWrap: 'wrap',
-            }}>
-              {/* Left: text */}
-              <div style={{ flex: 1, minWidth: 280 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--color-green)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" />
-                  </svg>
-                  <span style={{ fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--color-green)' }}>
-                    Welcome to TradeSource
-                  </span>
-                </div>
-                <h2 style={{ fontSize: 18, fontWeight: 800, color: 'var(--color-text)', letterSpacing: '-0.02em', marginBottom: 6 }}>
-                  Start by posting your first overflow job.
-                </h2>
-                <p style={{ fontSize: 13, color: 'var(--color-text-muted)', lineHeight: 1.65, marginBottom: 16 }}>
-                  Other contractors can start expressing interest the moment your job goes live. The faster you post, the sooner you connect.
-                </p>
-                <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-                  <a href="/post-job"
-                    style={{ padding: '10px 20px', borderRadius: 10, backgroundColor: 'var(--color-green)', color: '#fff', fontSize: 13, fontWeight: 700, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 8, boxShadow: '0 4px 14px rgba(16,185,129,0.25)', transition: 'background 0.2s, box-shadow 0.2s' }}
-                    onMouseEnter={e => { const el = e.currentTarget as HTMLElement; el.style.background = '#047857'; el.style.boxShadow = '0 6px 18px rgba(5,150,105,0.35)' }}
-                    onMouseLeave={e => { const el = e.currentTarget as HTMLElement; el.style.background = 'var(--color-green)'; el.style.boxShadow = '0 4px 14px rgba(16,185,129,0.25)' }}
-                  >
-                    Post Your First Job
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M5 12h14M12 5l7 7-7 7"/>
-                    </svg>
-                  </a>
-                  <a href="/jobs"
-                    style={{ padding: '10px 20px', borderRadius: 10, backgroundColor: 'var(--color-surface)', color: 'var(--color-text-muted)', fontSize: 13, fontWeight: 600, textDecoration: 'none', border: '1px solid var(--color-border)', transition: 'background 0.2s, box-shadow 0.2s, border-color 0.2s' }}
-                    onMouseEnter={e => { const el = e.currentTarget as HTMLElement; el.style.color = 'var(--color-text)'; el.style.borderColor = 'var(--color-blue-border)'; el.style.boxShadow = 'var(--ts-shadow-card-hover)' }}
-                    onMouseLeave={e => { const el = e.currentTarget as HTMLElement; el.style.color = 'var(--color-text-muted)'; el.style.borderColor = 'var(--color-border)'; el.style.boxShadow = 'none' }}
-                  >
-                    Browse jobs first
-                  </a>
-                </div>
+        <div className="ts-app-shell" style={{ paddingTop: 0, paddingBottom: 0, marginBottom: 24 }}>
+          <div className="ts-feature ts-feature--ok" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 24, flexWrap: 'wrap' }}>
+            <div style={{ flex: 1, minWidth: 280 }}>
+              <div className="ts-page-kicker" style={{ color: '#34D399', marginBottom: 10 }}>Welcome to TradeSource</div>
+              <h2 style={{ fontSize: 22, fontWeight: 800, color: 'var(--color-text)', letterSpacing: '-0.03em', marginBottom: 8, lineHeight: 1.15 }}>
+                Post your first <em style={{ fontStyle: 'italic', color: '#93C5FD', fontFamily: "'Iowan Old Style', 'Source Serif Pro', Georgia, serif", fontWeight: 500 }}>overflow job</em>.
+              </h2>
+              <p style={{ fontSize: 13, color: 'rgba(248,250,252,0.6)', lineHeight: 1.65, marginBottom: 16, maxWidth: 520 }}>
+                Other contractors start expressing interest the moment your job goes live. The faster you post, the sooner you connect.
+              </p>
+              <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+                <a href="/post-job" className="ts-action ts-action--primary">
+                  Post your first job
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+                </a>
+                <a href="/jobs" className="ts-action ts-action--ghost">Browse jobs first</a>
               </div>
-
-              {/* Right: stats snapshot */}
-              <div style={{ display: 'flex', gap: 24, flexShrink: 0 }}>
-                {[
-                  { n: availableJobs.length, label: 'Open Jobs', color: 'var(--color-green)' },
-                  { n: 4, label: 'Counties Live', color: 'var(--color-blue)' },
-                  { n: '5', label: 'Vetting Checks', color: 'var(--color-blue)' },
-                ].map(stat => (
-                  <div key={stat.label} style={{ textAlign: 'center' }}>
-                    <div style={{ fontSize: 28, fontWeight: 800, color: stat.color, letterSpacing: '-0.03em', lineHeight: 1 }}>{stat.n}</div>
-                    <div style={{ fontSize: 10, fontWeight: 600, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginTop: 4 }}>{stat.label}</div>
-                  </div>
-                ))}
-              </div>
-
-              {/* Dismiss */}
-              <button
-                onClick={dismissWelcomeBanner}
-                style={{ padding: '6px 10px', borderRadius: 8, fontSize: 11, fontWeight: 600, backgroundColor: 'transparent', color: 'var(--color-text-muted)', border: '1px solid var(--color-border)', cursor: 'pointer', alignSelf: 'flex-start', flexShrink: 0 }}
-              >
-                Dismiss
-              </button>
             </div>
+
+            <div style={{ display: 'flex', gap: 28, flexShrink: 0 }}>
+              {[
+                { n: availableJobs.length, label: 'Open jobs', tone: 'ok' },
+                { n: 4, label: 'Counties live', tone: 'accent' },
+                { n: '5', label: 'Vetting checks', tone: 'accent' },
+              ].map(stat => (
+                <div key={stat.label} style={{ textAlign: 'center' }}>
+                  <div className={`ts-stat-value ts-stat-value--${stat.tone}`} style={{ fontSize: 30 }}>{stat.n}</div>
+                  <div className="ts-stat-label" style={{ marginTop: 4 }}>{stat.label}</div>
+                </div>
+              ))}
+            </div>
+
+            <button onClick={dismissWelcomeBanner} className="ts-action ts-action--ghost ts-action--sm" style={{ alignSelf: 'flex-start' }}>
+              Dismiss
+            </button>
           </div>
         </div>
       )}
 
-      {/* ── Onboarding banners — lower priority ── */}
+      {/* ── Onboarding mini banners ── */}
       {(() => {
         const hasPending = access.vettingStatus === 'pending'
         const hasCompany = !!(user?.company || user?.business_name)
         if (hasPending) return (
-          <div style={{ backgroundColor: 'rgba(245,158,11,0.08)', borderBottom: '1px solid rgba(245,158,11,0.2)', padding: '12px 32px' }}>
-            <div style={{ maxWidth: 1100, margin: '0 auto', display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+          <div className="ts-app-shell" style={{ paddingTop: 0, paddingBottom: 0, marginBottom: 24 }}>
+            <div className="ts-panel" style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap', padding: '14px 18px', borderColor: 'rgba(245,158,11,0.2)', background: 'rgba(245,158,11,0.06)' }}>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#FBBF24" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
                 <circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" />
               </svg>
-              <p style={{ flex: 1, fontSize: 13, color: 'var(--color-text-muted)', lineHeight: 1.5 }}>
-                <strong style={{ color: 'var(--color-text)', fontWeight: 600 }}>Application in review</strong> — our team is reviewing your application personally. You will receive an email within 1-2 business days.
+              <p style={{ flex: 1, fontSize: 13, color: 'rgba(248,250,252,0.75)', lineHeight: 1.5, margin: 0 }}>
+                <strong style={{ color: 'var(--color-text)', fontWeight: 600 }}>Application in review</strong> — our team is reviewing your application personally. You will hear from us within 1–2 business days.
               </p>
             </div>
           </div>
         )
         if (!newlyAwardedJob && !isApproved && myPostedJobs.length === 0 && jobsInProgress.length === 0 && !hasCompany && showWelcomeBanner) return (
-          <div style={{ backgroundColor: 'rgba(37,99,235,0.08)', borderBottom: '1px solid rgba(37,99,235,0.15)', padding: '12px 32px' }}>
-            <div style={{ maxWidth: 1100, margin: '0 auto', display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--color-blue)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+          <div className="ts-app-shell" style={{ paddingTop: 0, paddingBottom: 0, marginBottom: 24 }}>
+            <div className="ts-panel" style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap', padding: '14px 18px', borderColor: 'rgba(96,165,250,0.22)', background: 'rgba(96,165,250,0.06)' }}>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#93C5FD" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
                 <circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" />
               </svg>
-              <p style={{ flex: 1, fontSize: 13, color: 'var(--color-text-muted)', lineHeight: 1.5 }}>
+              <p style={{ flex: 1, fontSize: 13, color: 'rgba(248,250,252,0.75)', lineHeight: 1.5, margin: 0 }}>
                 <strong style={{ color: 'var(--color-text)', fontWeight: 600 }}>Complete your profile</strong> to show contractors your business details and get rated.
               </p>
-              <button onClick={() => setView('profile')} style={{ padding: '7px 14px', borderRadius: 8, fontSize: 12, fontWeight: 600, backgroundColor: 'var(--color-blue)', color: '#fff', border: 'none', cursor: 'pointer', flexShrink: 0, boxShadow: '0 4px 14px rgba(37,99,235,0.25)', transition: 'background 0.2s, box-shadow 0.2s' }} onMouseEnter={e => { const el = e.currentTarget as HTMLElement; el.style.background = 'var(--color-blue-hover)'; el.style.boxShadow = '0 6px 18px rgba(37,99,235,0.35)' }} onMouseLeave={e => { const el = e.currentTarget as HTMLElement; el.style.background = 'var(--color-blue)'; el.style.boxShadow = '0 4px 14px rgba(37,99,235,0.25)' }}>Complete Profile</button>
+              <button onClick={() => setView('profile')} className="ts-action ts-action--blue ts-action--sm">
+                Complete profile
+              </button>
             </div>
           </div>
         )
@@ -951,20 +796,19 @@ export default function Dashboard() {
       })()}
 
       {/* Tab nav */}
-      <div style={{ backgroundColor: 'var(--color-surface)', borderBottom: '1px solid var(--color-border)', position: 'sticky', top: 60, zIndex: 20 }}>
-        <div style={{ maxWidth: 1100, margin: '0 auto', padding: '0 32px' }}>
-          <div style={{ display: 'flex', gap: 0, height: 52, alignItems: 'center' }}>
+      <div style={{ position: 'sticky', top: 64, zIndex: 20, background: 'rgba(10,19,35,0.72)', backdropFilter: 'saturate(180%) blur(14px)', WebkitBackdropFilter: 'saturate(180%) blur(14px)', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+        <div style={{ maxWidth: 1160, margin: '0 auto', padding: '14px 28px' }}>
+          <div className="ts-segtabs">
             {[
-              { key: 'browse', label: 'Browse Jobs', count: availableJobs.length },
-              { key: 'posted', label: 'My Posted Jobs', count: myPostedJobs.length },
+              { key: 'browse', label: 'Browse jobs', count: availableJobs.length },
+              { key: 'posted', label: 'My posted jobs', count: myPostedJobs.length },
               { key: 'messages', label: 'Messages', count: messageThreads.length },
               { key: 'profile', label: 'Profile', count: 0 },
             ].map(tab => (
-              <button key={tab.key} onClick={() => setView(tab.key as typeof view)} style={{ padding: '0 20px', height: '100%', fontSize: 13, fontWeight: view === tab.key ? 700 : 500, color: view === tab.key ? 'var(--color-blue)' : 'var(--color-text-subtle)', backgroundColor: 'transparent', border: 'none', borderBottom: view === tab.key ? '2.5px solid var(--color-blue)' : '2.5px solid transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8, transition: 'color 0.15s, border-color 0.15s' }}>
+              <button key={tab.key} onClick={() => setView(tab.key as typeof view)}
+                className={`ts-segtab ${view === tab.key ? 'is-active' : ''}`}>
                 {tab.label}
-                {tab.count > 0 && (
-                  <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 7px', borderRadius: 20, backgroundColor: view === tab.key ? 'var(--color-blue-soft)' : 'var(--color-surface)', color: view === tab.key ? 'var(--color-blue)' : 'var(--color-text-muted)' }}>{tab.count}</span>
-                )}
+                {tab.count > 0 && <span className="ts-segtab-count">{tab.count}</span>}
               </button>
             ))}
           </div>
@@ -972,57 +816,56 @@ export default function Dashboard() {
       </div>
 
       {/* Content */}
-      <div style={{ maxWidth: 1100, margin: '0 auto', padding: '32px 32px 64px' }}>
+      <div className="ts-app-shell" style={{ paddingTop: 32 }}>
 
         {/* BROWSE */}
         {view === 'browse' && (
           <div>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 14, marginBottom: 32 }}>
-              <StatCard value={availableJobs.length} label="Open Jobs" accent={availableJobs.length > 0 ? 'var(--color-green)' : undefined} />
-              <StatCard value={jobsInProgress.length} label="In Progress" accent="var(--color-blue)" />
-              <StatCard value={myPostedJobs.length} label="My Posted" accent="var(--color-text)" />
-              <StatCard value={myRating ? `${myRating} ★` : '—'} label={myRating ? `${myReviews.length} review${myReviews.length !== 1 ? 's' : ''}` : 'No rating'} accent={myRating ? '#F59E0B' : 'var(--color-text-subtle)'} />
+            <div className="ts-stat-row" style={{ marginBottom: 32 }}>
+              <StatCard value={availableJobs.length} label="Open jobs" tone={availableJobs.length > 0 ? 'ok' : undefined} />
+              <StatCard value={jobsInProgress.length} label="In progress" tone="accent" />
+              <StatCard value={myPostedJobs.length} label="My posted" />
+              <StatCard value={myRating ? `${myRating} ★` : '—'} label={myRating ? `${myReviews.length} review${myReviews.length !== 1 ? 's' : ''}` : 'No rating'} tone={myRating ? 'warn' : undefined} />
             </div>
 
-            {dashboardError && <div style={{ padding: '12px 16px', borderRadius: 10, fontSize: 13, backgroundColor: 'var(--color-red-soft)', border: '1px solid var(--color-border)', color: 'var(--color-red)', marginBottom: 20 }}>{dashboardError}</div>}
+            {dashboardError && <div className="ts-chip ts-chip--err" style={{ padding: '10px 14px', borderRadius: 10, fontSize: 13, fontWeight: 500, marginBottom: 20 }}>{dashboardError}</div>}
 
             {/* Active Work */}
             {jobsInProgress.length > 0 && (
               <div style={{ marginBottom: 32 }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
-                  <h2 style={{ fontSize: 12, fontWeight: 700, color: 'var(--color-text-muted)', letterSpacing: '0.06em', textTransform: 'uppercase' }}>Active Work</h2>
-                  <span style={{ fontSize: 11, fontWeight: 600, padding: '2px 8px', borderRadius: 20, backgroundColor: 'var(--color-blue-soft)', color: 'var(--color-blue)' }}>{jobsInProgress.length}</span>
+                <div className="ts-section-head-row" style={{ margin: '0 0 16px' }}>
+                  <span className="ts-section-eyebrow">Active work</span>
+                  <span className="ts-section-count">{jobsInProgress.length}</span>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                   {jobsInProgress.map((job: any) => (
-                    <div key={job.id} style={{ backgroundColor: 'var(--color-surface-raised)', border: '1px solid var(--color-border)', borderRadius: 14, padding: '18px 22px', borderLeft: '3px solid var(--color-blue)' }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 16 }}>
-                        <div style={{ flex: 1 }}>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 5 }}>
-                            <h3 style={{ fontSize: 14, fontWeight: 700, color: 'var(--color-text)' }}>{job.title}</h3>
-                            <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 9px', borderRadius: 20, backgroundColor: job.status === 'in_progress' ? 'var(--color-blue-soft)' : 'var(--color-green-soft)', color: job.status === 'in_progress' ? 'var(--color-blue)' : 'var(--color-green)' }}>{job.status === 'in_progress' ? 'In Progress' : 'Awarded'}</span>
+                    <div key={job.id} className="ts-panel" style={{ padding: '18px 22px' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 16, flexWrap: 'wrap' }}>
+                        <div style={{ flex: 1, minWidth: 200 }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6, flexWrap: 'wrap' }}>
+                            <h3 style={{ fontSize: 15, fontWeight: 600, color: 'var(--color-text)', letterSpacing: '-0.005em' }}>{job.title}</h3>
+                            <span className={`ts-chip ${job.status === 'in_progress' ? 'ts-chip--info' : 'ts-chip--ok'}`}>
+                              {job.status === 'in_progress' ? 'In progress' : 'Awarded'}
+                            </span>
                           </div>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
-                            {job.area && <span style={{ fontSize: 12, color: 'var(--color-text-muted)' }}>{job.area}</span>}
-                            {job.budget_min && <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--color-green)' }}>${job.budget_min.toLocaleString()}</span>}
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap', fontSize: 12, color: 'rgba(248,250,252,0.55)' }}>
+                            {job.area && <span>{job.area}</span>}
+                            {job.budget_min && <><span style={{ width: 3, height: 3, borderRadius: '50%', background: 'currentColor', display: 'inline-block' }}/><span style={{ color: '#34D399', fontWeight: 700, fontVariantNumeric: 'tabular-nums' }}>${job.budget_min.toLocaleString()}</span></>}
                           </div>
                         </div>
-                        <div style={{ display: 'flex', gap: 8, flexShrink: 0 }}>
+                        <div style={{ display: 'flex', gap: 8, flexShrink: 0, flexWrap: 'wrap' }}>
                           {job.status === 'awarded' && (
-                            <button onClick={async () => { const r = await fetch(`/api/jobs/${job.id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ status: 'in_progress' }) }); if (r.ok) { setJobs(prev => prev.map(j => j.id === job.id ? { ...j, status: 'in_progress' } : j)); showToast('Job started!') } }}
-                  style={{ padding: '7px 14px', borderRadius: 8, fontSize: 12, fontWeight: 700, backgroundColor: 'var(--color-blue)', color: '#fff', border: 'none', cursor: 'pointer', flexShrink: 0, boxShadow: '0 4px 14px rgba(37,99,235,0.25)', transition: 'background 0.2s, box-shadow 0.2s' }}
-                  onMouseEnter={e => { const el = e.currentTarget as HTMLElement; el.style.background = 'var(--color-blue-hover)'; el.style.boxShadow = '0 6px 18px rgba(37,99,235,0.35)' }}
-                  onMouseLeave={e => { const el = e.currentTarget as HTMLElement; el.style.background = 'var(--color-blue)'; el.style.boxShadow = '0 4px 14px rgba(37,99,235,0.25)' }}
-                >Confirm & Start</button>
+                            <button className="ts-action ts-action--blue ts-action--sm"
+                              onClick={async () => { const r = await fetch(`/api/jobs/${job.id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ status: 'in_progress' }) }); if (r.ok) { setJobs(prev => prev.map(j => j.id === job.id ? { ...j, status: 'in_progress' } : j)); showToast('Job started!') } }}>
+                              Confirm &amp; start
+                            </button>
                           )}
                           {job.status === 'in_progress' && (
-                            <button onClick={() => setJobToReview(job)}
-                  style={{ padding: '7px 14px', borderRadius: 8, fontSize: 12, fontWeight: 700, backgroundColor: 'var(--color-green-soft)', color: 'var(--color-green)', border: '1px solid rgba(16,185,129,0.2)', cursor: 'pointer', transition: 'background 0.2s, box-shadow 0.2s', boxShadow: '0 4px 14px rgba(16,185,129,0.15)' }}
-                  onMouseEnter={e => { const el = e.currentTarget as HTMLElement; el.style.background = 'var(--color-green)'; el.style.color = '#fff'; el.style.borderColor = 'var(--color-green)'; el.style.boxShadow = '0 6px 18px rgba(16,185,129,0.35)' }}
-                  onMouseLeave={e => { const el = e.currentTarget as HTMLElement; el.style.background = 'var(--color-green-soft)'; el.style.color = 'var(--color-green)'; el.style.borderColor = 'rgba(16,185,129,0.2)'; el.style.boxShadow = '0 4px 14px rgba(16,185,129,0.15)' }}
-                >Mark Done</button>
+                            <button onClick={() => setJobToReview(job)} className="ts-action ts-action--success ts-action--sm">
+                              Mark done
+                            </button>
                           )}
-                          <a href={`/jobs/${job.id}`} style={{ padding: '7px 14px', borderRadius: 8, fontSize: 12, fontWeight: 600, backgroundColor: 'var(--color-surface)', color: 'var(--color-text-muted)', border: '1px solid var(--color-border)', textDecoration: 'none' }}>Details</a>
+                          <a href={`/jobs/${job.id}`} className="ts-action ts-action--ghost ts-action--sm">Details</a>
                         </div>
                       </div>
                     </div>
@@ -1034,9 +877,9 @@ export default function Dashboard() {
             {/* Completed Work — jobs this contractor was awarded and completed */}
             {completedJobsWithReview.length > 0 && (
               <div style={{ marginBottom: 32 }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
-                  <h2 style={{ fontSize: 12, fontWeight: 700, color: 'var(--color-text-muted)', letterSpacing: '0.06em', textTransform: 'uppercase' }}>Completed Work</h2>
-                  <span style={{ fontSize: 11, fontWeight: 600, padding: '2px 8px', borderRadius: 20, backgroundColor: 'var(--color-green-soft)', color: 'var(--color-green)' }}>{completedJobsWithReview.length}</span>
+                <div className="ts-section-head-row" style={{ margin: '0 0 16px' }}>
+                  <span className="ts-section-eyebrow">Completed work</span>
+                  <span className="ts-section-count">{completedJobsWithReview.length}</span>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                   {completedJobsWithReview.map((job: any) => {
@@ -1045,48 +888,53 @@ export default function Dashboard() {
                     const alreadyReviewed = reviewSubmitted.has(job.id)
                     const showForm = showReviewForm === job.id
                     return (
-                      <div key={job.id} style={{ backgroundColor: 'var(--color-surface-raised)', border: '1px solid var(--color-border)', borderRadius: 14, padding: '18px 22px', borderLeft: '3px solid var(--color-green)' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 16, marginBottom: alreadyReviewed || showForm ? 0 : 12 }}>
-                          <div style={{ flex: 1 }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 5 }}>
-                              <h3 style={{ fontSize: 14, fontWeight: 700, color: 'var(--color-text)' }}>{job.title}</h3>
-                              <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 9px', borderRadius: 20, backgroundColor: 'var(--color-green-soft)', color: 'var(--color-green)' }}>Completed</span>
+                      <div key={job.id} className="ts-panel" style={{ padding: '18px 22px' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 16, marginBottom: alreadyReviewed || showForm ? 0 : 12, flexWrap: 'wrap' }}>
+                          <div style={{ flex: 1, minWidth: 200 }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6, flexWrap: 'wrap' }}>
+                              <h3 style={{ fontSize: 15, fontWeight: 600, color: 'var(--color-text)', letterSpacing: '-0.005em' }}>{job.title}</h3>
+                              <span className="ts-chip ts-chip--ok">Completed</span>
                             </div>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
-                              {job.area && <span style={{ fontSize: 12, color: 'var(--color-text-muted)' }}>{job.area}</span>}
-                              {job.budget_min && <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--color-green)' }}>${job.budget_min.toLocaleString()}</span>}
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap', fontSize: 12, color: 'rgba(248,250,252,0.55)' }}>
+                              {job.area && <span>{job.area}</span>}
+                              {job.budget_min && <><span style={{ width: 3, height: 3, borderRadius: '50%', background: 'currentColor', display: 'inline-block' }}/><span style={{ color: '#34D399', fontWeight: 700, fontVariantNumeric: 'tabular-nums' }}>${job.budget_min.toLocaleString()}</span></>}
                             </div>
                           </div>
                           {!alreadyReviewed && !showForm && (
-                            <button onClick={() => setShowReviewForm(job.id)} style={{ padding: '7px 14px', borderRadius: 8, fontSize: 12, fontWeight: 700, backgroundColor: '#F59E0B', color: '#fff', border: 'none', cursor: 'pointer', flexShrink: 0, boxShadow: '0 2px 8px rgba(245,158,11,0.25)' }}>Leave Review</button>
+                            <button onClick={() => setShowReviewForm(job.id)} className="ts-action ts-action--sm"
+                              style={{ background: '#FBBF24', color: '#06101F', boxShadow: '0 6px 20px rgba(251,191,36,0.3)' }}>
+                              Leave review
+                            </button>
                           )}
                           {alreadyReviewed && (
-                            <span style={{ padding: '6px 14px', borderRadius: 8, fontSize: 12, fontWeight: 600, backgroundColor: 'var(--color-green-soft)', color: 'var(--color-green)', flexShrink: 0 }}>✓ Review Submitted</span>
+                            <span className="ts-chip ts-chip--ok" style={{ padding: '6px 12px' }}>Review submitted</span>
                           )}
                         </div>
                         {showForm && (
-                          <div style={{ marginTop: 14, paddingTop: 14, borderTop: '1px solid var(--color-divider)' }}>
-                            <p style={{ fontSize: 12, color: 'var(--color-text-muted)', marginBottom: 12 }}>
-                              How was working with <strong>{subjectName}</strong> on <strong>{job.title}</strong>?
+                          <div style={{ marginTop: 14, paddingTop: 14, borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+                            <p style={{ fontSize: 12, color: 'rgba(248,250,252,0.6)', marginBottom: 12 }}>
+                              How was working with <strong style={{ color: 'var(--color-text)' }}>{subjectName}</strong> on <strong style={{ color: 'var(--color-text)' }}>{job.title}</strong>?
                             </p>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 12 }}>
                               {[1,2,3,4,5].map(star => (
-                                <button key={star} onClick={() => setReviewForm(prev => ({ ...prev, [job.contractor_id]: { ...(prev[job.contractor_id] || {}), rating: star, comment: prev[job.contractor_id]?.comment || '' } }))} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 24, lineHeight: 1, padding: '0 2px', color: (reviewForm[job.poster_id]?.rating || 0) >= star ? '#F59E0B' : 'var(--color-border-strong)' }}>★</button>
+                                <button key={star} onClick={() => setReviewForm(prev => ({ ...prev, [job.contractor_id]: { ...(prev[job.contractor_id] || {}), rating: star, comment: prev[job.contractor_id]?.comment || '' } }))}
+                                  style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 26, lineHeight: 1, padding: '0 3px', color: (reviewForm[job.poster_id]?.rating || 0) >= star ? '#FBBF24' : 'rgba(255,255,255,0.14)' }}>★</button>
                               ))}
                               {(reviewForm[job.poster_id]?.rating || 0) > 0 && (
-                                <span style={{ fontSize: 12, fontWeight: 600, color: '#F59E0B' }}>{(reviewForm[job.poster_id]?.rating || 0)}/5</span>
+                                <span style={{ fontSize: 12, fontWeight: 700, color: '#FBBF24', marginLeft: 6 }}>{(reviewForm[job.poster_id]?.rating || 0)}/5</span>
                               )}
                             </div>
-                            <textarea
+                            <textarea className="ts-textarea" rows={3}
                               value={reviewForm[job.poster_id]?.comment || ''}
                               onChange={e => setReviewForm(prev => ({ ...prev, [job.contractor_id]: { ...(prev[job.contractor_id] || {}), comment: e.target.value } }))}
-                              placeholder="Share your experience (optional)…"
-                              rows={3}
-                              style={{ width: '100%', padding: '10px 12px', borderRadius: 10, border: '1.5px solid var(--color-input-border)', backgroundColor: 'var(--color-input-bg)', color: 'var(--color-input-text)', fontSize: 13, fontFamily: 'inherit', resize: 'vertical', outline: 'none', marginBottom: 10 }}
-                            />
-                            <div style={{ display: 'flex', gap: 8 }}>
-                              <button onClick={() => handleSubmitReview(job.poster_id, job.id, reviewerName)} disabled={!reviewForm[job.poster_id]?.rating} style={{ padding: '7px 16px', borderRadius: 8, fontSize: 12, fontWeight: 700, backgroundColor: reviewForm[job.poster_id]?.rating ? '#F59E0B' : 'var(--color-border)', color: reviewForm[job.poster_id]?.rating ? '#fff' : 'var(--color-text-subtle)', border: 'none', cursor: reviewForm[job.poster_id]?.rating ? 'pointer' : 'not-allowed', opacity: reviewForm[job.poster_id]?.rating ? 1 : 0.6 }}>Submit Review</button>
-                              <button onClick={() => setShowReviewForm(null)} style={{ padding: '7px 14px', borderRadius: 8, fontSize: 12, fontWeight: 600, backgroundColor: 'transparent', color: 'var(--color-text-muted)', border: '1px solid var(--color-border)', cursor: 'pointer' }}>Cancel</button>
+                              placeholder="Share your experience (optional)…" />
+                            <div style={{ display: 'flex', gap: 8, marginTop: 10 }}>
+                              <button onClick={() => handleSubmitReview(job.poster_id, job.id, reviewerName)} disabled={!reviewForm[job.poster_id]?.rating}
+                                className="ts-action ts-action--sm"
+                                style={{ background: reviewForm[job.poster_id]?.rating ? '#FBBF24' : 'rgba(255,255,255,0.08)', color: reviewForm[job.poster_id]?.rating ? '#06101F' : 'rgba(248,250,252,0.4)' }}>
+                                Submit review
+                              </button>
+                              <button onClick={() => setShowReviewForm(null)} className="ts-action ts-action--ghost ts-action--sm">Cancel</button>
                             </div>
                           </div>
                         )}
@@ -1099,15 +947,15 @@ export default function Dashboard() {
 
             {/* Open Jobs */}
             <div>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
-                <h2 style={{ fontSize: 12, fontWeight: 700, color: 'var(--color-text-muted)', letterSpacing: '0.06em', textTransform: 'uppercase' }}>Open Jobs</h2>
-                <span style={{ fontSize: 11, fontWeight: 600, padding: '2px 8px', borderRadius: 20, backgroundColor: 'var(--color-green-soft)', color: 'var(--color-green)' }}>{availableJobs.length}</span>
+              <div className="ts-section-head-row" style={{ margin: '0 0 16px' }}>
+                <span className="ts-section-eyebrow">Open jobs</span>
+                <span className="ts-section-count">{availableJobs.length}</span>
               </div>
               {availableJobs.length === 0 ? (
-                <div style={{ padding: '48px 32px', borderRadius: 14, backgroundColor: 'var(--color-surface-raised)', border: '1px solid var(--color-border)', textAlign: 'center' }}>
-                  <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--color-text)', marginBottom: 6 }}>No open jobs in your area right now</p>
-                  <p style={{ fontSize: 12, color: 'var(--color-text-subtle)', marginBottom: 20 }}>Jobs are posted by network contractors as overflow work comes in. New work goes up regularly.</p>
-                  <a href="/jobs" style={{ display: 'inline-block', padding: '10px 20px', borderRadius: 10, backgroundColor: 'var(--color-blue)', color: '#fff', fontSize: 13, fontWeight: 600, textDecoration: 'none', boxShadow: '0 4px 14px rgba(37,99,235,0.25)' }}>Browse All Jobs</a>
+                <div className="ts-empty">
+                  <div className="ts-empty-title">No open jobs in your area right now</div>
+                  <div className="ts-empty-sub">Jobs are posted by network contractors as overflow work comes in. New work goes up regularly.</div>
+                  <div className="ts-empty-cta"><a href="/jobs" className="ts-action ts-action--blue">Browse all jobs</a></div>
                 </div>
               ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
@@ -1128,59 +976,51 @@ export default function Dashboard() {
         {/* POSTED JOBS */}
         {view === 'posted' && (
           <div>
-            {/* Poster-side review prompt: show when they have completed awarded jobs */}
+            {/* Poster-side review prompt */}
             {(myPostedJobs.some((j: any) => j.status === 'completed' && j.contractor_id)) && (
-              <div style={{
-                background: 'linear-gradient(135deg, rgba(245,158,11,0.1) 0%, rgba(245,158,11,0.04) 100%)',
-                border: '1px solid rgba(245,158,11,0.2)',
-                borderRadius: 14, padding: '20px 24px', marginBottom: 20,
-                display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16,
-                flexWrap: 'wrap',
-              }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                  <div style={{ width: 40, height: 40, borderRadius: 12, backgroundColor: 'rgba(245,158,11,0.15)', border: '1px solid rgba(245,158,11,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <div className="ts-feature ts-feature--warn" style={{ padding: '18px 22px', marginBottom: 20, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+                  <div style={{ width: 40, height: 40, borderRadius: 12, background: 'rgba(251,191,36,0.15)', border: '1px solid rgba(251,191,36,0.28)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FBBF24" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
                       <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
                     </svg>
                   </div>
                   <div>
-                    <p style={{ fontSize: 14, fontWeight: 700, color: 'var(--color-text)', marginBottom: 2 }}>
-                      Rate your completed contractor work
-                    </p>
-                    <p style={{ fontSize: 12, color: 'var(--color-text-muted)' }}>
-                      Your review helps other homeowners find trustworthy contractors on the network.
-                    </p>
+                    <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--color-text)', marginBottom: 2 }}>Rate your completed contractor work</div>
+                    <div style={{ fontSize: 12, color: 'rgba(248,250,252,0.55)' }}>
+                      Your review helps the whole network find trustworthy contractors.
+                    </div>
                   </div>
                 </div>
-                <a href="/reviews" style={{
-                  padding: '9px 18px', borderRadius: 10,
-                  backgroundColor: '#F59E0B', color: '#fff',
-                  fontSize: 12, fontWeight: 700, textDecoration: 'none', flexShrink: 0,
-                  boxShadow: '0 4px 14px rgba(245,158,11,0.25)',
-                  transition: 'background 0.2s, box-shadow 0.2s',
-                }}
-                  onMouseEnter={e => { const el = e.currentTarget as HTMLElement; el.style.background = '#D97706'; el.style.boxShadow = '0 6px 18px rgba(245,158,11,0.35)' }}
-                  onMouseLeave={e => { const el = e.currentTarget as HTMLElement; el.style.background = '#F59E0B'; el.style.boxShadow = '0 4px 14px rgba(245,158,11,0.25)' }}
-                >
-                  Leave a Review
+                <a href="/reviews" className="ts-action ts-action--sm"
+                  style={{ background: '#FBBF24', color: '#06101F', boxShadow: '0 6px 20px rgba(251,191,36,0.3)' }}>
+                  Leave a review
                 </a>
               </div>
             )}
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
+
+            <div className="ts-page-head-row" style={{ marginBottom: 24 }}>
               <div>
-                <h2 style={{ fontSize: 20, fontWeight: 800, color: 'var(--color-text)', letterSpacing: '-0.02em', marginBottom: 4 }}>My Posted Jobs</h2>
-                <p style={{ fontSize: 13, color: 'var(--color-text-muted)' }}>Manage contractors who expressed interest in your work.</p>
+                <div className="ts-section-eyebrow" style={{ marginBottom: 6 }}>My posted jobs</div>
+                <h2 style={{ fontSize: 22, fontWeight: 800, color: 'var(--color-text)', letterSpacing: '-0.025em', marginBottom: 4 }}>
+                  Manage work you’ve posted
+                </h2>
+                <p style={{ fontSize: 13, color: 'rgba(248,250,252,0.55)' }}>Review contractors who expressed interest and award the job.</p>
               </div>
-              <a href="/post-job" style={{ padding: '10px 20px', borderRadius: 10, backgroundColor: 'var(--color-blue)', color: '#fff', fontSize: 13, fontWeight: 700, textDecoration: 'none', boxShadow: '0 4px 14px rgba(37,99,235,0.25)' }}>Post New Job</a>
+              <a href="/post-job" className="ts-action ts-action--primary">
+                Post new job
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+              </a>
             </div>
+
             {myPostedJobs.length === 0 ? (
-              <div style={{ padding: '64px 32px', borderRadius: 14, backgroundColor: 'var(--color-surface-raised)', border: '1px solid var(--color-border)', textAlign: 'center' }}>
-                <div style={{ width: 52, height: 52, borderRadius: 14, backgroundColor: 'var(--color-green-soft)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
-                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--color-green)" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+              <div className="ts-empty">
+                <div style={{ width: 48, height: 48, borderRadius: 14, background: 'rgba(16,185,129,0.12)', border: '1px solid rgba(16,185,129,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#34D399" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
                 </div>
-                <h3 style={{ fontSize: 16, fontWeight: 700, color: 'var(--color-text)', marginBottom: 6 }}>No jobs posted yet</h3>
-                <p style={{ fontSize: 13, color: 'var(--color-text-muted)', marginBottom: 20, lineHeight: 1.65 }}>Post your overflow work so other vetted contractors can express interest.</p>
-                <a href="/post-job" style={{ display: 'inline-block', padding: '11px 22px', borderRadius: 10, backgroundColor: 'var(--color-blue)', color: '#fff', fontSize: 13, fontWeight: 700, textDecoration: 'none', boxShadow: '0 4px 14px rgba(37,99,235,0.25)' }}>Post Your First Job</a>
+                <div className="ts-empty-title">No jobs posted yet</div>
+                <div className="ts-empty-sub">Post your overflow work so other vetted contractors can express interest.</div>
+                <div className="ts-empty-cta"><a href="/post-job" className="ts-action ts-action--primary ts-action--lg">Post your first job</a></div>
               </div>
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
@@ -1194,68 +1034,74 @@ export default function Dashboard() {
 
         {/* MESSAGES */}
         {view === 'messages' && (
-          <div className="dashboard-messages-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1.7fr', gap: 16, minHeight: 480 }}>
-            <div style={{ backgroundColor: 'var(--color-surface-raised)', border: '1px solid var(--color-border)', borderRadius: 14, padding: 20, display: 'flex', flexDirection: 'column' }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
-                <h2 style={{ fontSize: 14, fontWeight: 700, color: 'var(--color-text)' }}>Conversations</h2>
-                {messageThreads.length > 0 && <span style={{ fontSize: 11, fontWeight: 700, padding: '2px 8px', borderRadius: 20, backgroundColor: 'var(--color-blue-soft)', color: 'var(--color-blue)' }}>{messageThreads.length}</span>}
+          <div className="dashboard-messages-grid" style={{ display: 'grid', gridTemplateColumns: 'minmax(240px, 1fr) minmax(0, 1.8fr)', gap: 16, minHeight: 520 }}>
+            <div className="ts-panel" style={{ padding: 18, display: 'flex', flexDirection: 'column' }}>
+              <div className="ts-section-head-row" style={{ margin: '0 0 14px' }}>
+                <span className="ts-section-eyebrow">Conversations</span>
+                {messageThreads.length > 0 && <span className="ts-section-count">{messageThreads.length}</span>}
               </div>
               {messageThreads.length === 0 ? (
-                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center' }}>
-                  <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-subtle)" strokeWidth={1.5} style={{ marginBottom: 12, opacity: 0.5 }}>
+                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: '24px 8px' }}>
+                  <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="rgba(248,250,252,0.35)" strokeWidth={1.5} style={{ marginBottom: 14 }}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                   </svg>
-                  <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--color-text-muted)', marginBottom: 4 }}>No conversations</p>
-                  <p style={{ fontSize: 12, color: 'var(--color-text-subtle)', lineHeight: 1.55 }}>Award a contractor on one of your posted jobs to start messaging.</p>
+                  <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--color-text)', marginBottom: 4 }}>No conversations yet</p>
+                  <p style={{ fontSize: 12, color: 'rgba(248,250,252,0.45)', lineHeight: 1.55, maxWidth: 220 }}>Award a contractor on one of your posted jobs to start messaging.</p>
                 </div>
               ) : (
-                <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 6 }}>
+                <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 4, margin: '0 -6px' }}>
                   {messageThreads.map(thread => (
-                    <button key={thread.id} onClick={() => handleOpenThread(thread)} style={{ width: '100%', textAlign: 'left', padding: '12px 14px', borderRadius: 10, cursor: 'pointer', backgroundColor: activeThread?.id === thread.id ? 'var(--color-blue-soft)' : 'var(--color-surface)', border: activeThread?.id === thread.id ? '1px solid rgba(37,99,235,0.2)' : '1px solid var(--color-border)', transition: 'all 0.15s' }}>
-                      <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--color-text)', marginBottom: 3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{thread.jobs?.title || `Job ${thread.job_id?.slice(0, 8)}`}</div>
-                      <div style={{ fontSize: 11, color: 'var(--color-text-subtle)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{thread.last_message || 'No messages yet'}</div>
+                    <button key={thread.id} onClick={() => handleOpenThread(thread)}
+                      className={`ts-thread ${activeThread?.id === thread.id ? 'is-active' : ''}`}>
+                      <div className="ts-thread-title">{thread.jobs?.title || `Job ${thread.job_id?.slice(0, 8)}`}</div>
+                      <div className="ts-thread-preview">{thread.last_message || 'No messages yet'}</div>
                     </button>
                   ))}
                 </div>
               )}
             </div>
 
-            <div style={{ backgroundColor: 'var(--color-surface-raised)', border: '1px solid var(--color-border)', borderRadius: 14, padding: 20, display: 'flex', flexDirection: 'column' }}>
+            <div className="ts-panel" style={{ padding: 20, display: 'flex', flexDirection: 'column' }}>
               {!activeThread ? (
-                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center' }}>
-                  <div style={{ width: 52, height: 52, borderRadius: 14, backgroundColor: 'var(--color-surface)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-subtle)" strokeWidth={1.75}><path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>
+                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: '24px' }}>
+                  <div style={{ width: 54, height: 54, borderRadius: 16, background: 'rgba(96,165,250,0.08)', border: '1px solid rgba(96,165,250,0.18)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 18 }}>
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#93C5FD" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>
                   </div>
-                  <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--color-text)', marginBottom: 4 }}>Select a conversation</p>
-                  <p style={{ fontSize: 12, color: 'var(--color-text-subtle)' }}>Choose a thread to view messages.</p>
+                  <p style={{ fontSize: 15, fontWeight: 600, color: 'var(--color-text)', marginBottom: 4, letterSpacing: '-0.005em' }}>Select a conversation</p>
+                  <p style={{ fontSize: 12, color: 'rgba(248,250,252,0.45)' }}>Choose a thread on the left to view messages.</p>
                 </div>
               ) : (
                 <>
-                  <div style={{ paddingBottom: 14, marginBottom: 14, borderBottom: '1px solid var(--color-divider)' }}>
-                    <h3 style={{ fontSize: 14, fontWeight: 600, color: 'var(--color-text)', marginBottom: 2 }}>{activeThread.jobs?.title || `Job ${activeThread.job_id?.slice(0, 8)}`}</h3>
-                    <p style={{ fontSize: 11, color: 'var(--color-text-subtle)' }}>{activeThread.jobs?.area || 'Location not specified'}</p>
+                  <div style={{ paddingBottom: 14, marginBottom: 14, borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+                    <h3 style={{ fontSize: 15, fontWeight: 600, color: 'var(--color-text)', marginBottom: 3, letterSpacing: '-0.005em' }}>{activeThread.jobs?.title || `Job ${activeThread.job_id?.slice(0, 8)}`}</h3>
+                    <p style={{ fontSize: 11, color: 'rgba(248,250,252,0.45)' }}>{activeThread.jobs?.area || 'Location not specified'}</p>
                   </div>
-                  <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 14, minHeight: 0 }}>
+                  <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 14, marginBottom: 14, minHeight: 0, padding: '4px 2px' }}>
                     {threadMessages.length === 0 ? (
-                      <div style={{ textAlign: 'center', paddingTop: 24 }}><p style={{ fontSize: 12, color: 'var(--color-text-subtle)' }}>No messages yet. Say hello!</p></div>
-                    ) : threadMessages.map((msg: any) => (
-                      <div key={msg.id} style={{ display: 'flex', flexDirection: msg.sender_email === user.email ? 'row-reverse' : 'row', alignItems: 'flex-end', gap: 8 }}>
-                        <div style={{ width: 28, height: 28, borderRadius: '50%', backgroundColor: msg.sender_email === user.email ? 'var(--color-blue)' : 'var(--color-surface)', border: msg.sender_email === user.email ? 'none' : '1px solid var(--color-border)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700, color: msg.sender_email === user.email ? '#fff' : 'var(--color-text-muted)', flexShrink: 0 }}>
-                          {(msg.sender_name || msg.sender_email || '?').charAt(0).toUpperCase()}
-                        </div>
-                        <div style={{ maxWidth: '72%' }}>
-                          <div style={{ fontSize: 10, color: 'var(--color-text-subtle)', marginBottom: 4, textAlign: msg.sender_email === user.email ? 'right' : 'left', paddingLeft: msg.sender_email === user.email ? 0 : 32 }}>{msg.sender_name || msg.sender_email}</div>
-                          <div style={{ padding: '9px 14px', borderRadius: 12, backgroundColor: msg.sender_email === user.email ? 'var(--color-blue)' : 'var(--color-surface)', color: msg.sender_email === user.email ? '#fff' : 'var(--color-text)', border: msg.sender_email === user.email ? 'none' : '1px solid var(--color-border)', fontSize: 13, lineHeight: 1.5, borderBottomLeftRadius: msg.sender_email === user.email ? 12 : 4, borderBottomRightRadius: msg.sender_email === user.email ? 4 : 12 }}>{msg.content}</div>
-                          <div style={{ fontSize: 10, color: 'var(--color-text-subtle)', marginTop: 3, textAlign: msg.sender_email === user.email ? 'right' : 'left', paddingLeft: msg.sender_email === user.email ? 0 : 32 }}>
-                            {new Date(msg.created_at).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}
+                      <div style={{ textAlign: 'center', paddingTop: 28 }}><p style={{ fontSize: 12, color: 'rgba(248,250,252,0.45)' }}>No messages yet. Say hello.</p></div>
+                    ) : threadMessages.map((msg: any) => {
+                      const isSelf = msg.sender_email === user.email
+                      return (
+                        <div key={msg.id} className={`ts-msg ${isSelf ? 'is-self' : ''}`}>
+                          <div className="ts-msg-avatar">{(msg.sender_name || msg.sender_email || '?').charAt(0).toUpperCase()}</div>
+                          <div className="ts-msg-body">
+                            <div className="ts-msg-sender">{msg.sender_name || msg.sender_email}</div>
+                            <div className="ts-msg-bubble">{msg.content}</div>
+                            <div className="ts-msg-time">{new Date(msg.created_at).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}</div>
                           </div>
                         </div>
-                      </div>
-                    ))}
+                      )
+                    })}
                   </div>
                   <div style={{ display: 'flex', gap: 8 }}>
-                    <input type="text" value={newMessage} onChange={e => setNewMessage(e.target.value)} onKeyDown={e => { if (e.key === 'Enter' && !sendingMessage) handleSendMessage(activeThread.id) }} placeholder="Send a message…" style={{ flex: 1, padding: '10px 14px', borderRadius: 10, border: '1.5px solid var(--color-input-border)', backgroundColor: 'var(--color-input-bg)', color: 'var(--color-input-text)', fontSize: 13, fontFamily: 'inherit', outline: 'none' }} disabled={sendingMessage} />
-                    <button onClick={() => handleSendMessage(activeThread.id)} disabled={sendingMessage || !newMessage.trim()} style={{ padding: '10px 18px', borderRadius: 10, backgroundColor: 'var(--color-blue)', color: '#fff', border: 'none', fontSize: 13, fontWeight: 700, cursor: sendingMessage || !newMessage.trim() ? 'not-allowed' : 'pointer', opacity: (sendingMessage || !newMessage.trim()) ? 0.5 : 1, boxShadow: '0 4px 14px rgba(37,99,235,0.25)' }}>Send</button>
+                    <input type="text" className="ts-input" value={newMessage}
+                      onChange={e => setNewMessage(e.target.value)}
+                      onKeyDown={e => { if (e.key === 'Enter' && !sendingMessage) handleSendMessage(activeThread.id) }}
+                      placeholder="Send a message…" disabled={sendingMessage} style={{ flex: 1 }} />
+                    <button onClick={() => handleSendMessage(activeThread.id)} disabled={sendingMessage || !newMessage.trim()}
+                      className="ts-action ts-action--blue">
+                      Send
+                    </button>
                   </div>
                 </>
               )}

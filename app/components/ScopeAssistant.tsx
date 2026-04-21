@@ -189,61 +189,29 @@ function QuestionInput({
   value: string
   onChange: (key: keyof ScopeFields, val: string) => void
 }) {
-  const inputStyle: React.CSSProperties = {
-    width: '100%',
-    padding: '10px 12px',
-    borderRadius: 8,
-    fontSize: 14,
-    border: '1.5px solid var(--color-input-border)',
-    outline: 'none',
-    transition: 'border-color 0.15s',
-    color: 'var(--color-text)',
-    backgroundColor: '#fff',
-    boxSizing: 'border-box',
-    resize: question.type === 'textarea' ? 'vertical' : 'none',
-  }
-
   return (
     <div>
-      <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--color-text)', marginBottom: 6 }}>
+      <label className="ts-field-label" style={{ marginBottom: 6, display: 'block' }}>
         {question.label}
       </label>
       {question.hint && (
-        <p style={{ fontSize: 12, color: 'var(--color-text-subtle)', marginBottom: 8, lineHeight: 1.4 }}>{question.hint}</p>
+        <p className="ts-field-hint" style={{ marginBottom: 10 }}>{question.hint}</p>
       )}
       {question.type === 'select' ? (
-        <select
-          value={value}
-          onChange={e => onChange(question.key, e.target.value)}
-          style={{ ...inputStyle, cursor: 'pointer' }}
-          onFocus={e => (e.target.style.borderColor = 'var(--color-blue)')}
-          onBlur={e => (e.target.style.borderColor = 'var(--color-input-border)')}
-        >
+        <select className="ts-select" value={value} onChange={e => onChange(question.key, e.target.value)}>
           <option value="">Select…</option>
           {question.options?.map(opt => (
             <option key={opt.value} value={opt.value}>{opt.label}</option>
           ))}
         </select>
       ) : question.type === 'textarea' ? (
-        <textarea
-          value={value}
-          onChange={e => onChange(question.key, e.target.value)}
-          rows={question.rows || 3}
-          placeholder={`Enter details…`}
-          style={inputStyle}
-          onFocus={e => (e.target.style.borderColor = 'var(--color-blue)')}
-          onBlur={e => (e.target.style.borderColor = 'var(--color-input-border)')}
-        />
+        <textarea className="ts-textarea" rows={question.rows || 3}
+          value={value} onChange={e => onChange(question.key, e.target.value)}
+          placeholder="Enter details…" />
       ) : (
-        <input
-          type="text"
-          value={value}
-          onChange={e => onChange(question.key, e.target.value)}
-          placeholder={`Enter ${question.label.toLowerCase()}…`}
-          style={inputStyle}
-          onFocus={e => (e.target.style.borderColor = 'var(--color-blue)')}
-          onBlur={e => (e.target.style.borderColor = 'var(--color-input-border)')}
-        />
+        <input type="text" className="ts-input"
+          value={value} onChange={e => onChange(question.key, e.target.value)}
+          placeholder={`Enter ${question.label.toLowerCase()}…`} />
       )}
     </div>
   )
@@ -334,54 +302,31 @@ export default function ScopeAssistant({ tradeType, onGenerated }: ScopeAssistan
   // ── Not yet started ─────────────────────────────────────────────────────────
   if (mode === 'idle') {
     return (
-      <div style={{
-        padding: '24px 24px',
-        borderRadius: 12,
-        backgroundColor: 'var(--color-blue-soft)',
-        border: '1px solid rgba(59,130,246,0.15)',
-        textAlign: 'center',
-      }}>
-        <div style={{ width: 40, height: 40, borderRadius: 10, backgroundColor: 'var(--color-blue)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px' }}>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M13 10V3L4 14h7v7l9-11h-7z" />
-          </svg>
-        </div>
-        <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--color-text)', marginBottom: 6 }}>TradeSource AI Scope Builder</p>
-        <p style={{ fontSize: 12, color: 'var(--color-text-muted)', marginBottom: 16, lineHeight: 1.5 }}>
-          Answer a few quick questions about this job and we'll build a clear, complete scope description.
-        </p>
-        <button
-          type="button"
-          onClick={startBuilding}
-          style={{
-            padding: '10px 24px',
-            borderRadius: 8,
-            backgroundColor: 'var(--color-blue)',
-            color: '#fff',
-            border: 'none',
-            fontSize: 13,
-            fontWeight: 600,
-            cursor: 'pointer',
-            boxShadow: '0 4px 14px rgba(37,99,235,0.3)',
-          }}
-        >
-          Build my scope →
-        </button>
-        <div style={{ marginTop: 12 }}>
-          <button
-            type="button"
-            onClick={switchToManual}
-            style={{
-              background: 'none',
-              border: 'none',
-              fontSize: 12,
-              color: 'var(--color-text-subtle)',
-              cursor: 'pointer',
-              textDecoration: 'underline',
-            }}
-          >
-            Skip — write my own description
-          </button>
+      <div className="ts-feature" style={{ textAlign: 'left', padding: '22px 24px' }}>
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 14 }}>
+          <div style={{ width: 40, height: 40, borderRadius: 10, background: 'rgba(96,165,250,0.18)', border: '1px solid rgba(96,165,250,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#93C5FD" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
+              <path d="M13 10V3L4 14h7v7l9-11h-7z" />
+            </svg>
+          </div>
+          <div style={{ flex: 1 }}>
+            <div className="ts-page-kicker" style={{ marginBottom: 6 }}>AI scope builder</div>
+            <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--color-text)', letterSpacing: '-0.01em', marginBottom: 4 }}>
+              Describe the job. We write the scope.
+            </div>
+            <p style={{ fontSize: 12, color: 'rgba(248,250,252,0.6)', lineHeight: 1.6, marginBottom: 14 }}>
+              Answer a few quick questions and we&apos;ll produce a clear, complete scope contractors can actually use.
+            </p>
+            <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+              <button type="button" onClick={startBuilding} className="ts-action ts-action--blue ts-action--sm">
+                Build my scope
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+              </button>
+              <button type="button" onClick={switchToManual} className="ts-action ts-action--ghost ts-action--sm">
+                Write my own
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     )
@@ -390,37 +335,22 @@ export default function ScopeAssistant({ tradeType, onGenerated }: ScopeAssistan
   // ── Generating ───────────────────────────────────────────────────────────────
   if (mode === 'generating') {
     return (
-      <div style={{
-        padding: '32px 24px',
-        borderRadius: 12,
-        backgroundColor: 'var(--color-surface-raised)',
-        border: '1px solid var(--color-border)',
-        textAlign: 'center',
-      }}>
-        <div style={{ width: 40, height: 40, borderRadius: 10, backgroundColor: 'var(--color-blue)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px' }}>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+      <div className="ts-panel" style={{ textAlign: 'center', padding: '36px 24px' }}>
+        <div style={{ width: 44, height: 44, borderRadius: 12, background: 'rgba(96,165,250,0.14)', border: '1px solid rgba(96,165,250,0.28)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 14px' }}>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#93C5FD" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
             <path d="M13 10V3L4 14h7v7l9-11h-7z" />
           </svg>
         </div>
-        <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--color-text)', marginBottom: 8 }}>Building your scope…</p>
-        <div style={{ display: 'flex', justifyContent: 'center', gap: 6, marginBottom: 12 }}>
+        <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--color-text)', letterSpacing: '-0.01em', marginBottom: 10 }}>Building your scope…</div>
+        <div style={{ display: 'flex', justifyContent: 'center', gap: 6, marginBottom: 14 }}>
           {[0, 1, 2].map(i => (
-            <div key={i} style={{
-              width: 6, height: 6, borderRadius: '50%',
-              backgroundColor: 'var(--color-blue)',
-              animation: `scopeBounce 1s infinite ${i * 0.2}s`,
-            }} />
+            <div key={i} style={{ width: 6, height: 6, borderRadius: '50%', background: '#60A5FA', animation: `scopeBounce 1s infinite ${i * 0.2}s` }} />
           ))}
         </div>
-        <p style={{ fontSize: 12, color: 'var(--color-text-subtle)' }}>
+        <p style={{ fontSize: 12, color: 'rgba(248,250,252,0.5)', maxWidth: 320, margin: '0 auto' }}>
           TradeSource AI is writing a clear scope description for subcontractors.
         </p>
-        <style>{`
-          @keyframes scopeBounce {
-            0%, 80%, 100% { opacity: 0.3; transform: scale(0.8); }
-            40% { opacity: 1; transform: scale(1); }
-          }
-        `}</style>
+        <style>{`@keyframes scopeBounce { 0%, 80%, 100% { opacity: 0.3; transform: scale(0.8); } 40% { opacity: 1; transform: scale(1); } }`}</style>
       </div>
     )
   }
@@ -429,82 +359,33 @@ export default function ScopeAssistant({ tradeType, onGenerated }: ScopeAssistan
   if (mode === 'building' && currentQuestion) {
     const currentValue = (fields[currentQuestion.key] as string) || ''
     return (
-      <div style={{
-        padding: '20px 24px',
-        borderRadius: 12,
-        backgroundColor: 'var(--color-surface-raised)',
-        border: '1px solid rgba(59,130,246,0.2)',
-      }}>
-        {/* Header */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <div style={{ width: 24, height: 24, borderRadius: 6, backgroundColor: 'var(--color-blue)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M13 10V3L4 14h7v7l9-11h-7z" />
-              </svg>
-            </div>
-            <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--color-text)' }}>AI Scope Builder</span>
-          </div>
-          <span style={{ fontSize: 11, color: 'var(--color-text-subtle)' }}>
-            {currentStep + 1} of {questions.length}
+      <div className="ts-panel" style={{ padding: '22px 24px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
+          <div className="ts-page-kicker" style={{ marginBottom: 0 }}>AI scope builder</div>
+          <span style={{ fontSize: 11, fontWeight: 600, color: 'rgba(248,250,252,0.5)', fontVariantNumeric: 'tabular-nums' }}>
+            {currentStep + 1} / {questions.length}
           </span>
         </div>
 
-        {/* Progress bar */}
-        <div style={{ height: 3, borderRadius: 2, backgroundColor: 'var(--color-border)', marginBottom: 20, overflow: 'hidden' }}>
-          <div style={{
-            height: '100%',
-            width: `${((currentStep) / questions.length) * 100}%`,
-            backgroundColor: 'var(--color-blue)',
-            borderRadius: 2,
-            transition: 'width 0.3s',
-          }} />
+        <div className="ts-progress" style={{ marginBottom: 22 }}>
+          <div className="ts-progress-fill" style={{ width: `${(currentStep / questions.length) * 100}%` }} />
         </div>
 
-        {/* Question */}
-        <div style={{ marginBottom: 20 }}>
-          <QuestionInput
-            question={currentQuestion}
-            value={currentValue}
-            onChange={update}
-          />
+        <div style={{ marginBottom: 22 }}>
+          <QuestionInput question={currentQuestion} value={currentValue} onChange={update} />
         </div>
 
-        {/* Nav */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <button
-            type="button"
-            onClick={prevStep}
-            style={{
-              background: 'none', border: 'none',
-              fontSize: 12, color: 'var(--color-text-subtle)',
-              cursor: 'pointer', padding: '6px 0',
-            }}
-          >
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+          <button type="button" onClick={prevStep} className="ts-action ts-action--ghost ts-action--sm">
             ← Back
           </button>
           <div style={{ display: 'flex', gap: 8 }}>
-            <button
-              type="button"
-              onClick={switchToManual}
-              style={{
-                background: 'none', border: '1px solid var(--color-border)',
-                fontSize: 12, color: 'var(--color-text-muted)',
-                cursor: 'pointer', padding: '8px 14px', borderRadius: 8,
-              }}
-            >
+            <button type="button" onClick={switchToManual} className="ts-action ts-action--ghost ts-action--sm">
               Skip to manual
             </button>
-            <button
-              type="button"
-              onClick={nextStep}
-              style={{
-                padding: '8px 18px', borderRadius: 8,
-                backgroundColor: 'var(--color-blue)', color: '#fff',
-                border: 'none', fontSize: 12, fontWeight: 600, cursor: 'pointer',
-              }}
-            >
-              {currentStep < questions.length - 1 ? 'Next →' : 'Generate scope →'}
+            <button type="button" onClick={nextStep} className="ts-action ts-action--blue ts-action--sm">
+              {currentStep < questions.length - 1 ? 'Next' : 'Generate scope'}
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
             </button>
           </div>
         </div>
@@ -516,69 +397,30 @@ export default function ScopeAssistant({ tradeType, onGenerated }: ScopeAssistan
   if (mode === 'done') {
     return (
       <div>
-        {/* Generated scope preview */}
-        <div style={{
-          padding: '20px 24px',
-          borderRadius: 12,
-          backgroundColor: 'rgba(16,185,129,0.04)',
-          border: '1px solid rgba(16,185,129,0.15)',
-          marginBottom: 12,
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
-            <div style={{ width: 22, height: 22, borderRadius: 6, backgroundColor: 'var(--color-green)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M5 13l4 4L19 7" />
-              </svg>
-            </div>
-            <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--color-green)' }}>Scope generated</span>
+        <div className="ts-feature ts-feature--ok" style={{ padding: '20px 22px', marginBottom: 12 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
+            <span className="ts-chip ts-chip--ok ts-chip--plain">Scope generated</span>
           </div>
-          <p style={{ fontSize: 13, color: 'var(--color-text)', lineHeight: 1.7, margin: 0, whiteSpace: 'pre-wrap' }}>
+          <p style={{ fontSize: 13, color: 'rgba(248,250,252,0.85)', lineHeight: 1.7, margin: 0, whiteSpace: 'pre-wrap' }}>
             {generatedScope}
           </p>
         </div>
 
-        {/* Actions */}
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-          <button
-            type="button"
-            onClick={regenerateScope}
-            style={{
-              padding: '8px 16px', borderRadius: 8,
-              backgroundColor: 'var(--color-surface)', color: 'var(--color-text)',
-              border: '1px solid var(--color-border)',
-              fontSize: 12, fontWeight: 500, cursor: 'pointer',
-            }}
-          >
+          <button type="button" onClick={acceptScope} className="ts-action ts-action--success ts-action--sm">
+            Use this scope
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </button>
+          <button type="button" onClick={regenerateScope} className="ts-action ts-action--ghost ts-action--sm">
             Regenerate
           </button>
-          <button
-            type="button"
-            onClick={switchToManual}
-            style={{
-              padding: '8px 16px', borderRadius: 8,
-              backgroundColor: 'var(--color-surface)', color: 'var(--color-text)',
-              border: '1px solid var(--color-border)',
-              fontSize: 12, fontWeight: 500, cursor: 'pointer',
-            }}
-          >
+          <button type="button" onClick={switchToManual} className="ts-action ts-action--ghost ts-action--sm">
             Edit manually
-          </button>
-          <button
-            type="button"
-            onClick={acceptScope}
-            style={{
-              padding: '8px 20px', borderRadius: 8,
-              backgroundColor: 'var(--color-green)', color: '#fff',
-              border: 'none', fontSize: 12, fontWeight: 600, cursor: 'pointer',
-              boxShadow: '0 2px 8px rgba(16,185,129,0.3)',
-            }}
-          >
-            Use this scope →
           </button>
         </div>
 
         {error && (
-          <div style={{ marginTop: 10, padding: '10px 14px', borderRadius: 8, fontSize: 12, backgroundColor: 'var(--color-red-soft)', border: '1px solid rgba(239,68,68,0.2)', color: 'var(--color-red)' }}>
+          <div className="ts-chip ts-chip--err" style={{ marginTop: 12, padding: '10px 14px', borderRadius: 10, fontSize: 12, fontWeight: 500 }}>
             {error}
           </div>
         )}
@@ -591,53 +433,20 @@ export default function ScopeAssistant({ tradeType, onGenerated }: ScopeAssistan
     return (
       <div>
         <div style={{ marginBottom: 10, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--color-text-muted)' }}>Description</span>
-          <button
-            type="button"
-            onClick={switchToAssistant}
-            style={{
-              background: 'none', border: 'none',
-              fontSize: 11, color: 'var(--color-blue)', cursor: 'pointer',
-              textDecoration: 'underline',
-            }}
-          >
-            Use AI Scope Builder instead
+          <span className="ts-field-label">Description</span>
+          <button type="button" onClick={switchToAssistant}
+            style={{ background: 'none', border: 'none', fontSize: 11, fontWeight: 600, color: '#93C5FD', cursor: 'pointer' }}>
+            Use AI scope builder →
           </button>
         </div>
-        <textarea
-          value={manualScope}
-          onChange={e => setManualScope(e.target.value)}
-          rows={5}
-          placeholder="Describe the full scope — surfaces, prep, access, paint specs, anything contractors need to know before responding."
-          style={{
-            width: '100%',
-            padding: '11px 14px',
-            borderRadius: 10,
-            fontSize: 14,
-            border: '1.5px solid var(--color-input-border)',
-            outline: 'none',
-            resize: 'vertical',
-            transition: 'border-color 0.15s',
-            color: 'var(--color-text)',
-            lineHeight: 1.65,
-            boxSizing: 'border-box',
-          }}
-          onFocus={e => (e.target.style.borderColor = 'var(--color-blue)')}
-          onBlur={e => (e.target.style.borderColor = 'var(--color-input-border)')}
-        />
+        <textarea className="ts-textarea" rows={5}
+          value={manualScope} onChange={e => setManualScope(e.target.value)}
+          placeholder="Describe the full scope — surfaces, prep, access, paint specs, anything contractors need to know before responding." />
         {manualScope.trim() && (
-          <div style={{ marginTop: 10 }}>
-            <button
-              type="button"
-              onClick={acceptScope}
-              style={{
-                padding: '8px 20px', borderRadius: 8,
-                backgroundColor: 'var(--color-green)', color: '#fff',
-                border: 'none', fontSize: 12, fontWeight: 600, cursor: 'pointer',
-                boxShadow: '0 2px 8px rgba(16,185,129,0.3)',
-              }}
-            >
-              Use this description →
+          <div style={{ marginTop: 12 }}>
+            <button type="button" onClick={acceptScope} className="ts-action ts-action--success ts-action--sm">
+              Use this description
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
             </button>
           </div>
         )}

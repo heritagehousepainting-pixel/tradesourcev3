@@ -6,7 +6,6 @@ import { useNavContext } from '@/app/components/NavContext'
 import ScopeAssistant, { type ScopeFields } from '@/app/components/ScopeAssistant'
 import FloatingAssistant from '@/features/assistant/ui/FloatingAssistant'
 import { supabase } from '@/lib/supabase'
-import { getSession } from '@/lib/auth/client'
 
 const TRADE_TYPES = [
   'Interior Painting',
@@ -26,16 +25,16 @@ const TIMELINE_OPTIONS = [
 ]
 
 const MATERIALS_OPTIONS = [
-  { value: 'poster_provides', label: 'Poster provides materials', sub: 'You supply paint and materials for the job' },
-  { value: 'subcontractor_provides', label: 'Sub-Contractor provides materials', sub: 'Price should include paint and all supplies' },
-  { value: 'to_discuss', label: 'Discuss after interest', sub: 'Finalize once a sub-contractor expresses interest' },
+  { value: 'poster_provides',         label: 'Poster provides materials',         sub: 'You supply paint and materials for the job' },
+  { value: 'subcontractor_provides',  label: 'Sub-contractor provides materials', sub: 'Price should include paint and all supplies' },
+  { value: 'to_discuss',              label: 'Discuss after interest',            sub: 'Finalize once a sub-contractor expresses interest' },
 ]
 
 const MAX_PHOTOS = 5
-const MAX_PHOTO_SIZE = 10 * 1024 * 1024 // 10 MB
+const MAX_PHOTO_SIZE = 10 * 1024 * 1024
 const PHOTO_TYPES = 'image/jpeg,image/png,image/webp'
 
-// ─── Photo upload section ───────────────────────────────────────────────────────
+// ─── Photo uploader ─────────────────────────────────────────────────────────
 
 function PhotoUploader({ photos, onChange }: { photos: File[]; onChange: (f: File[]) => void }) {
   const inputRef = useRef<HTMLInputElement>(null)
@@ -46,138 +45,70 @@ function PhotoUploader({ photos, onChange }: { photos: File[]; onChange: (f: Fil
     setError('')
     const remaining = MAX_PHOTOS - photos.length
     const incoming = Array.from(newFiles).filter(f => {
-      if (!PHOTO_TYPES.split(',').includes(f.type)) {
-        setError(`"${f.name}" is not a supported image type. Use JPEG, PNG, or WebP.`)
-        return false
-      }
-      if (f.size > MAX_PHOTO_SIZE) {
-        setError(`"${f.name}" is too large. Max file size is 10 MB.`)
-        return false
-      }
+      if (!PHOTO_TYPES.split(',').includes(f.type)) { setError(`"${f.name}" isn't a supported image type.`); return false }
+      if (f.size > MAX_PHOTO_SIZE) { setError(`"${f.name}" is too large. Max is 10 MB.`); return false }
       return true
     }).slice(0, remaining)
-
-    if (incoming.length === 0 && photos.length >= MAX_PHOTOS) {
-      setError(`Maximum ${MAX_PHOTOS} photos per job.`)
-      return
-    }
-    if (photos.length + incoming.length > MAX_PHOTOS) {
-      setError(`Only ${remaining} more photo(s) can be added.`)
-    }
+    if (incoming.length === 0 && photos.length >= MAX_PHOTOS) { setError(`Maximum ${MAX_PHOTOS} photos per job.`); return }
     onChange([...photos, ...incoming])
   }
-
-  const removePhoto = (index: number) => {
-    const updated = photos.filter((_, i) => i !== index)
-    onChange(updated)
-  }
+  const remove = (i: number) => onChange(photos.filter((_, idx) => idx !== i))
 
   return (
     <div>
-      <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 4 }}>
-        Job Photos
-      </label>
-      <p style={{ fontSize: 12, color: 'var(--color-text-subtle)', marginBottom: 10 }}>
-        Add photos of the work area to help subcontractors understand the scope. JPEG, PNG, WebP up to 10 MB each. Max {MAX_PHOTOS} photos.
-      </p>
+      <div className="ts-field-label" style={{ marginBottom: 4 }}>Job photos</div>
+      <div className="ts-field-hint" style={{ marginBottom: 12 }}>
+        Photos help contractors understand the scope fast. JPEG / PNG / WebP up to 10 MB. Max {MAX_PHOTOS}.
+      </div>
 
-      {/* Thumbnail previews */}
       {photos.length > 0 && (
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 10 }}>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 12 }}>
           {photos.map((file, i) => (
-            <div key={i} style={{ position: 'relative', width: 72, height: 72, borderRadius: 8, overflow: 'hidden', border: '1px solid var(--color-border)', backgroundColor: 'var(--color-surface)' }}>
-              <img
-                src={URL.createObjectURL(file)}
-                alt={`Photo ${i + 1}`}
-                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-              />
-              <button
-                type="button"
-                onClick={() => removePhoto(i)}
-                aria-label="Remove photo"
-                style={{
-                  position: 'absolute', top: 3, right: 3,
-                  width: 20, height: 20, borderRadius: '50%',
-                  backgroundColor: 'rgba(0,0,0,0.65)',
-                  border: 'none', cursor: 'pointer',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  padding: 0,
-                }}
-              >
-                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                  <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
-                </svg>
+            <div key={i} style={{ position: 'relative', width: 76, height: 76, borderRadius: 10, overflow: 'hidden', border: '1px solid rgba(255,255,255,0.1)' }}>
+              <img src={URL.createObjectURL(file)} alt={`Photo ${i+1}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              <button type="button" onClick={() => remove(i)} aria-label="Remove photo"
+                style={{ position: 'absolute', top: 4, right: 4, width: 20, height: 20, borderRadius: '50%', background: 'rgba(0,0,0,0.7)', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}>
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
               </button>
             </div>
           ))}
         </div>
       )}
 
-      {/* Drop zone */}
       {photos.length < MAX_PHOTOS && (
-        <div
-          onDragOver={e => { e.preventDefault(); setDragging(true) }}
-          onDragLeave={() => setDragging(false)}
-          onDrop={e => { e.preventDefault(); setDragging(false); validateAndAdd(e.dataTransfer.files) }}
-          onClick={() => inputRef.current?.click()}
-          style={{
-            border: dragging
-              ? '2px dashed var(--color-blue)'
-              : photos.length > 0
-                ? '1.5px solid var(--color-green)'
-                : '1.5px dashed var(--color-input-border)',
-            borderRadius: 10,
-            padding: '14px 18px',
-            backgroundColor: dragging
-              ? 'var(--color-blue-soft)'
-              : photos.length > 0
-                ? 'rgba(16,185,129,0.03)'
-                : 'var(--color-surface-raised)',
-            cursor: 'pointer',
-            transition: 'all 0.15s',
-            display: 'flex',
-            alignItems: 'center',
-            gap: 12,
-          }}
-        >
-          <div style={{
-            width: 36, height: 36, borderRadius: 8,
-            backgroundColor: photos.length > 0 ? 'var(--color-green-soft)' : 'var(--color-blue-soft)',
-            border: `1px solid ${photos.length > 0 ? 'var(--color-green-soft)' : 'var(--color-blue-soft)'}`,
-            display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
-          }}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={photos.length > 0 ? 'var(--color-green)' : 'var(--color-blue)'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <div onDragOver={e => { e.preventDefault(); setDragging(true) }}
+             onDragLeave={() => setDragging(false)}
+             onDrop={e => { e.preventDefault(); setDragging(false); validateAndAdd(e.dataTransfer.files) }}
+             onClick={() => inputRef.current?.click()}
+             style={{
+               cursor: 'pointer', padding: '18px 20px', borderRadius: 12,
+               border: dragging ? '1.5px dashed #60A5FA' : '1.5px dashed rgba(255,255,255,0.14)',
+               background: dragging ? 'rgba(96,165,250,0.08)' : 'rgba(255,255,255,0.02)',
+               display: 'flex', alignItems: 'center', gap: 14, transition: 'all .15s'
+             }}>
+          <div style={{ width: 38, height: 38, borderRadius: 10, background: 'rgba(96,165,250,0.12)', border: '1px solid rgba(96,165,250,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#93C5FD" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
               <rect x="3" y="3" width="18" height="18" rx="2" /><circle cx="8.5" cy="8.5" r="1.5" /><polyline points="21 15 16 10 5 21" />
             </svg>
           </div>
-          <div>
-            <p style={{ fontSize: 13, fontWeight: 500, color: 'var(--color-text-muted)', margin: 0, lineHeight: 1.3 }}>
-              <span style={{ color: 'var(--color-blue)', fontWeight: 600 }}>Click to add photos</span>
-              {' '}or drag and drop
-            </p>
-            <p style={{ fontSize: 11, color: 'var(--color-text-subtle)', margin: '2px 0 0' }}>
-              {photos.length}/{MAX_PHOTOS} — JPEG, PNG, WebP up to 10 MB
-            </p>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--color-text)' }}>
+              <span style={{ color: '#93C5FD', fontWeight: 600 }}>Click to add photos</span> or drop them here
+            </div>
+            <div className="ts-field-hint" style={{ marginTop: 2 }}>{photos.length}/{MAX_PHOTOS} · JPEG, PNG, WebP</div>
           </div>
-          <input
-            ref={inputRef}
-            type="file"
-            accept={PHOTO_TYPES}
-            multiple
+          <input ref={inputRef} type="file" accept={PHOTO_TYPES} multiple
             onChange={e => { if (e.target.files) validateAndAdd(e.target.files); e.target.value = '' }}
-            style={{ display: 'none' }}
-          />
+            style={{ display: 'none' }} />
         </div>
       )}
 
-      {error && (
-        <p style={{ marginTop: 6, fontSize: 12, color: 'var(--color-red)', marginBottom: 0 }}>{error}</p>
-      )}
+      {error && <div style={{ marginTop: 8, fontSize: 12, color: '#F87171' }}>{error}</div>}
     </div>
   )
 }
 
-// ─── Page ───────────────────────────────────────────────────────────────────────
+// ─── Page ───────────────────────────────────────────────────────────────────
 
 export default function PostJob() {
   const router = useRouter()
@@ -193,22 +124,13 @@ export default function PostJob() {
   const [lastSaved, setLastSaved] = useState<Date | null>(null)
 
   const [form, setForm] = useState({
-    title: '',
-    scope: '',
-    description: '',
-    area: '',
-    timeline: '',
-    fixed_price: '',
-    materials: '',
-    homeowner_name: '',
-    homeowner_email: '',
-    homeowner_phone: '',
+    title: '', scope: '', description: '', area: '', timeline: '',
+    fixed_price: '', materials: '',
+    homeowner_name: '', homeowner_email: '', homeowner_phone: '',
   })
 
-  // ── Local draft preservation ──────────────────────────────────────────────
   const DRAFT_KEY = 'tradesource_postjob_draft'
 
-  // Load draft from localStorage on mount
   useEffect(() => {
     try {
       const saved = localStorage.getItem(DRAFT_KEY)
@@ -216,50 +138,30 @@ export default function PostJob() {
         const parsed = JSON.parse(saved)
         if (parsed.form && typeof parsed.form === 'object') {
           setForm(parsed.form)
-          if (parsed.savedAt) {
-            const d = new Date(parsed.savedAt)
-            setLastSaved(d)
-            setDraftStatus('saved')
-          }
+          if (parsed.savedAt) { setLastSaved(new Date(parsed.savedAt)); setDraftStatus('saved') }
         }
       }
     } catch {}
   }, [])
 
-  // Save draft to localStorage whenever form changes (debounced 1.5s)
   useEffect(() => {
     const timer = setTimeout(() => {
       setDraftStatus('saving')
       try {
-        localStorage.setItem(DRAFT_KEY, JSON.stringify({
-          form,
-          savedAt: new Date().toISOString(),
-        }))
-        setLastSaved(new Date())
-        setDraftStatus('saved')
-      } catch {
-        setDraftStatus('unsaved')
-      }
+        localStorage.setItem(DRAFT_KEY, JSON.stringify({ form, savedAt: new Date().toISOString() }))
+        setLastSaved(new Date()); setDraftStatus('saved')
+      } catch { setDraftStatus('unsaved') }
     }, 1500)
     return () => clearTimeout(timer)
   }, [form])
 
-  // Clear draft on successful submit
-  const clearDraft = () => {
-    try { localStorage.removeItem(DRAFT_KEY) } catch {}
-    setDraftStatus('unsaved')
-    setLastSaved(null)
-  }
+  const clearDraft = () => { try { localStorage.removeItem(DRAFT_KEY) } catch {}; setDraftStatus('unsaved'); setLastSaved(null) }
 
-  // Load contractor profile once canonical access is established.
   useEffect(() => {
     if (!access.checked || !access.isAuthenticated) return
     const id = access.profile?.id
     if (!id) return
-    fetch(`/api/users?id=${id}`)
-      .then(r => r.ok ? r.json() : null)
-      .then(data => { if (data) setLoggedInContractor(data) })
-      .catch(() => {})
+    fetch(`/api/users?id=${id}`).then(r => r.ok ? r.json() : null).then(d => { if (d) setLoggedInContractor(d) }).catch(() => {})
   }, [access.checked, access.isAuthenticated, access.profile])
 
   const update = (field: string, value: string) =>
@@ -267,43 +169,23 @@ export default function PostJob() {
 
   const handleScopeGenerated = (scope: string, fields: Partial<ScopeFields>, source?: 'assistant' | 'manual') => {
     setForm(prev => ({ ...prev, description: scope }))
-    setScopeFields(fields)
-    setScopeSource(source || 'assistant')
+    setScopeFields(fields); setScopeSource(source || 'assistant')
   }
 
   const postJob = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!form.title || !form.description || !form.area) {
-      setError('Please fill in all required fields: title, service type, location, and scope description.')
-      return
-    }
-    // Require service type: form.scope (manual/AI selection) OR scopeSource (AI builder used)
-    if (!form.scope && !scopeSource) {
-      setError('Please select a service type above.')
-      return
-    }
-    if (!form.fixed_price) {
-      setError('Please set a fixed price for this job.')
-      return
-    }
-    if (!form.materials) {
-      setError('Please specify who provides materials.')
-      return
-    }
-    setLoading(true)
-    setError('')
+    if (!form.title || !form.description || !form.area) { setError('Please fill in title, service type, location, and scope description.'); return }
+    if (!form.scope && !scopeSource) { setError('Please select a service type above.'); return }
+    if (!form.fixed_price) { setError('Please set a fixed price for this job.'); return }
+    if (!form.materials) { setError('Please specify who provides materials.'); return }
+    setLoading(true); setError('')
 
     try {
-
-      // Upload photos to Supabase Storage first
       const uploadedPhotoUrls: string[] = []
       for (const file of photos) {
         const ext = file.name.split('.').pop() || 'jpg'
         const path = `job-photos/${Date.now()}_${Math.random().toString(36).slice(2)}.${ext}`
-        const { error: uploadError } = await supabase.storage
-          .from('job-photos')
-          .upload(path, file, { contentType: file.type, upsert: false })
-
+        const { error: uploadError } = await supabase.storage.from('job-photos').upload(path, file, { contentType: file.type, upsert: false })
         if (!uploadError) {
           const { data: urlData } = supabase.storage.from('job-photos').getPublicUrl(path)
           if (urlData?.publicUrl) uploadedPhotoUrls.push(urlData.publicUrl)
@@ -311,670 +193,371 @@ export default function PostJob() {
       }
 
       const body: any = {
-        title: form.title,
-        scope: form.scope,
-        description: form.description,
-        area: form.area,
+        title: form.title, scope: form.scope, description: form.description, area: form.area,
         timeline: form.timeline || null,
-        budget_min: parseFloat(form.fixed_price),
-        budget_max: parseFloat(form.fixed_price),
-        materials: form.materials,
-        photos: uploadedPhotoUrls,
-        has_video: false,
-        // ── Structured scope fields from AI Scope Builder ──
+        budget_min: parseFloat(form.fixed_price), budget_max: parseFloat(form.fixed_price),
+        materials: form.materials, photos: uploadedPhotoUrls, has_video: false,
         ...(scopeFields || {}),
       }
       const resolvedPosterId = loggedInContractor?.id || access.contractorProfileId
-      if (resolvedPosterId) {
-        body.poster_id = resolvedPosterId
-        body.contractor_id = resolvedPosterId
-      } else if (form.homeowner_name && form.homeowner_email) {
-        body.homeowner_name = form.homeowner_name
-        body.homeowner_email = form.homeowner_email
+      if (resolvedPosterId) { body.poster_id = resolvedPosterId; body.contractor_id = resolvedPosterId }
+      else if (form.homeowner_name && form.homeowner_email) {
+        body.homeowner_name = form.homeowner_name; body.homeowner_email = form.homeowner_email
         body.homeowner_phone = form.homeowner_phone || null
       }
-      const res = await fetch('/api/jobs', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
-      })
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}))
-        throw new Error(data?.error || `Failed to post job (HTTP ${res.status}).`)
-      }
-      setSubmitted(true)
-      clearDraft()
-    } catch (err: any) {
-      setError(err.message || 'Something went wrong.')
-      setLoading(false)
-    }
+      const res = await fetch('/api/jobs', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
+      if (!res.ok) { const data = await res.json().catch(() => ({})); throw new Error(data?.error || `Failed to post job (HTTP ${res.status}).`) }
+      setSubmitted(true); clearDraft()
+    } catch (err: any) { setError(err.message || 'Something went wrong.'); setLoading(false) }
   }
 
+  // ─── Success state ─────────────────────────────────────────────
   if (submitted) {
     return (
-      <div style={{ backgroundColor: 'var(--color-bg)', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <div style={{ textAlign: 'center', maxWidth: 480, padding: '0 24px' }}>
-          <div style={{ width: 64, height: 64, borderRadius: 18, backgroundColor: 'var(--color-green-soft)', border: '1px solid rgba(16,185,129,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px' }}>
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--color-green)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M5 13l4 4L19 7" />
-            </svg>
+      <div className="ts-app" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '48px 20px' }}>
+        <div style={{ maxWidth: 520, width: '100%', textAlign: 'center' }}>
+          <div style={{ width: 64, height: 64, borderRadius: 18, background: 'rgba(16,185,129,0.12)', border: '1px solid rgba(16,185,129,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px' }}>
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#34D399" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 13l4 4L19 7" /></svg>
           </div>
-          <h1 style={{ fontSize: 26, fontWeight: 800, color: 'var(--color-text)', letterSpacing: '-0.03em', marginBottom: 12 }}>
-            Job posted!
-          </h1>
-          <p style={{ fontSize: 15, color: 'var(--color-text-muted)', lineHeight: 1.65, marginBottom: 32 }}>
-            Contractors in your area will see it and can express interest. You&apos;ll hear from matched contractors directly.
+          <div className="ts-page-kicker">Posted · visible to the network</div>
+          <h1 className="ts-page-title" style={{ marginBottom: 14 }}>Your job is <em>live</em>.</h1>
+          <p className="ts-page-sub" style={{ margin: '0 auto 28px' }}>
+            Approved contractors can now express interest at your fixed price. You&apos;ll review profiles and award the work directly.
           </p>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 10, maxWidth: 280, margin: '0 auto' }}>
-            <a href="/jobs" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '12px 24px', borderRadius: 10, fontSize: 14, fontWeight: 600, backgroundColor: 'var(--color-blue)', color: '#fff', textDecoration: 'none', boxShadow: '0 4px 14px rgba(37,99,235,0.25)' }}>
-              Browse All Jobs
-            </a>
-            {access.isAuthenticated ? (
-              <a href="/dashboard" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '12px 24px', borderRadius: 10, fontSize: 14, fontWeight: 500, backgroundColor: 'var(--color-divider)', color: 'var(--color-text)', border: '1px solid rgba(255,255,255,0.1)', textDecoration: 'none' }}>
-                Go to Dashboard
-              </a>
-            ) : (
-              <a href="/login" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '12px 24px', borderRadius: 10, fontSize: 14, fontWeight: 500, backgroundColor: 'var(--color-divider)', color: 'var(--color-text)', border: '1px solid rgba(255,255,255,0.1)', textDecoration: 'none' }}>
-                Create Free Account
-              </a>
-            )}
+          <div style={{ display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap' }}>
+            <a href="/dashboard" className="ts-action ts-action--primary ts-action--lg">Go to dashboard</a>
+            <a href="/jobs" className="ts-action ts-action--ghost ts-action--lg">Browse open jobs</a>
           </div>
         </div>
       </div>
     )
   }
 
-  // ── Unauthenticated / unapproved state ─────────────────────────────────────
+  // ─── Locked state ──────────────────────────────────────────────
   const isUnauthenticated = !access.checked || (!access.isAuthenticated && !access.checked === false)
   const needsApproval = access.checked && access.isAuthenticated && !access.canPostJobs
 
   if (isUnauthenticated || needsApproval) {
     return (
-      <div style={{ backgroundColor: 'var(--color-bg)', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '40px 24px' }}>
-        <div style={{
-          maxWidth: 480, width: '100%',
-          backgroundColor: 'var(--color-bg-alt)',
-          border: '1px solid rgba(255,255,255,0.1)',
-          borderRadius: 20,
-          padding: '48px 40px',
-          boxShadow: 'var(--ts-shadow-card-hover)',
-          textAlign: 'center',
-          overflow: 'hidden',
-        }}>
-          {/* Orange accent bar */}
-          <div style={{ height: 4, backgroundColor: 'var(--color-orange)', borderRadius: '2px 2px 0 0', margin: '-48px -40px 36px' }} />
-
-          {/* Lock icon */}
-          <div style={{
-            width: 64, height: 64, borderRadius: 18,
-            backgroundColor: 'rgba(245,158,11,0.1)',
-            border: '1px solid rgba(245,158,11,0.2)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            margin: '0 auto 28px',
-          }}>
-            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/>
-            </svg>
-          </div>
-
-          <h2 style={{ fontSize: 22, fontWeight: 800, color: 'var(--color-text)', marginBottom: 10, letterSpacing: '-0.03em' }}>
-            {needsApproval ? 'Application Under Review' : 'Sign In to Post a Job'}
-          </h2>
-          <p style={{ fontSize: 14, color: 'var(--color-text-muted)', lineHeight: 1.7, marginBottom: 32 }}>
+      <div className="ts-app" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '48px 20px' }}>
+        <div style={{ maxWidth: 520, width: '100%' }}>
+          <div className="ts-page-kicker">{needsApproval ? 'Application in review' : 'Contractor access required'}</div>
+          <h1 className="ts-page-title" style={{ marginBottom: 14 }}>
+            {needsApproval ? <>You&apos;re almost <em>in</em>.</> : <>Sign in to <em>post work</em>.</>}
+          </h1>
+          <p className="ts-page-sub" style={{ marginBottom: 28 }}>
             {needsApproval
-              ? "You're almost there. Your TradeSource application is currently being reviewed. Once approved, you'll be able to post overflow work and connect with vetted contractors."
-              : 'Posting jobs requires an approved TradeSource contractor account. Browse open jobs while you wait for approval, or apply if you haven\'t yet.'}
+              ? 'Our team is reviewing your TradeSource application. Once approved, you can post overflow work and connect with vetted contractors.'
+              : 'Posting jobs is limited to approved TradeSource contractors. Browse open jobs while you wait, or apply to join the network.'}
           </p>
 
-          {/* What is this page for */}
-          <div style={{
-            backgroundColor: 'var(--color-surface)',
-            border: '1px solid rgba(255,255,255,0.07)',
-            borderRadius: 12,
-            padding: '16px 20px',
-            marginBottom: 28,
-            textAlign: 'left',
-          }}>
-            <p style={{ fontSize: 11, fontWeight: 700, color: 'var(--color-text-subtle)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 10 }}>What this page does</p>
-            {[
-              'Post overflow work that doesn\'t fit your capacity',
-              'Contractors in your area express interest',
-              'You approve the contractor and award the job',
-            ].map((item, i) => (
-              <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, marginBottom: 7 }}>
-                <div style={{ width: 20, height: 20, borderRadius: 6, backgroundColor: 'var(--color-green-soft)', border: '1px solid rgba(16,185,129,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--color-green)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 13l4 4L19 7"/></svg>
+          <div className="ts-panel" style={{ marginBottom: 22 }}>
+            <div className="ts-section-eyebrow" style={{ marginBottom: 12 }}>What this page does</div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              {[
+                'Post overflow work that does not fit your capacity',
+                'Vetted contractors in your area express interest',
+                'You review profiles and award the job directly',
+              ].map((item, i) => (
+                <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
+                  <div style={{ width: 20, height: 20, borderRadius: 6, background: 'rgba(16,185,129,0.14)', border: '1px solid rgba(16,185,129,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 1 }}>
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#34D399" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
+                  </div>
+                  <span style={{ fontSize: 13, color: 'rgba(248,250,252,0.8)', lineHeight: 1.6 }}>{item}</span>
                 </div>
-                <span style={{ fontSize: 12, color: 'var(--color-text-muted)', lineHeight: 1.55 }}>{item}</span>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
 
-          {/* CTAs */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+          <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
             {needsApproval ? (
               <>
-                <a href="/jobs" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '13px 24px', borderRadius: 10, fontSize: 14, fontWeight: 700, backgroundColor: 'var(--color-blue)', color: '#fff', textDecoration: 'none', boxShadow: '0 4px 14px rgba(37,99,235,0.25)' }}>
-                  Browse Open Jobs While You Wait
-                </a>
-                <a href="/dashboard" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '12px 24px', borderRadius: 10, fontSize: 13, fontWeight: 500, backgroundColor: 'var(--color-surface)', color: 'var(--color-text)', border: '1px solid rgba(255,255,255,0.1)', textDecoration: 'none' }}>
-                  Back to Dashboard
-                </a>
+                <a href="/jobs" className="ts-action ts-action--primary ts-action--lg">Browse open jobs</a>
+                <a href="/dashboard" className="ts-action ts-action--ghost ts-action--lg">Back to dashboard</a>
               </>
             ) : (
               <>
-                <a href="/signin" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '13px 24px', borderRadius: 10, fontSize: 14, fontWeight: 700, backgroundColor: 'var(--color-blue)', color: '#fff', textDecoration: 'none', boxShadow: '0 4px 14px rgba(37,99,235,0.25)' }}>
-                  Sign In
-                </a>
-                <a href="/apply" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '12px 24px', borderRadius: 10, fontSize: 13, fontWeight: 600, backgroundColor: 'var(--color-surface)', color: 'var(--color-text)', border: '1px solid rgba(255,255,255,0.1)', textDecoration: 'none' }}>
-                  Apply for Access
-                </a>
-                <a href="/jobs" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '11px 24px', borderRadius: 10, fontSize: 13, fontWeight: 400, color: 'var(--color-text-muted)', textDecoration: 'none' }}>
-                  Browse jobs first
-                </a>
+                <a href="/signin" className="ts-action ts-action--primary ts-action--lg">Sign in</a>
+                <a href="/apply" className="ts-action ts-action--ghost ts-action--lg">Apply for access</a>
               </>
             )}
           </div>
-
-          <p style={{ fontSize: 11, color: 'var(--color-text-subtle)', marginTop: 24 }}>
-            Not yet a member?{' '}
-            <a href="/apply" style={{ color: 'var(--color-blue)', textDecoration: 'none', fontWeight: 600 }}>Apply for access</a>
-          </p>
         </div>
       </div>
     )
   }
 
+  const preview = {
+    title: form.title || 'Your job title',
+    area: form.area || 'Location',
+    scope: form.scope || 'Service type',
+    price: form.fixed_price ? `$${Number(form.fixed_price).toLocaleString()}` : '$—',
+    description: form.description || 'Scope description will appear here as you build it with the AI or type manually.',
+  }
+
   return (
-    <div style={{ backgroundColor: 'var(--color-bg)', minHeight: '100vh', display: 'flex', alignItems: 'stretch' }}>
-
-      {/* ─── Left Panel ─── */}
-      <div
-        data-postjob-left-panel
-        style={{
-          display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
-          width: '48%', padding: '48px 56px',
-          backgroundColor: 'var(--color-bg-alt)',
-          backgroundImage: 'repeating-linear-gradient(-45deg, transparent, transparent 8px, rgba(255,255,255,0.012) 8px, rgba(255,255,255,0.012) 9px)',
-          borderRight: '1px solid rgba(255,255,255,0.07)',
-          position: 'relative', overflow: 'hidden',
-        }}
-      >
-        <div style={{ position: 'absolute', bottom: -80, right: -80, width: 280, height: 280, borderRadius: '50%', background: 'radial-gradient(circle, rgba(249,115,22,0.06) 0%, transparent 70%)' }} />
-
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <div style={{ width: 30, height: 30, borderRadius: 7, backgroundColor: 'var(--color-blue)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M13 10V3L4 14h7v7l9-11h-7z" />
-            </svg>
-          </div>
-          <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--color-text)' }}>TradeSource</span>
-        </div>
-
-        {/* Draft save — prominent badge at top of form card */}
-        <div style={{
-          display: 'flex', alignItems: 'center', gap: 6,
-          padding: '7px 14px', borderRadius: 20,
-          fontSize: 12, fontWeight: 700,
-          transition: 'all 0.3s',
-          marginBottom: 20,
-          ...(draftStatus === 'saved' ? {
-            backgroundColor: 'rgba(16,185,129,0.1)',
-            color: 'var(--color-green)',
-            border: '1px solid rgba(16,185,129,0.2)',
-          } : draftStatus === 'saving' ? {
-            backgroundColor: 'rgba(37,99,235,0.08)',
-            color: 'var(--color-text-muted)',
-            border: '1px solid rgba(37,99,235,0.12)',
-          } : {
-            backgroundColor: 'rgba(255,255,255,0.04)',
-            color: 'var(--color-text-subtle)',
-            border: '1px solid rgba(255,255,255,0.08)',
-          }),
-        }}>
-          {draftStatus === 'saved' && (
-            <>
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M5 13l4 4L19 7"/>
-              </svg>
-              Draft saved
-              {lastSaved && (
-                <span style={{ fontSize: 11, fontWeight: 400, opacity: 0.75, marginLeft: 2 }}>
-                  · {lastSaved.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}
-                </span>
-              )}
-            </>
-          )}
-          {draftStatus === 'saving' && (
-            <>
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ animation: 'spin 1s linear infinite' }}>
-                <circle cx="12" cy="12" r="10" strokeDasharray="32" strokeDashoffset="8"/>
-              </svg>
-              Saving…
-            </>
-          )}
-          {draftStatus === 'unsaved' && (
-            <>
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
-              </svg>
-              Draft not saved
-            </>
-          )}
-        </div>
+    <div className="ts-postjob">
+      {/* ─── Left: brand, pitch, live preview ─── */}
+      <aside className="ts-postjob-left">
+        <a href="/" className="ts-app-brand" style={{ color: '#F8FAFC' }}>Trade<span>Source</span></a>
 
         <div>
-          <div style={{ width: 32, height: 3, borderRadius: 2, backgroundColor: 'var(--color-orange)', marginBottom: 20 }} />
-          <h1 style={{ fontSize: 'clamp(28px, 3.5vw, 44px)', fontWeight: 800, color: 'var(--color-text)', letterSpacing: '-0.03em', lineHeight: 1.1, marginBottom: 16 }}>
+          <div className="ts-page-kicker" style={{ marginBottom: 14 }}>Post overflow work · Phase 1</div>
+          <h1 className="ts-postjob-title">
             Route overflow work<br />
-            <span style={{ color: 'var(--color-blue)' }}>to vetted painters.</span>
+            <em>to vetted painters.</em>
           </h1>
-          <p style={{ fontSize: 15, color: 'var(--color-text-muted)', lineHeight: 1.7, marginBottom: 32 }}>
+          <p className="ts-postjob-sub">
             Post a fixed-price scope and let qualified painters in the network come to you. No bidding, no ads, no chasing leads.
           </p>
+        </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-            {[
-              { title: 'Network of vetted painters', sub: 'Every contractor is license + insurance verified before joining' },
-              { title: 'Fixed rate only', sub: 'Contractors respond knowing the price upfront — no renegotiation' },
-              { title: 'You approve the contractor', sub: 'Review profiles, ratings, and availability before awarding' },
-            ].map(({ title, sub }) => (
-              <div key={title} style={{ display: 'flex', alignItems: 'flex-start', gap: 14 }}>
-                <div style={{ width: 36, height: 36, borderRadius: 10, backgroundColor: 'var(--color-green-soft)', border: '1px solid rgba(16,185,129,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-green)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M5 13l4 4L19 7" />
-                  </svg>
-                </div>
-                <div>
-                  <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--color-text)', marginBottom: 2 }}>{title}</div>
-                  <div style={{ fontSize: 12, color: 'var(--color-text-muted)' }}>{sub}</div>
-                </div>
+        <div className="ts-postjob-bullets">
+          {[
+            { t: 'Network of vetted painters', s: 'Every contractor is license + insurance verified before joining' },
+            { t: 'Fixed rate only',             s: 'Contractors respond knowing the price up front — no renegotiation' },
+            { t: 'You approve the contractor',  s: 'Review profiles, ratings, and availability before awarding' },
+          ].map(b => (
+            <div key={b.t} className="ts-postjob-bullet">
+              <div className="ts-postjob-bullet-icon">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round"><path d="M5 13l4 4L19 7"/></svg>
               </div>
-            ))}
+              <div>
+                <div className="ts-postjob-bullet-title">{b.t}</div>
+                <div className="ts-postjob-bullet-sub">{b.s}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Live preview mockup — mirrors homepage mk-* language */}
+        <div className="ts-postjob-preview">
+          <div className="mk-chrome">
+            <div className="mk-dots"><span/><span/><span/></div>
+            <div className="mk-chrome-title">Post overflow work · preview</div>
+          </div>
+          <div className="mk-body mk-body-tight">
+            <div className="mk-field">
+              <div className="mk-label">Title</div>
+              <div className="mk-input" style={{ fontWeight: 600 }}>{preview.title}</div>
+            </div>
+            <div className="mk-row-2">
+              <div className="mk-field"><div className="mk-label">Location</div><div className="mk-input">{preview.area}</div></div>
+              <div className="mk-field"><div className="mk-label">Fixed price</div><div className="mk-input mk-input-price">{preview.price}</div></div>
+            </div>
+            <div className="mk-field">
+              <div className="mk-label">Scope</div>
+              <div className="mk-input mk-input-tall" style={{ maxHeight: 76, overflow: 'hidden' }}>{preview.description}</div>
+            </div>
           </div>
         </div>
 
-        <span style={{ fontSize: 11, color: 'var(--color-text-subtle)' }}>
-          Phase 1 · Montgomery/Bucks/Delaware/Philadelphia
-        </span>
-      </div>
+        <div className="ts-postjob-foot">Phase 1 · Philadelphia · Montgomery · Bucks · Delaware</div>
+      </aside>
 
-      {/* ─── Right Panel — Form ─── */}
-      <div data-postjob-form-panel style={{ flex: 1, display: 'flex', alignItems: 'flex-start', justifyContent: 'center', padding: '56px 48px', overflowY: 'auto' }}>
-        <div style={{ width: '100%', maxWidth: 560 }}>
-
-          <div style={{ marginBottom: 28 }}>
-            <h2 style={{ fontSize: 22, fontWeight: 800, color: 'var(--color-text)', letterSpacing: '-0.03em', marginBottom: 6 }}>
-              Post Overflow Work
-            </h2>
-            <p style={{ fontSize: 14, color: 'var(--color-text-muted)', lineHeight: 1.6 }}>
-              Share a fixed-price scope with painters in the network. No bidding, no leads, no ads.
-            </p>
-          </div>
-
-          <div className="form-card" style={{ borderRadius: 14, overflow: 'hidden', boxShadow: 'var(--ts-shadow-card)' }}>
-            <div style={{ height: 4, backgroundColor: 'var(--color-blue)' }} />
-
-            <div style={{ padding: '28px 32px' }}>
-
-              {error && (
-                <div style={{ marginBottom: 16, padding: '12px 16px', borderRadius: 10, fontSize: 13, backgroundColor: 'var(--color-red-soft)', border: '1px solid var(--color-border)', color: 'var(--color-red)', marginTop: -8 }}>
-                  {error}
-                </div>
-              )}
-
-              <form onSubmit={postJob} style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
-
-                {/* Title + Scope */}
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-                  <div>
-                    <label htmlFor="job-title" style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>
-                      Job Title <span style={{ color: 'var(--color-red)' }}>*</span>
-                    </label>
-                    <input
-                      id="job-title"
-                      name="title"
-                      type="text"
-                      value={form.title}
-                      onChange={e => update('title', e.target.value)}
-                      placeholder="e.g. Interior Repaint — 3BR, Manayunk"
-                      required
-                      style={{ width: '100%', padding: '11px 14px', borderRadius: 10, fontSize: 14, border: '1.5px solid var(--color-input-border)', outline: 'none', transition: 'border-color 0.15s', color: 'var(--color-text)', backgroundColor: '#fff' }}
-                      onFocus={e => e.target.style.borderColor = 'var(--color-blue)'}
-                      onBlur={e => e.target.style.borderColor = 'var(--color-input-border)'}
-                    />
-                  </div>
-                  <div>
-                    <label htmlFor="job-scope" style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>
-                      Service Type <span style={{ color: 'var(--color-red)' }}>*</span>
-                    </label>
-                    <select
-                      id="job-scope"
-                      name="scope"
-                      value={form.scope}
-                      onChange={e => {
-                        const val = e.target.value
-                        update('scope', val)
-                        setForm(prev => ({ ...prev, description: '', scope: val }))
-                        setScopeSource(null)
-                      }}
-                      required
-                      style={{ width: '100%', padding: '11px 14px', borderRadius: 10, fontSize: 14, border: '1.5px solid var(--color-input-border)', outline: 'none', transition: 'border-color 0.15s', color: 'var(--color-text)', cursor: 'pointer' }}
-                      onFocus={e => e.target.style.borderColor = 'var(--color-blue)'}
-                      onBlur={e => e.target.style.borderColor = 'var(--color-input-border)'}
-                    >
-                      <option value="">Select type…</option>
-                      {TRADE_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
-                    </select>
-                  </div>
-                </div>
-
-                {/* Location + Timeline */}
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-                  <div>
-                    <label htmlFor="job-area" style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>
-                      Job Location <span style={{ color: 'var(--color-red)' }}>*</span>
-                    </label>
-                    <input
-                      id="job-area"
-                      name="area"
-                      type="text"
-                      value={form.area}
-                      onChange={e => update('area', e.target.value)}
-                      placeholder="e.g. Manayunk, Philadelphia"
-                      required
-                      style={{ width: '100%', padding: '11px 14px', borderRadius: 10, fontSize: 14, border: '1.5px solid var(--color-input-border)', outline: 'none', transition: 'border-color 0.15s', color: 'var(--color-text)', backgroundColor: '#fff' }}
-                      onFocus={e => e.target.style.borderColor = 'var(--color-blue)'}
-                      onBlur={e => e.target.style.borderColor = 'var(--color-input-border)'}
-                    />
-                  </div>
-                  <div>
-                    <label htmlFor="job-timeline" style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>
-                      Timeline
-                    </label>
-                    <select
-                      id="job-timeline"
-                      name="timeline"
-                      value={form.timeline}
-                      onChange={e => update('timeline', e.target.value)}
-                      style={{ width: '100%', padding: '11px 14px', borderRadius: 10, fontSize: 14, border: '1.5px solid var(--color-input-border)', outline: 'none', transition: 'border-color 0.15s', color: 'var(--color-text)', cursor: 'pointer' }}
-                      onFocus={e => e.target.style.borderColor = 'var(--color-blue)'}
-                      onBlur={e => e.target.style.borderColor = 'var(--color-input-border)'}
-                    >
-                      <option value="">Select timeline…</option>
-                      {TIMELINE_OPTIONS.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
-                    </select>
-                  </div>
-                </div>
-
-                {/* Fixed Price */}
-                <div>
-                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 4 }}>
-                    Fixed Price <span style={{ color: 'var(--color-red)' }}>*</span>
-                  </label>
-                  <p style={{ fontSize: 12, color: 'var(--color-text-subtle)', marginBottom: 10 }}>
-                    One price. No bidding. Contractors who accept will commit to this amount.
-                  </p>
-                  <div style={{ position: 'relative', maxWidth: 220 }}>
-                    <span style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', fontSize: 16, color: 'var(--color-text-muted)', fontWeight: 600, pointerEvents: 'none' }}>$</span>
-                    <input
-                      id="job-price"
-                      type="text"
-                      inputMode="numeric"
-                      value={form.fixed_price}
-                      onChange={e => update('fixed_price', e.target.value)}
-                      placeholder="0"
-                      required
-                      style={{ width: '100%', paddingLeft: 34, paddingRight: 14, paddingTop: 11, paddingBottom: 11, borderRadius: 10, fontSize: 20, fontWeight: 700, border: '1.5px solid var(--color-input-border)', outline: 'none', transition: 'border-color 0.15s', color: 'var(--color-text)', letterSpacing: '-0.02em' }}
-                      onFocus={e => e.target.style.borderColor = 'var(--color-blue)'}
-                      onBlur={e => e.target.style.borderColor = 'var(--color-input-border)'}
-                    />
-                    <span style={{ position: 'absolute', right: 14, top: '50%', transform: 'translateY(-50%)', fontSize: 13, color: 'var(--color-text-subtle)', pointerEvents: 'none' }}>total</span>
-                  </div>
-                </div>
-
-                {/* Materials */}
-                <div>
-                  <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 4 }}>
-                    Materials <span style={{ color: 'var(--color-red)' }}>*</span>
-                  </label>
-                  <p style={{ fontSize: 12, color: 'var(--color-text-subtle)', marginBottom: 10 }}>
-                    Who is providing paint and supplies?
-                  </p>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                    {MATERIALS_OPTIONS.map(opt => (
-                      <button
-                        key={opt.value}
-                        type="button"
-                        onClick={() => setForm(prev => ({ ...prev, materials: opt.value }))}
-                        style={{
-                          display: 'flex', alignItems: 'center', gap: 12,
-                          padding: '11px 14px', borderRadius: 10,
-                          cursor: 'pointer', transition: 'all 0.15s', textAlign: 'left',
-                          border: form.materials === opt.value ? '1.5px solid var(--color-chip-checked-border)' : '2px solid var(--color-chip-unchecked-border)',
-                          backgroundColor: form.materials === opt.value ? 'var(--color-chip-checked-bg)' : 'var(--color-chip-unchecked)',
-                          boxShadow: form.materials === opt.value ? '0 0 0 3px rgba(59,130,246,0.1)' : 'none',
-                        }}
-                      >
-                        <div style={{
-                          width: 18, height: 18, borderRadius: 4,
-                          border: form.materials === opt.value ? '2px solid var(--color-chip-checked-border)' : '2px solid var(--color-chip-unchecked-border)',
-                          backgroundColor: form.materials === opt.value ? 'var(--color-chip-checked-border)' : 'rgba(255,255,255,0.15)',
-                          display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
-                        }}>
-                          {form.materials === opt.value && (
-                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                              <path d="M5 13l4 4L19 7" />
-                            </svg>
-                          )}
-                        </div>
-                        <div>
-                          <div style={{ fontSize: 13, fontWeight: 600, color: form.materials === opt.value ? 'var(--color-blue-hover)' : 'var(--color-text-muted)' }}>{opt.label}</div>
-                          <div style={{ fontSize: 11, color: 'var(--color-text-subtle)', marginTop: 1 }}>{opt.sub}</div>
-                        </div>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* ── AI SCOPE BUILDER — replaces Description textarea ── */}
-                <div>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
-                    <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-                      Job Description <span style={{ color: 'var(--color-red)' }}>*</span>
-                    </label>
-                    {form.description && (
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                        <div style={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: 'var(--color-green)' }} />
-                        <span style={{ fontSize: 11, color: 'var(--color-green)', fontWeight: 600 }}>
-                          {scopeSource === 'assistant' ? 'AI-generated' : 'Manual'}
-                        </span>
-                      </div>
-                    )}
-                  </div>
-                  {!form.description && form.scope && (
-                    <div style={{ backgroundColor: 'rgba(16,185,105,0.06)', border: '1px solid rgba(16,185,105,0.15)', borderRadius: 8, padding: '8px 12px', marginBottom: 10, display: 'flex', alignItems: 'flex-start', gap: 8 }}>
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, marginTop: 2 }}>
-                      <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
-                    </svg>
-                    <p style={{ fontSize: 11, color: 'var(--color-text-muted)', lineHeight: 1.5, margin: 0 }}>
-                      <strong style={{ color: 'var(--color-green)', fontWeight: 600 }}>Tip:</strong> Use the AI Scope Builder below to write a complete, professional scope — contractors respond faster to detailed scopes.
-                    </p>
-                  </div>
-                  )}
-
-                  {/* Scope assistant: activates when service type is selected */}
-                  {form.scope ? (
-                    <div style={{ marginBottom: form.description ? 12 : 0 }}>
-                      <ScopeAssistant
-                        tradeType={form.scope}
-                        onGenerated={handleScopeGenerated}
-                      />
-                      {/* ── Manual fallback: always available below the AI builder ── */}
-                      <div style={{ marginTop: 10, paddingTop: 10, borderTop: '1px solid var(--color-border)' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
-                          <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--color-text-muted)' }}>Or describe the job yourself</span>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              // Focus the manual textarea below
-                              const el = document.getElementById('manual-job-description')
-                              if (el) el.focus()
-                            }}
-                            style={{ fontSize: 11, fontWeight: 600, color: 'var(--color-blue)', background: 'none', border: 'none', cursor: 'pointer', padding: '2px 0' }}
-                          >
-                            Write manually ↓
-                          </button>
-                        </div>
-                        <textarea
-                          id="manual-job-description"
-                          value={form.description || ''}
-                          onChange={e => handleScopeGenerated(e.target.value, {}, 'manual')}
-                          placeholder="Describe the work — scope, prep, surfaces, expectations, anything the contractor needs to know…"
-                          rows={4}
-                          style={{
-                            width: '100%',
-                            padding: '11px 14px',
-                            borderRadius: 10,
-                            fontSize: 13,
-                            border: '1.5px solid var(--color-input-border)',
-                            backgroundColor: 'var(--color-input-bg)',
-                            color: 'var(--color-input-text)',
-                            fontFamily: 'inherit',
-                            lineHeight: 1.6,
-                            resize: 'vertical',
-                            outline: 'none',
-                            transition: 'border-color 0.15s',
-                          }}
-                          onFocus={e => e.target.style.borderColor = 'var(--color-blue)'}
-                          onBlur={e => e.target.style.borderColor = 'var(--color-input-border)'}
-                        />
-                      </div>
-                    </div>
-                  ) : (
-                    <div style={{
-                      padding: '14px 16px',
-                      borderRadius: 10,
-                      backgroundColor: 'var(--color-surface)',
-                      border: '1px solid var(--color-border)',
-                      fontSize: 12,
-                      color: 'var(--color-text-subtle)',
-                      textAlign: 'center',
-                    }}>
-                      Select a service type above to build your scope description.
-                    </div>
-                  )}
-
-                  {/* Scope summary visible once scope is built */}
-                  {form.description && (
-                    <div style={{
-                      padding: '12px 16px',
-                      borderRadius: 10,
-                      backgroundColor: 'var(--color-surface)',
-                      border: '1px solid var(--color-border)',
-                      marginTop: 10,
-                    }}>
-                      <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>Scope summary</div>
-                      <p style={{ fontSize: 13, color: 'var(--color-text)', lineHeight: 1.65, margin: 0, whiteSpace: 'pre-wrap' }}>{form.description}</p>
-                    </div>
-                  )}
-                </div>
-
-                {/* ── PHOTOS — real upload wired to Supabase Storage ── */}
-                <div style={{
-                  padding: '16px 18px',
-                  borderRadius: 12,
-                  backgroundColor: 'var(--color-surface)',
-                  border: '1px solid var(--color-border)',
-                }}>
-                  <PhotoUploader photos={photos} onChange={setPhotos} />
-                </div>
-
-                {/* ── VIDEO — not wired, clearly labeled ── */}
-                <div style={{
-                  padding: '16px 18px',
-                  borderRadius: 12,
-                  backgroundColor: 'var(--color-surface)',
-                  border: '1px solid var(--color-border)',
-                  opacity: 0.65,
-                }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                    <div style={{ width: 36, height: 36, borderRadius: 8, backgroundColor: 'var(--color-surface-raised)', border: '1px solid var(--color-border)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-subtle)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <polygon points="23 7 16 12 23 17 23 7" /><rect x="1" y="5" width="15" height="14" rx="2" />
-                      </svg>
-                    </div>
-                    <div>
-                      <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--color-text-muted)' }}>Job Video</div>
-                      <div style={{ fontSize: 12, color: 'var(--color-text-subtle)' }}>Video uploads — coming soon</div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Contact */}
-                {!loggedInContractor && (
-                  <>
-                    <div style={{ height: 1, backgroundColor: 'var(--color-surface)', margin: '4px 0' }} />
-                    <div>
-                      <p style={{ fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 10 }}>
-                        Contact Info
-                      </p>
-                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-                        <input
-                          type="text"
-                          value={form.homeowner_name}
-                          onChange={e => update('homeowner_name', e.target.value)}
-                          placeholder="Your name"
-                          style={{ padding: '11px 14px', borderRadius: 10, fontSize: 14, border: '1.5px solid var(--color-input-border)', outline: 'none', transition: 'border-color 0.15s', color: 'var(--color-text)', backgroundColor: '#fff' }}
-                          onFocus={e => e.target.style.borderColor = 'var(--color-blue)'}
-                          onBlur={e => e.target.style.borderColor = 'var(--color-input-border)'}
-                        />
-                        <input
-                          type="email"
-                          value={form.homeowner_email}
-                          onChange={e => update('homeowner_email', e.target.value)}
-                          placeholder="Email address"
-                          style={{ padding: '11px 14px', borderRadius: 10, fontSize: 14, border: '1.5px solid var(--color-input-border)', outline: 'none', transition: 'border-color 0.15s', color: 'var(--color-text)', backgroundColor: '#fff' }}
-                          onFocus={e => e.target.style.borderColor = 'var(--color-blue)'}
-                          onBlur={e => e.target.style.borderColor = 'var(--color-input-border)'}
-                        />
-                      </div>
-                    </div>
-                  </>
-                )}
-
-                {/* Submit */}
-                <button
-                  type="submit"
-                  disabled={loading}
-                  style={{
-                    width: '100%', padding: '14px', borderRadius: 10,
-                    fontSize: 14, fontWeight: 700, color: '#fff',
-                    backgroundColor: 'var(--color-blue)',
-                    border: 'none', cursor: loading ? 'default' : 'pointer',
-                    boxShadow: loading ? 'none' : '0 4px 14px rgba(37,99,235,0.25)',
-                    letterSpacing: '0.01em', transition: 'background 0.2s, box-shadow 0.2s', marginTop: 4,
-                  }}
-                  onMouseEnter={e => { if (!loading) { const el = e.currentTarget as HTMLElement; el.style.background = 'var(--color-blue-hover)'; el.style.boxShadow = '0 6px 18px rgba(37,99,235,0.35)' }}}
-                  onMouseLeave={e => { if (!loading) { const el = e.currentTarget as HTMLElement; el.style.background = 'var(--color-blue)'; el.style.boxShadow = '0 4px 14px rgba(37,99,235,0.25)' }}}
-                >
-                  {loading ? (
-                    <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
-                      <span style={{ width: 14, height: 14, borderRadius: '50%', border: '2px solid rgba(255,255,255,0.4)', borderTopColor: '#fff', display: 'block', animation: 'spin 1s linear infinite' }} />
-                      Posting…
-                    </span>
-                  ) : 'Post Job'}
-                </button>
-
-                <div style={{ textAlign: 'center' }}>
-                  <a href="/" style={{ fontSize: 13, color: 'var(--color-text-subtle)', textDecoration: 'none' }}>
-                    ← Back to home
-                  </a>
-                </div>
-
-              </form>
+      {/* ─── Right: the form ─── */}
+      <section className="ts-postjob-right">
+        <div className="ts-postjob-right-inner">
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginBottom: 24 }}>
+            <div>
+              <div className="ts-page-kicker">Post a job</div>
+              <h2 style={{ fontSize: 26, fontWeight: 800, letterSpacing: '-0.03em', color: 'var(--color-text)', marginTop: 8 }}>
+                Share your scope with the network.
+              </h2>
+            </div>
+            <div className={`ts-draft-badge ${draftStatus === 'saved' ? 'is-saved' : draftStatus === 'saving' ? 'is-saving' : ''}`}>
+              {draftStatus === 'saved' ? (
+                <>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round"><path d="M5 13l4 4L19 7"/></svg>
+                  Draft saved
+                </>
+              ) : draftStatus === 'saving' ? (
+                <>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} style={{ animation: 'spin 1s linear infinite' }}><circle cx="12" cy="12" r="10" strokeDasharray="32" strokeDashoffset="8"/></svg>
+                  Saving…
+                </>
+              ) : 'Draft unsaved'}
             </div>
           </div>
+
+          {error && (
+            <div className="ts-chip ts-chip--err" style={{ padding: '10px 14px', borderRadius: 10, fontSize: 13, fontWeight: 500, marginBottom: 16 }}>{error}</div>
+          )}
+
+          <form onSubmit={postJob} style={{ display: 'flex', flexDirection: 'column', gap: 28 }}>
+
+            {/* Section 1 — Basics */}
+            <div>
+              <div className="ts-section-eyebrow" style={{ marginBottom: 14 }}>1 · Job basics</div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+                <div className="ts-field">
+                  <label className="ts-field-label" htmlFor="job-title">Title <span className="ts-field-req">*</span></label>
+                  <input id="job-title" name="title" type="text" className="ts-input"
+                    value={form.title} onChange={e => update('title', e.target.value)}
+                    placeholder="Interior repaint — 3BR, Manayunk" required />
+                </div>
+                <div className="ts-field">
+                  <label className="ts-field-label" htmlFor="job-scope">Service type <span className="ts-field-req">*</span></label>
+                  <select id="job-scope" className="ts-select"
+                    value={form.scope}
+                    onChange={e => { const val = e.target.value; update('scope', val); setForm(prev => ({ ...prev, description: '', scope: val })); setScopeSource(null) }}
+                    required>
+                    <option value="">Select type…</option>
+                    {TRADE_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
+                  </select>
+                </div>
+                <div className="ts-field">
+                  <label className="ts-field-label" htmlFor="job-area">Location <span className="ts-field-req">*</span></label>
+                  <input id="job-area" name="area" type="text" className="ts-input"
+                    value={form.area} onChange={e => update('area', e.target.value)}
+                    placeholder="Manayunk, Philadelphia" required />
+                </div>
+                <div className="ts-field">
+                  <label className="ts-field-label" htmlFor="job-timeline">Timeline</label>
+                  <select id="job-timeline" className="ts-select"
+                    value={form.timeline} onChange={e => update('timeline', e.target.value)}>
+                    <option value="">Flexible…</option>
+                    {TIMELINE_OPTIONS.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            {/* Section 2 — Price + materials */}
+            <div>
+              <div className="ts-section-eyebrow" style={{ marginBottom: 14 }}>2 · Price &amp; materials</div>
+              <div className="ts-field" style={{ marginBottom: 18 }}>
+                <label className="ts-field-label">Fixed price <span className="ts-field-req">*</span></label>
+                <div className="ts-field-hint">One price. No bidding. Contractors accept at this amount.</div>
+                <div style={{ position: 'relative', maxWidth: 260 }}>
+                  <span style={{ position: 'absolute', left: 16, top: '50%', transform: 'translateY(-50%)', fontSize: 16, color: 'rgba(248,250,252,0.5)', fontWeight: 600, pointerEvents: 'none' }}>$</span>
+                  <input id="job-price" type="text" inputMode="numeric" className="ts-input"
+                    value={form.fixed_price} onChange={e => update('fixed_price', e.target.value)}
+                    placeholder="0" required
+                    style={{ paddingLeft: 36, fontSize: 22, fontWeight: 700, letterSpacing: '-0.02em' }} />
+                  <span style={{ position: 'absolute', right: 16, top: '50%', transform: 'translateY(-50%)', fontSize: 12, color: 'rgba(248,250,252,0.4)', pointerEvents: 'none' }}>total</span>
+                </div>
+              </div>
+
+              <div className="ts-field">
+                <label className="ts-field-label">Materials <span className="ts-field-req">*</span></label>
+                <div className="ts-field-hint">Who is providing paint and supplies?</div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  {MATERIALS_OPTIONS.map(opt => {
+                    const active = form.materials === opt.value
+                    return (
+                      <button key={opt.value} type="button"
+                        onClick={() => setForm(prev => ({ ...prev, materials: opt.value }))}
+                        style={{
+                          display: 'flex', alignItems: 'flex-start', gap: 12,
+                          padding: '14px 16px', borderRadius: 12, cursor: 'pointer', textAlign: 'left',
+                          border: active ? '1px solid rgba(96,165,250,0.45)' : '1px solid rgba(255,255,255,0.08)',
+                          background: active ? 'rgba(96,165,250,0.08)' : 'rgba(255,255,255,0.025)',
+                          transition: 'all .15s',
+                        }}>
+                        <div style={{ width: 18, height: 18, borderRadius: 6, flexShrink: 0, marginTop: 2,
+                          border: active ? '1px solid #60A5FA' : '1px solid rgba(255,255,255,0.2)',
+                          background: active ? '#60A5FA' : 'transparent',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          {active && <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth={3.5}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>}
+                        </div>
+                        <div>
+                          <div style={{ fontSize: 13, fontWeight: 600, color: active ? '#93C5FD' : 'var(--color-text)' }}>{opt.label}</div>
+                          <div style={{ fontSize: 12, color: 'rgba(248,250,252,0.5)', marginTop: 2 }}>{opt.sub}</div>
+                        </div>
+                      </button>
+                    )
+                  })}
+                </div>
+              </div>
+            </div>
+
+            {/* Section 3 — Scope */}
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
+                <div className="ts-section-eyebrow">3 · Scope</div>
+                {form.description && (
+                  <span className={`ts-chip ${scopeSource === 'assistant' ? 'ts-chip--info' : 'ts-chip--ok'}`}>
+                    {scopeSource === 'assistant' ? 'AI generated' : 'Manual'}
+                  </span>
+                )}
+              </div>
+
+              {form.scope ? (
+                <div className="ts-panel">
+                  <ScopeAssistant tradeType={form.scope} onGenerated={handleScopeGenerated} />
+                  <div style={{ marginTop: 14, paddingTop: 14, borderTop: '1px solid rgba(255,255,255,0.07)' }}>
+                    <div className="ts-field-label" style={{ marginBottom: 8 }}>Or describe the job yourself</div>
+                    <textarea id="manual-job-description" className="ts-textarea"
+                      value={form.description || ''}
+                      onChange={e => handleScopeGenerated(e.target.value, {}, 'manual')}
+                      placeholder="Describe the scope — prep, surfaces, coats, anything the contractor needs to know…"
+                      rows={5} />
+                  </div>
+                  {form.description && (
+                    <div style={{ marginTop: 14, padding: '14px 16px', borderRadius: 12, background: 'rgba(16,185,129,0.06)', border: '1px solid rgba(16,185,129,0.18)' }}>
+                      <div className="ts-field-label" style={{ color: '#34D399', marginBottom: 6 }}>Scope summary</div>
+                      <p style={{ fontSize: 13, color: 'rgba(248,250,252,0.85)', lineHeight: 1.65, margin: 0, whiteSpace: 'pre-wrap' }}>{form.description}</p>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="ts-panel" style={{ textAlign: 'center', color: 'rgba(248,250,252,0.5)', fontSize: 13 }}>
+                  Select a service type above to build your scope.
+                </div>
+              )}
+            </div>
+
+            {/* Section 4 — Photos */}
+            <div>
+              <div className="ts-section-eyebrow" style={{ marginBottom: 14 }}>4 · Photos</div>
+              <div className="ts-panel">
+                <PhotoUploader photos={photos} onChange={setPhotos} />
+              </div>
+            </div>
+
+            {/* Contact (guests only) */}
+            {!loggedInContractor && (
+              <div>
+                <div className="ts-section-eyebrow" style={{ marginBottom: 14 }}>5 · Contact</div>
+                <div className="ts-panel" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+                  <div className="ts-field">
+                    <label className="ts-field-label">Your name</label>
+                    <input type="text" className="ts-input" value={form.homeowner_name}
+                      onChange={e => update('homeowner_name', e.target.value)} placeholder="Full name" />
+                  </div>
+                  <div className="ts-field">
+                    <label className="ts-field-label">Email</label>
+                    <input type="email" className="ts-input" value={form.homeowner_email}
+                      onChange={e => update('homeowner_email', e.target.value)} placeholder="you@company.com" />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Submit */}
+            <div style={{ display: 'flex', gap: 12, alignItems: 'center', marginTop: 4 }}>
+              <button type="submit" disabled={loading} className="ts-action ts-action--primary ts-action--lg" style={{ flex: 1 }}>
+                {loading ? (
+                  <>
+                    <span style={{ width: 14, height: 14, borderRadius: '50%', border: '2px solid rgba(6,16,31,0.3)', borderTopColor: '#06101F', display: 'block', animation: 'spin 1s linear infinite' }} />
+                    Posting…
+                  </>
+                ) : (
+                  <>
+                    Post job
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+                  </>
+                )}
+              </button>
+              <a href="/dashboard" className="ts-action ts-action--ghost ts-action--lg">Cancel</a>
+            </div>
+
+            <div style={{ textAlign: 'center', fontSize: 12, color: 'rgba(248,250,252,0.4)' }}>
+              Visible only to approved network contractors.
+            </div>
+
+          </form>
 
           <FloatingAssistant
             route="/post-job"
@@ -985,7 +568,7 @@ export default function PostJob() {
             isLoggedIn={!!loggedInContractor || access.isAuthenticated}
           />
         </div>
-      </div>
+      </section>
     </div>
   )
 }
