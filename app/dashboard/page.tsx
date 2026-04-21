@@ -669,7 +669,7 @@ export default function Dashboard() {
             <div style={{ flex: 1, minWidth: 280 }}>
               <div className="ts-page-kicker" style={{ color: '#34D399', marginBottom: 10 }}>Welcome to TradeSource</div>
               <h2 style={{ fontSize: 22, fontWeight: 800, color: 'var(--color-text)', letterSpacing: '-0.03em', marginBottom: 8, lineHeight: 1.15 }}>
-                Post your first <em style={{ fontStyle: 'italic', color: '#93C5FD', fontFamily: "'Iowan Old Style', 'Source Serif Pro', Georgia, serif", fontWeight: 500 }}>overflow job</em>.
+                Post your first <em style={{ fontStyle: 'normal', color: '#93C5FD', fontWeight: 700 }}>overflow job</em>.
               </h2>
               <p style={{ fontSize: 13, color: 'rgba(248,250,252,0.6)', lineHeight: 1.65, marginBottom: 16, maxWidth: 520 }}>
                 Other contractors start expressing interest the moment your job goes live. The faster you post, the sooner you connect.

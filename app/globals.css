@@ -5102,10 +5102,19 @@ main,
   margin-bottom: 12px;
 }
 .ts-page-title em {
-  font-style: italic; font-weight: 500;
-  color: #93C5FD; font-family: 'Iowan Old Style', 'Source Serif Pro', Georgia, serif;
+  font-style: normal;
+  font-weight: 700;
+  background: linear-gradient(135deg, #93C5FD 0%, #60A5FA 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
-[data-theme="light"] .ts-page-title em { color: #3B82F6; }
+[data-theme="light"] .ts-page-title em {
+  background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
 .ts-page-sub {
   font-size: 15px; line-height: 1.65;
   color: rgba(248,250,252,0.55);
@@ -5490,8 +5499,12 @@ main,
   color: #F8FAFC; margin-bottom: 16px;
 }
 .ts-postjob-title em {
-  font-style: italic; font-weight: 500;
-  color: #93C5FD; font-family: 'Iowan Old Style', 'Source Serif Pro', Georgia, serif;
+  font-style: normal;
+  font-weight: 700;
+  background: linear-gradient(135deg, #93C5FD 0%, #60A5FA 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 .ts-postjob-sub {
   font-size: 15px; color: rgba(248,250,252,0.6); line-height: 1.7;
@@ -5799,9 +5812,8 @@ main,
   color: #F8FAFC;
 }
 .ts-app-hero-title em {
-  font-style: italic;
-  font-weight: 500;
-  font-family: 'Iowan Old Style', 'Source Serif Pro', Georgia, serif;
+  font-style: normal;
+  font-weight: 700;
   background: linear-gradient(135deg, #93C5FD 0%, #60A5FA 100%);
   -webkit-background-clip: text;
   background-clip: text;

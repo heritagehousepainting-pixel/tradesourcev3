@@ -38,7 +38,7 @@ export default function ReviewJobModal({ isOpen, job, onSubmit, onSkip, onClose 
           <div className="ts-modal-head">
             <div>
               <div className="ts-page-kicker" style={{ color: '#FBBF24', marginBottom: 10 }}>Mark complete &amp; review</div>
-              <h2 className="ts-modal-title">How was <em style={{ fontStyle: 'italic', color: '#93C5FD', fontFamily: "'Iowan Old Style', 'Source Serif Pro', Georgia, serif", fontWeight: 500 }}>{job.title}</em>?</h2>
+              <h2 className="ts-modal-title">How was <em style={{ fontStyle: 'normal', color: '#93C5FD', fontWeight: 700 }}>{job.title}</em>?</h2>
               {job.area && <p className="ts-modal-sub">{job.area}</p>}
             </div>
             <button onClick={onClose} className="ts-modal-close" aria-label="Close">

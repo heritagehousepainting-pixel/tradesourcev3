@@ -57,7 +57,7 @@ export default function QuickAvailabilityModal({ isOpen, onClose, onSuccess, use
               <div className="ts-page-kicker" style={{ marginBottom: 10 }}>Quick availability</div>
               <h2 className="ts-modal-title">
                 Tell the network you have a{' '}
-                <em style={{ fontStyle: 'italic', color: '#93C5FD', fontFamily: "'Iowan Old Style', 'Source Serif Pro', Georgia, serif", fontWeight: 500 }}>gap</em>.
+                <em style={{ fontStyle: 'normal', color: '#93C5FD', fontWeight: 700 }}>gap</em>.
               </h2>
               <p className="ts-modal-sub">Get matched to overflow work from nearby contractors.</p>
             </div>
