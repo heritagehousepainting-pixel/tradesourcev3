@@ -6199,3 +6199,311 @@ main,
   background: rgba(255,255,255,0.82);
   border-bottom-color: rgba(15,23,42,0.06);
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   MOBILE POLISH PASS — mobile-only, desktop untouched
+   All selectors gated inside max-width media queries.
+   Goal: consistent rhythm, breathing room, tap targets, calm stacking.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 640px) {
+
+  /* ── Global safety: prevent horizontal bleed from halos & auroras ──────── */
+  html, body { overflow-x: hidden; }
+  .ts-app, .ts-postjob { overflow-x: clip; }
+
+  /* ── App shell: consistent gutter & vertical rhythm ────────────────────── */
+  .ts-app-shell {
+    padding-left: 18px !important;
+    padding-right: 18px !important;
+    padding-top: 28px !important;
+    padding-bottom: 40px !important;
+  }
+  .ts-app-shell + .ts-app-shell { padding-top: 0 !important; }
+
+  /* ── Authed layout nav: slimmer, tighter gutter ────────────────────────── */
+  .ts-layout-nav .mobile-nav-inner { height: 56px !important; }
+  .ts-layout-nav > div { padding-left: 16px !important; padding-right: 16px !important; }
+
+  /* ── Hero block: generous top/bottom, tight horizontal ─────────────────── */
+  .ts-app-hero {
+    padding: 44px 20px 32px !important;
+    text-align: center;
+  }
+  .ts-app-hero-kicker { margin-bottom: 14px !important; }
+  .ts-app-hero-title {
+    font-size: clamp(34px, 10vw, 52px) !important;
+    line-height: 1.08 !important;
+    margin-bottom: 16px !important;
+    letter-spacing: -0.035em !important;
+  }
+  .ts-app-hero-sub {
+    font-size: 15px !important;
+    line-height: 1.55 !important;
+    max-width: 36ch;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 22px !important;
+  }
+  .ts-app-hero-cta {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 10px !important;
+    width: 100%;
+    max-width: 320px;
+    margin: 0 auto 24px !important;
+  }
+  .ts-app-hero-cta .ts-action { width: 100%; justify-content: center; min-height: 48px; }
+  .ts-app-hero-meta {
+    font-size: 12px !important;
+    gap: 10px !important;
+    flex-wrap: wrap;
+    justify-content: center;
+    line-height: 1.6;
+  }
+  .ts-app-hero-meta .sep { display: none; }
+  .ts-app-hero-meta > span:not(.sep) {
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+
+  /* ── Page head (non-hero) ──────────────────────────────────────────────── */
+  .ts-page-head { margin-bottom: 22px !important; }
+  .ts-page-kicker { margin-bottom: 10px !important; }
+  .ts-page-title {
+    font-size: clamp(28px, 8vw, 40px) !important;
+    line-height: 1.1 !important;
+    margin-bottom: 12px !important;
+  }
+  .ts-page-sub { font-size: 14px !important; line-height: 1.6 !important; }
+  .ts-page-head-row { flex-direction: column; align-items: stretch; gap: 16px; }
+  .ts-page-head-row .ts-action { width: 100%; justify-content: center; min-height: 46px; }
+
+  /* ── Panels / feature blocks: softer padding, comfortable stacking ─────── */
+  .ts-panel { padding: 18px 16px !important; border-radius: 14px !important; }
+  .ts-panel + .ts-panel { margin-top: 12px; }
+  .ts-feature { padding: 22px 18px !important; border-radius: 16px !important; }
+
+  /* ── Sticky tab bar: tighter, scrollable, no wrap ──────────────────────── */
+  .ts-segtabs {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding: 2px;
+    gap: 4px !important;
+    margin: 0 -18px;
+    padding-left: 18px !important;
+    padding-right: 18px !important;
+  }
+  .ts-segtabs::-webkit-scrollbar { display: none; }
+  .ts-segtab {
+    flex-shrink: 0;
+    font-size: 13px !important;
+    padding: 9px 14px !important;
+    min-height: 40px;
+  }
+
+  /* Match authed sticky tab wrapper to the lighter nav */
+  [class*="ts-app-shell"] + div[style*="sticky"] { top: 56px !important; }
+
+  /* ── Section eyebrow row ───────────────────────────────────────────────── */
+  .ts-section-head-row { margin-bottom: 14px !important; }
+  .ts-section-eyebrow { font-size: 11px !important; }
+
+  /* ── Stat row (still used on some surfaces): one-column stack ──────────── */
+  .ts-stat-row {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 10px !important;
+  }
+  .ts-stat { padding: 14px 14px !important; }
+  .ts-stat-value { font-size: 22px !important; }
+  .ts-stat-label { font-size: 11px !important; }
+
+  /* ── Chips: softer, never overflow row ─────────────────────────────────── */
+  .ts-chip { font-size: 11px !important; padding: 4px 9px !important; }
+
+  /* ── Actions / buttons: minimum tap target ─────────────────────────────── */
+  .ts-action { min-height: 44px; }
+  .ts-action--sm { min-height: 38px; }
+  .ts-action--lg { min-height: 50px; font-size: 15px !important; padding: 0 22px !important; }
+
+  /* ── Forms / fields: calmer spacing, bigger input heights ──────────────── */
+  .ts-field { margin-bottom: 18px !important; }
+  .ts-field-label { font-size: 13px !important; margin-bottom: 6px !important; }
+  .ts-field-hint { font-size: 12px !important; margin-bottom: 10px !important; }
+  .ts-field input,
+  .ts-field textarea,
+  .ts-field select,
+  input.ts-input,
+  textarea.ts-input,
+  select.ts-input {
+    font-size: 16px !important;   /* prevents iOS zoom */
+    padding: 13px 14px !important;
+    border-radius: 12px !important;
+  }
+  .ts-field textarea { min-height: 112px; }
+
+  /* ── Segmented pill bar: stack if too tight ────────────────────────────── */
+  .ts-segbar {
+    flex-direction: column;
+    padding: 4px;
+    gap: 2px;
+  }
+  .ts-segbar-opt {
+    width: 100%;
+    text-align: left;
+    padding: 13px 14px !important;
+    min-height: 46px;
+    justify-content: flex-start !important;
+  }
+
+  /* ── Joblist frame (Open jobs on /dashboard) ───────────────────────────── */
+  .ts-joblist-frame { border-radius: 16px !important; }
+  .ts-mk-halo { padding: 10px !important; border-radius: 20px !important; }
+  .ts-joblist-rows { padding: 4px !important; }
+  .ts-joblist-row {
+    padding: 16px 14px !important;
+    gap: 12px !important;
+    align-items: flex-start !important;
+    min-height: 68px;
+  }
+  .ts-joblist-title {
+    font-size: 14px !important;
+    line-height: 1.35 !important;
+    flex-wrap: wrap;
+  }
+  .ts-joblist-meta {
+    font-size: 12px !important;
+    gap: 8px !important;
+    flex-wrap: wrap;
+    line-height: 1.5;
+  }
+  .ts-joblist-price {
+    font-size: 14px !important;
+    align-self: center;
+  }
+  .ts-joblist-chev { align-self: center; }
+  .mk-chrome { padding: 10px 14px !important; }
+  .mk-chrome-title { font-size: 11px !important; }
+
+  /* ── Post-job page: stack both columns, no vertical seam on mobile ─────── */
+  .ts-postjob { display: block !important; }
+  .ts-postjob-left,
+  .ts-postjob-right {
+    padding: 40px 20px !important;
+    border-right: none !important;
+  }
+  .ts-postjob-left {
+    text-align: center;
+    padding-top: 48px !important;
+    padding-bottom: 28px !important;
+  }
+  .ts-postjob-title {
+    font-size: clamp(30px, 9vw, 44px) !important;
+    line-height: 1.1 !important;
+  }
+  .ts-postjob-sub { margin-left: auto; margin-right: auto; }
+  .ts-postjob-checklist {
+    max-width: 340px;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    text-align: left;
+  }
+  .ts-postjob-preview {
+    margin-top: 28px;
+    max-width: 360px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .ts-postjob-right { padding-top: 32px !important; }
+
+  /* Section spacing inside post-job form */
+  .ts-postjob-right .ts-panel + .ts-panel,
+  .ts-postjob-right .ts-field-group + .ts-field-group { margin-top: 28px; }
+
+  /* Form submit row */
+  .ts-postjob-submit,
+  .ts-form-submit-row {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 10px !important;
+    margin-top: 28px !important;
+  }
+  .ts-postjob-submit .ts-action,
+  .ts-form-submit-row .ts-action { width: 100%; justify-content: center; }
+
+  /* ── Modals: full-height comfortable, safe insets ──────────────────────── */
+  .ts-modal-overlay { padding: 12px !important; align-items: flex-end !important; }
+  .ts-modal {
+    max-width: 100% !important;
+    width: 100% !important;
+    max-height: 92vh !important;
+    border-radius: 20px 20px 16px 16px !important;
+    padding: 22px 20px !important;
+  }
+  .ts-modal-title { font-size: 20px !important; line-height: 1.2 !important; }
+  .ts-modal-actions { flex-direction: column-reverse !important; gap: 10px !important; margin-top: 20px !important; }
+  .ts-modal-actions .ts-action { width: 100%; justify-content: center; }
+
+  /* ── Messages thread: cleaner bubble flow ──────────────────────────────── */
+  .ts-thread { padding: 14px 2px !important; gap: 10px !important; }
+  .ts-msg { max-width: 82% !important; font-size: 14px !important; padding: 10px 14px !important; border-radius: 16px !important; line-height: 1.45 !important; }
+  .ts-msg-meta { font-size: 10.5px !important; margin-top: 4px !important; }
+  .ts-thread-input { padding: 12px !important; gap: 8px; }
+  .ts-thread-input textarea { font-size: 16px !important; min-height: 44px !important; }
+
+  /* ── Definition list (profile) ─────────────────────────────────────────── */
+  .ts-dl { grid-template-columns: 1fr !important; gap: 14px !important; }
+  .ts-dl dt { font-size: 11px !important; margin-bottom: 3px; }
+  .ts-dl dd { font-size: 14px !important; }
+
+  /* ── Toggle rows ───────────────────────────────────────────────────────── */
+  .ts-toggle {
+    padding: 14px !important;
+    gap: 14px !important;
+    flex-wrap: wrap;
+  }
+  .ts-toggle-main { min-width: 0; flex: 1; }
+
+  /* ── Empty states: more breathing room ─────────────────────────────────── */
+  .ts-empty { padding: 36px 20px !important; border-radius: 16px !important; }
+  .ts-empty-title { font-size: 16px !important; margin-bottom: 8px !important; }
+  .ts-empty-sub { font-size: 13px !important; line-height: 1.55 !important; max-width: 34ch; margin-left: auto; margin-right: auto; }
+  .ts-empty-cta { margin-top: 18px; }
+  .ts-empty-cta .ts-action { width: 100%; max-width: 280px; justify-content: center; }
+
+  /* ── Homepage hero CTA row breathing room (mobile) ─────────────────────── */
+  .ts-hero-cta-row { gap: 10px !important; }
+  .ts-hero-cta-row .ts-action { width: 100%; justify-content: center; }
+
+  /* ── Section scroll anchors (fix sticky nav overlap) ───────────────────── */
+  section[id], [data-section] { scroll-margin-top: 72px; }
+
+  /* ── Apply page / sign-in: calmer vertical stack ───────────────────────── */
+  .ts-apply-shell, .ts-signin-shell { padding: 32px 20px !important; }
+  .ts-apply-shell .ts-panel, .ts-signin-shell .ts-panel { margin-top: 20px; }
+
+  /* ── Profile section spacing ───────────────────────────────────────────── */
+  .ts-profile-section + .ts-profile-section { margin-top: 20px; }
+
+  /* ── Admin rows / user cards ───────────────────────────────────────────── */
+  .ts-row { padding: 16px 14px !important; gap: 12px; }
+  .ts-row-main { min-width: 0; }
+  .ts-row-actions { flex-wrap: wrap; gap: 8px !important; }
+  .ts-row-actions .ts-action { flex: 1 1 auto; min-width: 120px; justify-content: center; }
+
+  /* ── Progress bar spacing ──────────────────────────────────────────────── */
+  .ts-progress { margin: 18px 0; }
+}
+
+/* ─── Ultra-narrow (≤ 380px) final polish ─────────────────────────────────── */
+@media (max-width: 380px) {
+  .ts-app-shell { padding-left: 14px !important; padding-right: 14px !important; }
+  .ts-app-hero { padding-left: 14px !important; padding-right: 14px !important; }
+  .ts-app-hero-title { font-size: clamp(28px, 10vw, 36px) !important; }
+  .ts-panel { padding: 16px 14px !important; }
+  .ts-joblist-row { padding: 14px 12px !important; }
+  .ts-chip { font-size: 10.5px !important; padding: 3px 8px !important; }
+}
